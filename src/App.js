@@ -25,7 +25,7 @@ export default function App() {
 					</a>{" "}
 					and{" "}
 					<a
-						href="https://nax16b-react-weather-search.netlify.com/"
+						href="https://nax16b-react-weather-search.netlify.app/"
 						target="_blank"
 						rel="noopener noreferrer">
 						hosted on Netlify
