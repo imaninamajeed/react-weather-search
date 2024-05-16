@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Weather from "./Weather";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+	return (
+		<div className="App text-white">
+			<div className="container">
+				<Weather defaultCity="Subang Jaya" />
+
+				<footer className="text-center">
+					This project was coded by{" "}
+					<a
+						href="https://www.linkedin.com/in/imaninamajeed/"
+						target="_blank"
+						rel="noopener noreferrer">
+						Nur Imanina
+					</a>{" "}
+					and is{" "}
+					<a
+						href="https://github.com/imaninamajeed"
+						target="_blank"
+						rel="noopener noreferrer">
+						available on GitHub
+					</a>{" "}
+					and{" "}
+					<a
+						href="https://nax16b-react-weather-search.netlify.com/"
+						target="_blank"
+						rel="noopener noreferrer">
+						hosted on Netlify
+					</a>
+				</footer>
+			</div>
+		</div>
+	);
 }
-
-export default App;
