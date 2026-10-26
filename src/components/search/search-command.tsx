@@ -19,6 +19,9 @@ import { useRecentSearches } from "./use-recent-searches";
 
 const DEBOUNCE_MS = 250;
 
+/** Dispatch on `window` to open the dialog from elsewhere (e.g. the dashboard's empty state). */
+export const OPEN_SEARCH_EVENT = "isobar:open-search";
+
 interface SearchResult {
   /** The query these places answer. */
   query: string;
@@ -55,8 +58,13 @@ export function SearchCommand() {
         setOpen(true);
       }
     }
+    const openFromEvent = () => setOpen(true);
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener(OPEN_SEARCH_EVENT, openFromEvent);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener(OPEN_SEARCH_EVENT, openFromEvent);
+    };
   }, []);
 
   useEffect(() => {

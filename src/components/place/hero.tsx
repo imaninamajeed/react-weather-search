@@ -20,9 +20,12 @@ interface PlaceHeroProps {
   units: Units;
   /** Save / set-home controls, top right. */
   actions?: ReactNode;
+  /** The dashboard owns the page's h1, so its hero heading is an h2. */
+  headingLevel?: 1 | 2;
 }
 
-export function PlaceHero({ place, forecast, units, actions }: PlaceHeroProps) {
+export function PlaceHero({ place, forecast, units, actions, headingLevel = 1 }: PlaceHeroProps) {
+  const Heading = headingLevel === 1 ? "h1" : "h2";
   const { current } = forecast;
   const today = forecast.daily[0];
   const weather = describeWeather(current.weatherCode, current.isDay);
@@ -39,13 +42,16 @@ export function PlaceHero({ place, forecast, units, actions }: PlaceHeroProps) {
     >
       <div className="grid gap-8 p-6 md:p-10 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
             <p className="label-caps">{localTimeLine}</p>
             {actions}
           </div>
-          <h1 id="place-title" className="mt-3 font-display text-5xl leading-[0.95] md:text-7xl">
+          <Heading
+            id="place-title"
+            className="mt-3 font-display text-5xl leading-[0.95] md:text-7xl"
+          >
             {place.name}
-          </h1>
+          </Heading>
           <p className="mt-2 text-muted-foreground">{formatPlaceSubtitle(place)}</p>
           <p className="mt-6 max-w-prose text-lg text-balance">{summarizeToday(forecast, units)}</p>
         </div>

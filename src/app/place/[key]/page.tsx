@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { PlaceActions } from "@/components/place/place-actions";
 import { PlaceView } from "@/components/place/place-view";
 import { PlaceSkeleton } from "@/components/shared/skeletons";
+import { getPreferences } from "@/lib/preferences";
+import { isSaved } from "@/lib/preferences-core";
 import { lookupPlace, resolvePlace } from "@/lib/resolve-place";
-import { DEFAULT_UNITS } from "@/lib/units";
 
 export async function generateMetadata({ params }: PageProps<"/place/[key]">): Promise<Metadata> {
   const { key } = await params;
@@ -18,8 +20,22 @@ export async function generateMetadata({ params }: PageProps<"/place/[key]">): P
 async function PlaceRoute({ params }: Pick<PageProps<"/place/[key]">, "params">) {
   // Awaiting params inside <Suspense> lets Next.js serve the shell instantly for any place.
   const { key } = await params;
-  const place = await resolvePlace(key);
-  return <PlaceView place={place} units={DEFAULT_UNITS} />;
+  const [place, preferences] = await Promise.all([resolvePlace(key), getPreferences()]);
+
+  return (
+    <PlaceView
+      place={place}
+      units={preferences.units}
+      actions={
+        <PlaceActions
+          placeKey={place.key}
+          placeName={place.name}
+          saved={isSaved(preferences, place.key)}
+          isHome={preferences.homeKey === place.key}
+        />
+      }
+    />
+  );
 }
 
 export default function PlacePage(props: PageProps<"/place/[key]">) {

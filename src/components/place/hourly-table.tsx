@@ -11,7 +11,7 @@ export function HourlyTable({ hours, units }: { hours: HourlyPoint[]; units: Uni
         View as table
       </summary>
       <div
-        className="max-h-80 overflow-auto border-t border-border"
+        className="relative max-h-80 overflow-auto border-t border-border"
         tabIndex={0}
         role="region"
         aria-label="Hourly forecast table"
