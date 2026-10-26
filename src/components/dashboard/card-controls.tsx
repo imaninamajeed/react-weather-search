@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUp, House, X } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { movePlace, removePlace, restorePlace, setHome } from "@/app/actions";
+import { useOnlineStatus } from "@/components/pwa/use-online-status";
 import { Button } from "@/components/ui/button";
 
 interface CardControlsProps {
@@ -17,6 +18,9 @@ interface CardControlsProps {
 /** Reorder, set-home and remove for one saved place (manage mode). */
 export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: CardControlsProps) {
   const [pending, startTransition] = useTransition();
+  // Reordering and removing change the saved list on the server, so they need a connection.
+  const online = useOnlineStatus();
+  const busy = pending || !online;
 
   function run(action: () => Promise<{ ok: boolean; error?: string }>) {
     startTransition(async () => {
@@ -44,7 +48,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         variant="ghost"
         size="icon-sm"
         aria-label={`Move ${placeName} up`}
-        disabled={pending || isFirst}
+        disabled={busy || isFirst}
         onClick={() => run(() => movePlace(placeKey, "up"))}
       >
         <ArrowUp aria-hidden="true" />
@@ -53,7 +57,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         variant="ghost"
         size="icon-sm"
         aria-label={`Move ${placeName} down`}
-        disabled={pending || isLast}
+        disabled={busy || isLast}
         onClick={() => run(() => movePlace(placeKey, "down"))}
       >
         <ArrowDown aria-hidden="true" />
@@ -62,7 +66,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         <Button
           variant="ghost"
           size="sm"
-          disabled={pending}
+          disabled={busy}
           onClick={() => run(() => setHome(placeKey))}
         >
           <House aria-hidden="true" />
@@ -73,7 +77,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         variant="ghost"
         size="sm"
         className="ml-auto text-muted-foreground hover:text-destructive"
-        disabled={pending}
+        disabled={busy}
         onClick={remove}
       >
         <X aria-hidden="true" />

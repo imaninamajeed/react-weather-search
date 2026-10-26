@@ -1,3 +1,5 @@
 allowBuilds:
+  # esbuild ships its binary as an optional dependency; its postinstall is only a speed-up.
+  esbuild: false
   sharp: false
   unrs-resolver: false

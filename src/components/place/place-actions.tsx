@@ -4,6 +4,7 @@ import { Bookmark, BookmarkCheck, House } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { removePlace, restorePlace, savePlace, setHome } from "@/app/actions";
+import { useOnlineStatus } from "@/components/pwa/use-online-status";
 import { Button } from "@/components/ui/button";
 
 interface PlaceActionsProps {
@@ -16,6 +17,8 @@ interface PlaceActionsProps {
 /** Save / set-home controls in the hero. Every change can be undone from its toast. */
 export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceActionsProps) {
   const [pending, startTransition] = useTransition();
+  const online = useOnlineStatus();
+  const offlineHint = online ? undefined : "Needs a connection";
 
   function toggleSaved() {
     startTransition(async () => {
@@ -52,7 +55,8 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
         variant="outline"
         size="sm"
         aria-pressed={saved}
-        disabled={pending}
+        disabled={pending || !online}
+        title={offlineHint}
         onClick={toggleSaved}
       >
         {saved ? <BookmarkCheck aria-hidden="true" /> : <Bookmark aria-hidden="true" />}
@@ -64,7 +68,13 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
           Home
         </span>
       ) : (
-        <Button variant="ghost" size="sm" disabled={pending} onClick={makeHome}>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={pending || !online}
+          title={offlineHint}
+          onClick={makeHome}
+        >
           <House aria-hidden="true" />
           Set as home
         </Button>

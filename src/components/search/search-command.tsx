@@ -15,6 +15,7 @@ import {
 import { formatPlaceSubtitle } from "@/lib/format";
 import { normalizeQuery, MIN_QUERY_LENGTH } from "@/lib/open-meteo/geocoding-query";
 import { coordinateKey, placeHref, type Place } from "@/lib/places";
+import { useOnlineStatus } from "@/components/pwa/use-online-status";
 import { useRecentSearches } from "./use-recent-searches";
 
 const DEBOUNCE_MS = 250;
@@ -44,6 +45,7 @@ export function SearchCommand() {
   const [debounced, setDebounced] = useState("");
   const [result, setResult] = useState<SearchResult>({ query: "", places: [] });
   const [notice, setNotice] = useState("");
+  const online = useOnlineStatus();
 
   const query = normalizeQuery(input);
   const searchable = query.length >= MIN_QUERY_LENGTH;
@@ -74,7 +76,7 @@ export function SearchCommand() {
 
   // Stale requests are aborted so an older, slower response can never overwrite a newer one.
   useEffect(() => {
-    if (debounced.length < MIN_QUERY_LENGTH) return;
+    if (debounced.length < MIN_QUERY_LENGTH || !online) return;
     const controller = new AbortController();
     fetch(`/api/places/search?q=${encodeURIComponent(debounced)}`, { signal: controller.signal })
       .then((response) => {
@@ -87,7 +89,7 @@ export function SearchCommand() {
         setResult({ query: debounced, places: null });
       });
     return () => controller.abort();
-  }, [debounced]);
+  }, [debounced, online]);
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
@@ -126,7 +128,9 @@ export function SearchCommand() {
   const places = settled ? (result.places ?? []) : [];
 
   let status = notice;
-  if (!status && searchable) {
+  if (!status && searchable && !online) {
+    status = "You're offline. Search needs a connection.";
+  } else if (!status && searchable) {
     if (loading) status = "Searching…";
     else if (failed) status = "Search is unavailable right now. Try again in a moment.";
     else if (places.length === 0) status = `No places match “${query}”.`;

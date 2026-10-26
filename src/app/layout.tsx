@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { OfflineBanner } from "@/components/pwa/offline-banner";
+import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Toaster } from "@/components/ui/sonner";
@@ -24,6 +26,8 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  applicationName: "Isobar",
+  appleWebApp: { capable: true, title: "Isobar", statusBarStyle: "default" },
   title: {
     default: "Isobar — weather, alerts and forecast confidence",
     template: "%s · Isobar",
@@ -61,10 +65,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Skip to content
             </a>
+            <OfflineBanner />
             <SiteHeader />
             {children}
             <SiteFooter />
             <Toaster />
+            <ServiceWorkerRegister />
           </TooltipProvider>
         </ThemeProvider>
       </body>

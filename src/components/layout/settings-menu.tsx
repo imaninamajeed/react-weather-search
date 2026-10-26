@@ -1,14 +1,17 @@
 "use client";
 
-import { SlidersHorizontal } from "lucide-react";
+import { Download, SlidersHorizontal } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { setUnits } from "@/app/actions";
 import { Button } from "@/components/ui/button";
+import { useInstallPrompt } from "@/components/pwa/use-install-prompt";
+import { useOnlineStatus } from "@/components/pwa/use-online-status";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -20,6 +23,9 @@ import type { Units } from "@/lib/weather/types";
 export function SettingsMenu({ units }: { units: Units }) {
   const { theme, setTheme } = useTheme();
   const [pending, startTransition] = useTransition();
+  const online = useOnlineStatus();
+  // Always mounted, so it catches the browser's one-shot install event early.
+  const install = useInstallPrompt();
 
   function changeUnits(value: string) {
     startTransition(async () => {
@@ -38,8 +44,12 @@ export function SettingsMenu({ units }: { units: Units }) {
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel>Units</DropdownMenuLabel>
         <DropdownMenuRadioGroup value={units} onValueChange={changeUnits}>
-          <DropdownMenuRadioItem value="metric">Metric (°C, km/h)</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="imperial">Imperial (°F, mph)</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="metric" disabled={!online}>
+            Metric (°C, km/h)
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="imperial" disabled={!online}>
+            Imperial (°F, mph)
+          </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Theme</DropdownMenuLabel>
@@ -48,6 +58,15 @@ export function SettingsMenu({ units }: { units: Units }) {
           <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
+        {install && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => void install()}>
+              <Download aria-hidden="true" />
+              Install app
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
