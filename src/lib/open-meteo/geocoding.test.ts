@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import byId from "@/test/fixtures/geocoding-subang-jaya.json";
 import search from "@/test/fixtures/geocoding-tokyo.json";
-import { normalizeQuery, toPlace } from "./geocoding";
+import { toPlace } from "./geocoding";
+import { normalizeQuery } from "./geocoding-query";
 
 describe("toPlace", () => {
   it("maps a geocoding result to a Place with a stable key", () => {

@@ -74,3 +74,26 @@ export function minutesOfDay(iso: string): number {
 export function isSameDay(a: string, b: string): boolean {
   return a.slice(0, 10) === b.slice(0, 10);
 }
+
+const hour12 = (hour: number) => hour % 12 || 12;
+const meridiem = (hour: number) => (hour < 12 ? "AM" : "PM");
+
+/**
+ * "3–6 PM" or "11 AM–2 PM" for a run of whole hours, from the first hour's start to the
+ * end of the last hour. Both arguments are naive local timestamps.
+ */
+export function formatHourRange(firstHour: string, lastHour: string): string {
+  const start = Number(firstHour.slice(11, 13));
+  const end = (Number(lastHour.slice(11, 13)) + 1) % 24;
+  if (meridiem(start) === meridiem(end)) return `${hour12(start)}–${hour12(end)} ${meridiem(end)}`;
+  return `${hour12(start)} ${meridiem(start)}–${hour12(end)} ${meridiem(end)}`;
+}
+
+/** "UTC+8", "UTC+5:30", "UTC−3" */
+export function formatUtcOffset(seconds: number): string {
+  const sign = seconds < 0 ? "−" : "+";
+  const totalMinutes = Math.abs(Math.round(seconds / 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `UTC${sign}${hours}${minutes ? `:${String(minutes).padStart(2, "0")}` : ""}`;
+}

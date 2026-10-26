@@ -3,6 +3,7 @@ import { cacheLife } from "next/cache";
 import { z } from "zod";
 import { geocodedKey, type Place } from "@/lib/places";
 import { fetchJson, openMeteoUrl, UpstreamError } from "./client";
+import { MIN_QUERY_LENGTH, normalizeQuery } from "./geocoding-query";
 
 const SOURCE = "open-meteo/geocoding";
 const MAX_RESULTS = 8;
@@ -34,14 +35,6 @@ export function toPlace(result: GeocodingResult): Place {
     longitude: result.longitude,
     timezone: result.timezone,
   };
-}
-
-export const MIN_QUERY_LENGTH = 2;
-export const MAX_QUERY_LENGTH = 80;
-
-/** Collapses whitespace and clamps length so equivalent queries share a cache entry. */
-export function normalizeQuery(query: string): string {
-  return query.trim().replace(/\s+/g, " ").slice(0, MAX_QUERY_LENGTH);
 }
 
 async function fetchSearch(query: string): Promise<Place[]> {

@@ -42,3 +42,32 @@ describe("format", () => {
     expect(formatPlaceSubtitle({ name: "Pin", region: "Dropped pin" })).toBe("Dropped pin");
   });
 });
+
+import { formatHourRange } from "./format";
+
+describe("formatHourRange", () => {
+  it("collapses the meridiem when both ends share it", () => {
+    expect(formatHourRange("2026-10-27T15:00", "2026-10-27T17:00")).toBe("3–6 PM");
+    expect(formatHourRange("2026-10-27T00:00", "2026-10-27T09:00")).toBe("12–10 AM");
+  });
+
+  it("spells out both when the range crosses noon or midnight", () => {
+    expect(formatHourRange("2026-10-27T11:00", "2026-10-27T13:00")).toBe("11 AM–2 PM");
+    expect(formatHourRange("2026-10-27T22:00", "2026-10-27T23:00")).toBe("10 PM–12 AM");
+  });
+
+  it("covers a single hour", () => {
+    expect(formatHourRange("2026-10-27T14:00", "2026-10-27T14:00")).toBe("2–3 PM");
+  });
+});
+
+import { formatUtcOffset } from "./format";
+
+describe("formatUtcOffset", () => {
+  it("formats whole and fractional offsets", () => {
+    expect(formatUtcOffset(28800)).toBe("UTC+8");
+    expect(formatUtcOffset(19800)).toBe("UTC+5:30");
+    expect(formatUtcOffset(-10800)).toBe("UTC−3");
+    expect(formatUtcOffset(0)).toBe("UTC+0");
+  });
+});
