@@ -23,12 +23,12 @@ export function formatWeekday(iso: string, style: "short" | "long" = "short"): s
   return format(iso, { weekday: style });
 }
 
-/** "27 Oct" */
+/** "Oct 27" */
 export function formatDayMonth(iso: string): string {
   return format(iso, { day: "numeric", month: "short" });
 }
 
-/** "Tuesday, 27 October" */
+/** "Tuesday, October 27" */
 export function formatLongDate(iso: string): string {
   return format(iso, { weekday: "long", day: "numeric", month: "long" });
 }
@@ -96,4 +96,35 @@ export function formatUtcOffset(seconds: number): string {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   return `UTC${sign}${hours}${minutes ? `:${String(minutes).padStart(2, "0")}` : ""}`;
+}
+
+/** Converts an ISO timestamp carrying an offset ("…-04:00", "…Z") to wall-clock time in `timeZone`. */
+export function isoToWallClock(iso: string, timeZone: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) throw new RangeError(`Invalid timestamp: ${iso}`);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const get = (type: string) => parts.find((part) => part.type === type)?.value ?? "00";
+  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
+}
+
+/** The naive timestamp `days` calendar days after a naive date or timestamp (DST-free: wall-clock arithmetic). */
+export function addDays(iso: string, days: number): string {
+  const date = wallClock(iso);
+  date.setUTCDate(date.getUTCDate() + days);
+  return iso.length === 10 ? date.toISOString().slice(0, 10) : date.toISOString().slice(0, 16);
+}
+
+/** The timestamp one hour after a naive hourly timestamp. */
+export function addHours(iso: string, hours: number): string {
+  const date = wallClock(iso);
+  date.setUTCHours(date.getUTCHours() + hours);
+  return date.toISOString().slice(0, 16);
 }

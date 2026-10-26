@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { HazardBadge } from "@/components/alerts/hazard-badge";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPlaceSubtitle, formatWeekdayClock } from "@/lib/format";
+import { getPlaceAlerts } from "@/lib/alerts";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { placeHref, type Place } from "@/lib/places";
 import { formatTemperature } from "@/lib/units";
@@ -13,13 +15,18 @@ import type { Units } from "@/lib/weather/types";
 import { CardControls } from "./card-controls";
 
 async function CardBody({ place, units }: { place: Place; units: Units }) {
-  const { current, daily } = await getForecast(place.latitude, place.longitude);
+  const forecast = await getForecast(place.latitude, place.longitude);
+  const { current, daily } = forecast;
+  const { alerts } = await getPlaceAlerts(place, forecast);
   const today = daily[0];
   const weather = describeWeather(current.weatherCode, current.isDay);
 
   return (
     <>
-      <p className="label-caps mt-4">{formatWeekdayClock(current.time)}</p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <p className="label-caps">{formatWeekdayClock(current.time)}</p>
+        <HazardBadge alerts={alerts} />
+      </div>
       <div className="mt-2 flex items-end justify-between gap-3">
         <p className="text-5xl leading-none font-medium tracking-tight">
           {formatTemperature(current.temperature, units)}

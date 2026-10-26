@@ -1,5 +1,8 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
+import { PlaceAlerts } from "@/components/alerts/place-alerts";
 import { Section } from "@/components/shared/section";
+import { SectionBoundary } from "@/components/shared/section-boundary";
+import { RowsSkeleton } from "@/components/shared/skeletons";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import type { Place } from "@/lib/places";
 import type { Units } from "@/lib/weather/types";
@@ -29,6 +32,14 @@ export async function PlaceView({
   return (
     <div className="space-y-10">
       <PlaceHero place={resolved} forecast={forecast} units={units} actions={actions} />
+
+      <Section id="alerts" title="Alerts">
+        <SectionBoundary title="Alerts">
+          <Suspense fallback={<RowsSkeleton rows={1} />}>
+            <PlaceAlerts place={resolved} forecast={forecast} units={units} />
+          </Suspense>
+        </SectionBoundary>
+      </Section>
 
       <Section id="hourly" title="Next 48 hours">
         <HourlyChart hours={hours} units={units} />

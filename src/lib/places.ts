@@ -9,6 +9,8 @@ export const placeSchema = z.object({
   key: z.string().min(1).max(120),
   name: z.string().min(1).max(120),
   region: z.string().max(120).optional(),
+  /** Second-level admin area (county / district), used to match official warnings. */
+  district: z.string().max(120).optional(),
   country: z.string().max(120).optional(),
   countryCode: z.string().length(2).optional(),
   latitude: z.number().min(-90).max(90),
@@ -23,6 +25,7 @@ export const DEFAULT_PLACE: Place = {
   key: "8504423-subang-jaya",
   name: "Subang Jaya",
   region: "Selangor",
+  district: "Petaling",
   country: "Malaysia",
   countryCode: "MY",
   latitude: 3.04384,

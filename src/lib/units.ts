@@ -18,6 +18,10 @@ export const convertPrecipitation = (mm: number, units: Units) =>
 export const convertPressure = (hpa: number, units: Units) =>
   units === "imperial" ? hpa * 0.02953 : hpa;
 
+/** Centimetres in, centimetres or inches out. */
+export const convertSnowfall = (cm: number, units: Units) =>
+  units === "imperial" ? cm / 2.54 : cm;
+
 /** Metres in, kilometres or miles out. */
 export const convertDistance = (metres: number, units: Units) =>
   units === "imperial" ? metres / 1609.344 : metres / 1000;
@@ -41,6 +45,11 @@ export function formatPrecipitation(mm: number, units: Units): string {
   const value = convertPrecipitation(mm, units);
   const digits = units === "imperial" ? 2 : value < 10 ? 1 : 0;
   return `${value.toFixed(digits)} ${unitLabels(units).precipitation}`;
+}
+
+export function formatSnowfall(cm: number, units: Units): string {
+  const value = convertSnowfall(cm, units);
+  return `${units === "imperial" ? value.toFixed(1) : Math.round(value)} ${units === "imperial" ? "in" : "cm"}`;
 }
 
 export function formatPressure(hpa: number, units: Units): string {

@@ -71,3 +71,36 @@ describe("formatUtcOffset", () => {
     expect(formatUtcOffset(0)).toBe("UTC+0");
   });
 });
+
+import { addDays, addHours, isoToWallClock } from "./format";
+
+describe("isoToWallClock", () => {
+  it("shows the same instant as wall-clock time in the requested zone", () => {
+    const instant = "2026-10-26T12:36:00-04:00"; // 16:36 UTC
+    expect(isoToWallClock(instant, "America/New_York")).toBe("2026-10-26T12:36");
+    expect(isoToWallClock(instant, "UTC")).toBe("2026-10-26T16:36");
+    expect(isoToWallClock(instant, "Asia/Tokyo")).toBe("2026-10-27T01:36");
+    expect(isoToWallClock("2026-10-26T16:00:00Z", "Asia/Kolkata")).toBe("2026-10-26T21:30");
+  });
+
+  it("never renders midnight as hour 24", () => {
+    expect(isoToWallClock("2026-10-26T16:00:00Z", "Asia/Kuala_Lumpur")).toBe("2026-10-27T00:00");
+  });
+
+  it("rejects garbage", () => {
+    expect(() => isoToWallClock("soon", "UTC")).toThrow(RangeError);
+  });
+});
+
+describe("addDays / addHours", () => {
+  it("rolls over months and years", () => {
+    expect(addDays("2026-10-31", 1)).toBe("2026-11-01");
+    expect(addDays("2026-12-31", 1)).toBe("2027-01-01");
+    expect(addDays("2026-03-01T08:30", -1)).toBe("2026-02-28T08:30");
+  });
+
+  it("adds hours across midnight", () => {
+    expect(addHours("2026-10-27T23:00", 1)).toBe("2026-10-28T00:00");
+    expect(addHours("2026-10-27T10:00", 3)).toBe("2026-10-27T13:00");
+  });
+});

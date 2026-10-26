@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import { AlertsOverview } from "./alerts-overview";
 import { PlaceHero } from "@/components/place/hero";
 import { Section } from "@/components/shared/section";
 import { SectionBoundary } from "@/components/shared/section-boundary";
@@ -61,6 +62,14 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
           <HomeHero place={home} units={units} />
         </Suspense>
       </SectionBoundary>
+
+      <Section id="alerts" title="Alerts">
+        <SectionBoundary title="Alerts">
+          <Suspense fallback={<RowsSkeleton rows={1} />}>
+            <AlertsOverview places={weekPlaces} units={units} />
+          </Suspense>
+        </SectionBoundary>
+      </Section>
 
       <Section
         id="places"

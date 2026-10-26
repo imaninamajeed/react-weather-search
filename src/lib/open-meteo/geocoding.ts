@@ -16,6 +16,7 @@ const resultSchema = z.object({
   country_code: z.string().length(2).optional(),
   country: z.string().optional(),
   admin1: z.string().optional(),
+  admin2: z.string().optional(),
   timezone: z.string().optional(),
 });
 
@@ -29,6 +30,7 @@ export function toPlace(result: GeocodingResult): Place {
     key: geocodedKey(result.id, result.name),
     name: result.name,
     region: result.admin1,
+    district: result.admin2,
     country: result.country,
     countryCode: result.country_code?.toUpperCase(),
     latitude: result.latitude,

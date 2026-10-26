@@ -10,6 +10,7 @@ describe("toPlace", () => {
       key: "8504423-subang-jaya",
       name: "Subang Jaya",
       region: "Selangor",
+      district: "Petaling",
       country: "Malaysia",
       countryCode: "MY",
       latitude: 3.04384,
