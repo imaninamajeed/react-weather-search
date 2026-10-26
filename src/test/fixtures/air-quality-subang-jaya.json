@@ -1,0 +1,27 @@
+{
+  "latitude": 3.0,
+  "longitude": 101.600006,
+  "generationtime_ms": 0.3396272659301758,
+  "utc_offset_seconds": 28800,
+  "timezone": "Asia/Kuala_Lumpur",
+  "timezone_abbreviation": "GMT+8",
+  "elevation": 37.0,
+  "current_units": {
+    "time": "iso8601",
+    "interval": "seconds",
+    "us_aqi": "USAQI",
+    "pm2_5": "μg/m³",
+    "pm10": "μg/m³",
+    "ozone": "μg/m³",
+    "nitrogen_dioxide": "μg/m³"
+  },
+  "current": {
+    "time": "2026-10-27T01:00",
+    "interval": 3600,
+    "us_aqi": 96,
+    "pm2_5": 27.8,
+    "pm10": 27.9,
+    "ozone": 0.0,
+    "nitrogen_dioxide": 91.8
+  }
+}
