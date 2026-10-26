@@ -6,6 +6,7 @@ import { RowsSkeleton } from "@/components/shared/skeletons";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import type { Place } from "@/lib/places";
 import type { Units } from "@/lib/weather/types";
+import { ConfidencePanel } from "./confidence-panel";
 import { ConditionsGrid } from "./conditions-grid";
 import { DailyList } from "./daily-list";
 import { PlaceHero } from "./hero";
@@ -48,6 +49,19 @@ export async function PlaceView({
 
       <Section id="daily" title="14-day outlook">
         <DailyList forecast={forecast} units={units} />
+      </Section>
+
+      <Section id="confidence" title="Forecast confidence">
+        <SectionBoundary title="Forecast confidence">
+          <Suspense fallback={<RowsSkeleton rows={3} />}>
+            <ConfidencePanel
+              latitude={forecast.latitude}
+              longitude={forecast.longitude}
+              units={units}
+              today={forecast.daily[0].date}
+            />
+          </Suspense>
+        </SectionBoundary>
       </Section>
 
       <Section id="conditions" title="Right now">
