@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated or vendored files that are copied in at build time.
+    "public/maplibre-gl-worker.mjs",
+    "public/sw.js",
+    "public/swe-worker-*.js",
   ]),
 ]);
 

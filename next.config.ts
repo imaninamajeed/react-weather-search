@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
     forecast: { stale: 300, revalidate: 900, expire: 3600 },
     airQuality: { stale: 300, revalidate: 3600, expire: 86400 },
     alerts: { stale: 300, revalidate: 300, expire: 1800 },
+    radar: { stale: 60, revalidate: 300, expire: 1800 },
   },
   turbopack: {
     root: import.meta.dirname,

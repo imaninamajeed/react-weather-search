@@ -1,3 +1,4 @@
+import { Map as MapIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -27,7 +28,13 @@ export function SiteHeader() {
           />
           <span className="font-display text-2xl leading-none">Isobar</span>
         </Link>
-        <div className="ml-auto w-full max-w-xs">
+        <Button asChild variant="ghost" size="sm" className="ml-auto shrink-0">
+          <Link href="/map" aria-label="Map">
+            <MapIcon aria-hidden="true" />
+            <span className="hidden sm:inline">Map</span>
+          </Link>
+        </Button>
+        <div className="w-full max-w-xs">
           <SearchCommand />
         </div>
         <Suspense

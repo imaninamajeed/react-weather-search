@@ -163,3 +163,54 @@
     @apply font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase;
   }
 }
+
+/*
+ * MapLibre ships light-only chrome; theme its popup, controls and attribution with our tokens.
+ * Scoped under .maplibregl-map because its stylesheet is injected after ours and would otherwise
+ * win on equal specificity.
+ */
+.maplibregl-map .maplibregl-popup-content {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.875rem;
+  box-shadow: 0 8px 24px oklch(0 0 0 / 25%);
+}
+.maplibregl-map .maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: var(--popover);
+}
+.maplibregl-map .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: var(--popover);
+}
+.maplibregl-map .maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--popover);
+}
+.maplibregl-map .maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--popover);
+}
+.maplibregl-map .maplibregl-popup-close-button {
+  color: var(--muted-foreground);
+}
+.maplibregl-map .maplibregl-ctrl-group {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+.maplibregl-map .maplibregl-ctrl-group button + button {
+  border-top-color: var(--border);
+}
+.dark .maplibregl-map .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.maplibregl-map .maplibregl-ctrl.maplibregl-ctrl-attrib {
+  background: color-mix(in oklch, var(--card) 80%, transparent);
+  color: var(--muted-foreground);
+}
+.maplibregl-map .maplibregl-ctrl-attrib a {
+  color: inherit;
+}
