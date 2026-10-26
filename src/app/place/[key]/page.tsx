@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { PlaceNav } from "@/components/place/place-nav";
 import { PlaceActions } from "@/components/place/place-actions";
 import { PlaceView } from "@/components/place/place-view";
 import { PlaceSkeleton } from "@/components/shared/skeletons";
@@ -23,18 +24,21 @@ async function PlaceRoute({ params }: Pick<PageProps<"/place/[key]">, "params">)
   const [place, preferences] = await Promise.all([resolvePlace(key), getPreferences()]);
 
   return (
-    <PlaceView
-      place={place}
-      units={preferences.units}
-      actions={
-        <PlaceActions
-          placeKey={place.key}
-          placeName={place.name}
-          saved={isSaved(preferences, place.key)}
-          isHome={preferences.homeKey === place.key}
-        />
-      }
-    />
+    <div className="space-y-6">
+      <PlaceNav placeKey={place.key} current="forecast" />
+      <PlaceView
+        place={place}
+        units={preferences.units}
+        actions={
+          <PlaceActions
+            placeKey={place.key}
+            placeName={place.name}
+            saved={isSaved(preferences, place.key)}
+            isHome={preferences.homeKey === place.key}
+          />
+        }
+      />
+    </div>
   );
 }
 

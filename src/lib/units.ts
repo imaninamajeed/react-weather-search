@@ -9,6 +9,10 @@ export function isUnits(value: unknown): value is Units {
 export const convertTemperature = (celsius: number, units: Units) =>
   units === "imperial" ? (celsius * 9) / 5 + 32 : celsius;
 
+/** A temperature *difference*: scale only, no +32 offset. */
+export const convertTemperatureDelta = (celsius: number, units: Units) =>
+  units === "imperial" ? (celsius * 9) / 5 : celsius;
+
 export const convertSpeed = (kmh: number, units: Units) =>
   units === "imperial" ? kmh * 0.621371 : kmh;
 
@@ -35,6 +39,13 @@ export function unitLabels(units: Units) {
 /** "29°" – the degree sign only, because the unit is shown once nearby. */
 export function formatTemperature(celsius: number, units: Units): string {
   return `${Math.round(convertTemperature(celsius, units))}°`;
+}
+
+/** "+1.4°" / "−0.6°": a signed difference. */
+export function formatTemperatureDelta(celsius: number, units: Units): string {
+  const value = convertTemperatureDelta(celsius, units);
+  const rounded = Math.round(value * 10) / 10;
+  return `${rounded > 0 ? "+" : rounded < 0 ? "−" : ""}${Math.abs(rounded).toFixed(1)}°`;
 }
 
 export function formatSpeed(kmh: number, units: Units): string {

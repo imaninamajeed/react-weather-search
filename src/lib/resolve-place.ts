@@ -19,9 +19,10 @@ export async function lookupPlace(rawKey: string): Promise<Place | null> {
 
 /**
  * Resolves a URL key to a place for rendering: 404s for bad keys and redirects
- * non-canonical keys (wrong slug, over-precise coordinates) to the canonical URL.
+ * non-canonical keys (wrong slug, over-precise coordinates) to the canonical URL, keeping
+ * any sub-path such as "/history".
  */
-export async function resolvePlace(rawKey: string): Promise<Place> {
+export async function resolvePlace(rawKey: string, subPath = ""): Promise<Place> {
   const place = await lookupPlace(rawKey);
   if (!place) notFound();
 
@@ -30,7 +31,7 @@ export async function resolvePlace(rawKey: string): Promise<Place> {
     parsePlaceKey(rawKey)?.kind === "coordinates"
       ? coordinateKey(place.latitude, place.longitude)
       : place.key;
-  if (requested !== canonical) redirect(placeHref({ key: canonical }));
+  if (requested !== canonical) redirect(`${placeHref({ key: canonical })}${subPath}`);
 
   return place;
 }
