@@ -24,7 +24,7 @@ export function SiteFooter() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Nur Imanina
+            Imanina
           </a>
           {" · "}
           <a
