@@ -22,7 +22,7 @@ exercise), so the first finding rests on OpenWeather's published deprecation, no
 | 7   | Medium   | Search input unvalidated, unencoded, empty submits allowed     | Validated and normalised on server and client   |
 | 8   | Medium   | Accessibility gaps                                             | WCAG 2.2 AA target, axe-tested on every page    |
 | 9   | Medium   | Layout doesn't adapt to small screens                          | Mobile-first, checked at 375 px                 |
-| 10  | Medium   | The only test cannot pass                                      | 213 unit + 34 e2e tests                         |
+| 10  | Medium   | The only test cannot pass                                      | 213 unit + 38 e2e tests                         |
 | 11  | Low      | Deprecated and unused tooling                                  | Next.js 16, TypeScript, pnpm                    |
 | 12  | Low      | Boilerplate and hygiene                                        | Real metadata, README, assets, docs             |
 
@@ -119,7 +119,7 @@ scrolls horizontally.
 `App.test.js` renders `<App />` and looks for text matching "learn react", which the app doesn't
 contain, so the only test cannot pass.
 
-_Resolution:_ 213 unit/component tests and 34 end-to-end tests (see README).
+_Resolution:_ 213 unit/component tests and 38 end-to-end tests (see README).
 
 ### 11. Tooling (low)
 

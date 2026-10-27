@@ -5,7 +5,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { OfflineBanner } from "@/components/pwa/offline-banner";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SidebarStateRestore } from "@/components/layout/sidebar-state-restore";
+import { TopBar } from "@/components/layout/top-bar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -66,10 +69,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Skip to content
             </a>
-            <OfflineBanner />
-            <SiteHeader />
-            {children}
-            <SiteFooter />
+            <SidebarProvider>
+              <SidebarStateRestore />
+              <AppSidebar />
+              <SidebarInset>
+                <OfflineBanner />
+                <TopBar />
+                {children}
+                <SiteFooter />
+              </SidebarInset>
+            </SidebarProvider>
             <Toaster />
             <ServiceWorkerRegister />
           </TooltipProvider>

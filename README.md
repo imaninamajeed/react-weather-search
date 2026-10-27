@@ -77,7 +77,7 @@ public. The history was not rewritten.
   hazard thresholds, confidence rating, climate normals, unit conversion, timezone-correct
   formatting, preference parsing, official-feed matching, the search dialog's race handling. They use
   real API responses captured as fixtures (`src/test/fixtures`).
-- **End-to-end tests** (34, Chromium): journeys, resilience, every feature, the map, offline PWA
+- **End-to-end tests** (38, Chromium): journeys, resilience, every feature, the map, offline PWA
   behaviour, and **axe-core accessibility checks on every page in light and dark**. Every upstream
   API is answered from fixtures by a small `fetch`-patching preload (`e2e/mock-upstream.mjs`), so
   the suite is deterministic, needs no network, and the production code contains no test hooks.
