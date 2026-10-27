@@ -1,4 +1,5 @@
 import { IconArrowRight } from "@tabler/icons-react";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AlertsOverview } from "./alerts-overview";
@@ -16,7 +17,7 @@ import type { Units } from "@/lib/weather/types";
 import { HourStrip } from "./hour-strip";
 import { Onboarding } from "./onboarding";
 import { PlaceCard } from "./place-card";
-import { WeekAheadTable } from "./week-ahead-table";
+import { OpenSearchButton } from "./open-search-button";
 
 async function HomeHero({ place, units }: { place: Place; units: Units }) {
   const forecast = await getForecast(place.latitude, place.longitude);
@@ -44,14 +45,34 @@ async function HomeHero({ place, units }: { place: Place; units: Units }) {
   );
 }
 
-/** The personalised landing page: home forecast, saved places and a week-ahead comparison. */
+/** Home is the only place followed: nothing to compare yet, so say how to add more. */
+function OnlyHome() {
+  return (
+    <div className="rounded-lg border border-dashed border-border p-6">
+      <p className="text-muted-foreground">
+        Your home place is the only one you follow so far. Add another to see its conditions here.
+      </p>
+      <div className="mt-4">
+        <OpenSearchButton label="Add a place" variant="outline" />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The personalised landing page, built to be read in one glance: home now, anything you need to know,
+ * and the status of the other places you follow. Managing and comparing places lives on /places.
+ */
 export async function Dashboard({ searchParams }: { searchParams: Promise<{ manage?: string }> }) {
   const [preferences, params] = await Promise.all([getPreferences(), searchParams]);
+  // Manage mode used to be a dashboard query; it is a page of its own now.
+  if (params.manage) redirect("/places");
+
   const { units, places } = preferences;
   const home = homePlace(preferences);
-  const managing = params.manage === "1" && places.length > 0;
-  // Home leads the week-ahead table even when it is the default city and not saved.
-  const weekPlaces = [home, ...places.filter((place) => place.key !== home.key)];
+  // The home place is the hero above, so it isn't repeated as a card.
+  const others = places.filter((place) => place.key !== home.key);
+  const followed = [home, ...others];
 
   return (
     <div className="space-y-10">
@@ -66,7 +87,7 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
       <Section id="alerts" title="Alerts">
         <SectionBoundary title="Alerts">
           <Suspense fallback={<RowsSkeleton rows={1} />}>
-            <AlertsOverview places={weekPlaces} units={units} />
+            <AlertsOverview places={followed} units={units} />
           </Suspense>
         </SectionBoundary>
       </Section>
@@ -76,9 +97,10 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
         title="Your places"
         aside={
           places.length > 0 && (
-            <Button asChild variant={managing ? "default" : "outline"} size="sm">
-              <Link href={managing ? "/" : "/?manage=1"} scroll={false}>
-                {managing ? "Done" : "Manage"}
+            <Button asChild variant="outline" size="sm">
+              <Link href="/places">
+                Manage and compare
+                <IconArrowRight aria-hidden="true" />
               </Link>
             </Button>
           )
@@ -86,35 +108,18 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
       >
         {places.length === 0 ? (
           <Onboarding />
+        ) : others.length === 0 ? (
+          <OnlyHome />
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {places.map((place, index) => (
+            {others.map((place) => (
               <li key={place.key}>
-                <PlaceCard
-                  place={place}
-                  units={units}
-                  isHome={place.key === home.key}
-                  manage={
-                    managing
-                      ? { isFirst: index === 0, isLast: index === places.length - 1 }
-                      : undefined
-                  }
-                />
+                <PlaceCard place={place} units={units} isHome={false} />
               </li>
             ))}
           </ul>
         )}
       </Section>
-
-      {places.length > 0 && (
-        <Section id="week" title="Week ahead">
-          <SectionBoundary title="The week-ahead table">
-            <Suspense fallback={<RowsSkeleton rows={Math.min(weekPlaces.length, 5)} />}>
-              <WeekAheadTable places={weekPlaces} units={units} />
-            </Suspense>
-          </SectionBoundary>
-        </Section>
-      )}
     </div>
   );
 }

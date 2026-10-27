@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { WeatherMap, type MapPlace } from "@/components/map/weather-map";
+import { PageHeader } from "@/components/shared/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { getRadarFrames } from "@/lib/radar";
@@ -69,14 +70,13 @@ async function MapContent({ searchParams }: Pick<PageProps<"/map">, "searchParam
 export default function MapPage(props: PageProps<"/map">) {
   return (
     <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-      <header className="mb-6">
-        <p className="label-caps">Live radar</p>
-        <h1 className="mt-2 font-heading text-5xl leading-[0.95] md:text-6xl">Map</h1>
-        <p className="mt-3 max-w-prose text-muted-foreground">
-          Rain radar for the last two hours, with the places you follow. Click anywhere for the
-          weather at that spot.
-        </p>
-      </header>
+      <div className="mb-6">
+        <PageHeader
+          label="Live radar"
+          title="Map"
+          lead="Rain radar for the last two hours, with the places you follow. Click anywhere for the weather at that spot."
+        />
+      </div>
       <Suspense fallback={<Skeleton aria-hidden="true" className="h-[60svh] w-full rounded-xl" />}>
         <MapContent searchParams={props.searchParams} />
       </Suspense>

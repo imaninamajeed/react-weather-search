@@ -1,24 +1,5 @@
-import { expect, test, type BrowserContext } from "@playwright/test";
-import { mockMapNetwork } from "./helpers";
-
-const place = (key: string, name: string, latitude: number, longitude: number) => ({
-  key,
-  name,
-  latitude,
-  longitude,
-});
-
-async function seedPlaces(context: BrowserContext, baseURL: string) {
-  const preferences = {
-    units: "metric",
-    homeKey: "8504423-subang-jaya",
-    places: [
-      place("8504423-subang-jaya", "Subang Jaya", 3.04384, 101.58062),
-      place("1850147-tokyo", "Tokyo", 35.6895, 139.69171),
-    ],
-  };
-  await context.addCookies([{ name: "wx", value: JSON.stringify(preferences), url: baseURL }]);
-}
+import { expect, test } from "@playwright/test";
+import { mockMapNetwork, seedPlaces } from "./helpers";
 
 test.describe("desktop", () => {
   test("lists navigation and your places, and highlights where you are", async ({
@@ -31,6 +12,7 @@ test.describe("desktop", () => {
 
     const sidebar = page.locator('[data-slot="sidebar"]').first();
     await expect(sidebar.getByRole("link", { name: "Dashboard" })).toBeVisible();
+    await expect(sidebar.getByRole("link", { name: "Places" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Radar map" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Tokyo" })).toHaveAttribute(

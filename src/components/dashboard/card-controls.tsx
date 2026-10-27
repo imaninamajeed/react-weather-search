@@ -22,10 +22,11 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
   const online = useOnlineStatus();
   const busy = pending || !online;
 
-  function run(action: () => Promise<{ ok: boolean; error?: string }>) {
+  function run(action: () => Promise<{ ok: boolean; error?: string }>, success?: string) {
     startTransition(async () => {
       const result = await action();
       if (!result.ok) toast.error(result.error ?? "Something went wrong.");
+      else if (success) toast.success(success);
     });
   }
 
@@ -67,7 +68,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
           variant="ghost"
           size="sm"
           disabled={busy}
-          onClick={() => run(() => setHome(placeKey))}
+          onClick={() => run(() => setHome(placeKey), `${placeName} is now your home`)}
         >
           <IconHome aria-hidden="true" />
           Set as home

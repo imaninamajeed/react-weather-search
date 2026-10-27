@@ -28,7 +28,7 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
         className="relative -mx-4 overflow-x-auto px-4"
         tabIndex={0}
         role="region"
-        aria-label="Week ahead"
+        aria-label="Week ahead table"
       >
         <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-left">
           <caption className="sr-only">
@@ -72,6 +72,7 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
                     const weather = describeWeather(day.weatherCode);
                     return (
                       <td key={date} className="p-1">
+                        {/* Text sits on a temperature tint, so it uses foreground ink: muted grey fails contrast on it. */}
                         <div
                           className="rounded-md px-2 py-2 text-center"
                           style={{
@@ -83,7 +84,7 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
                           <span className="block text-sm font-medium">
                             {formatTemperature(day.temperatureMax, units)}
                           </span>
-                          <span className="tnum block text-xs text-muted-foreground">
+                          <span className="tnum block text-xs text-foreground/80">
                             {day.precipitationProbabilityMax}%
                             <span className="sr-only"> chance of rain</span>
                           </span>

@@ -9,6 +9,10 @@ const PORT = 3210;
  */
 export default defineConfig({
   testDir: "./e2e",
+  // Generous on purpose: pages stream from a cold server, axe scans large DOMs (the climate page
+  // holds ~700 table cells), and CI machines are small. A real hang still fails; a slow start doesn't.
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

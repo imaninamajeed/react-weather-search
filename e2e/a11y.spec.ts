@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { expectNoSeriousViolations, mockMapNetwork } from "./helpers";
+import { expectNoSeriousViolations, mockMapNetwork, seedPlaces } from "./helpers";
 
 test.use({
   launchOptions: {
@@ -12,6 +12,7 @@ const PAGES = [
   ["place", "/place/8504423-subang-jaya"],
   ["outlook", "/place/8504423-subang-jaya/outlook"],
   ["history", "/place/8504423-subang-jaya/history"],
+  ["places", "/places"],
   ["map", "/map"],
   ["offline", "/offline"],
   ["not found", "/place/nope"],
@@ -36,3 +37,18 @@ test("the search dialog is accessible", async ({ page }) => {
   await page.getByRole("option").first().waitFor();
   await expectNoSeriousViolations(page);
 });
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`places with saved places and the week-ahead table are accessible (${scheme})`, async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await seedPlaces(context, baseURL!);
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto("/places");
+    await page.getByRole("region", { name: "Week ahead", exact: true }).waitFor();
+    await page.waitForLoadState("networkidle");
+    await expectNoSeriousViolations(page);
+  });
+}

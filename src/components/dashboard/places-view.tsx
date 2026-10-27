@@ -1,0 +1,58 @@
+import { Suspense } from "react";
+import { Section } from "@/components/shared/section";
+import { SectionBoundary } from "@/components/shared/section-boundary";
+import { RowsSkeleton } from "@/components/shared/skeletons";
+import { getPreferences } from "@/lib/preferences";
+import { homePlace } from "@/lib/preferences-core";
+import { OpenSearchButton } from "./open-search-button";
+import { Onboarding } from "./onboarding";
+import { PlaceCard } from "./place-card";
+import { WeekAheadTable } from "./week-ahead-table";
+
+/**
+ * Everything about the list of places you follow: manage it (reorder, set home, remove) and compare
+ * it (a week ahead for all of them at once). Management controls are always on here, so it needs no "manage mode".
+ */
+export async function PlacesView() {
+  const { units, places, ...rest } = await getPreferences();
+  const home = homePlace({ units, places, ...rest });
+  // Home leads the comparison even when it is the default city and not saved.
+  const compared = [home, ...places.filter((place) => place.key !== home.key)];
+
+  return (
+    <div className="space-y-10">
+      <Section
+        id="places"
+        title="Following"
+        aside={<OpenSearchButton label="Add a place" variant="outline" size="sm" />}
+      >
+        {places.length === 0 ? (
+          <Onboarding />
+        ) : (
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {places.map((place, index) => (
+              <li key={place.key}>
+                <PlaceCard
+                  place={place}
+                  units={units}
+                  isHome={place.key === home.key}
+                  manage={{ isFirst: index === 0, isLast: index === places.length - 1 }}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </Section>
+
+      {places.length > 0 && (
+        <Section id="week" title="Week ahead">
+          <SectionBoundary title="The week-ahead table">
+            <Suspense fallback={<RowsSkeleton rows={Math.min(compared.length, 5)} />}>
+              <WeekAheadTable places={compared} units={units} />
+            </Suspense>
+          </SectionBoundary>
+        </Section>
+      )}
+    </div>
+  );
+}
