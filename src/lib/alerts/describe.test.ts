@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { describeAlert, describeHazard, relativeDay, sortAlerts } from "./describe";
+import { compareAlerts, describeAlert, describeHazard, relativeDay, sortAlerts } from "./describe";
 import type { ForecastHazard, OfficialAlert } from "./types";
 
 const TODAY = "2026-10-27";
@@ -146,5 +146,19 @@ describe("sortAlerts", () => {
       "early-advisory",
       "late-advisory",
     ]);
+  });
+});
+
+describe("compareAlerts", () => {
+  it("orders any two alerts the way sortAlerts does, so alerts from several places can be merged", () => {
+    const officialWarning = official({ id: "a" });
+    const forecastWarning = hazard({ id: "b", severity: "warning" });
+    const forecastAdvisory = hazard({ id: "c" });
+    expect(compareAlerts(officialWarning, forecastWarning)).toBeLessThan(0);
+    expect(compareAlerts(forecastWarning, forecastAdvisory)).toBeLessThan(0);
+    expect(compareAlerts(forecastAdvisory, forecastAdvisory)).toBe(0);
+    expect(
+      sortAlerts([forecastAdvisory, forecastWarning, officialWarning]).map((a) => a.id),
+    ).toEqual(["a", "b", "c"]);
   });
 });

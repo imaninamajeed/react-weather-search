@@ -1,4 +1,9 @@
-import { IconLayoutDashboard, IconListDetails, IconMap } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconLayoutDashboard,
+  IconListDetails,
+  IconMap,
+} from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -62,6 +67,9 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarNavLink href="/" exact icon={<IconLayoutDashboard aria-hidden="true" />}>
                 Dashboard
+              </SidebarNavLink>
+              <SidebarNavLink href="/alerts" icon={<IconAlertTriangle aria-hidden="true" />}>
+                Alerts
               </SidebarNavLink>
               <SidebarNavLink href="/places" icon={<IconListDetails aria-hidden="true" />}>
                 Places

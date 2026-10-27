@@ -12,6 +12,7 @@ const PAGES = [
   ["place", "/place/8504423-subang-jaya"],
   ["outlook", "/place/8504423-subang-jaya/outlook"],
   ["history", "/place/8504423-subang-jaya/history"],
+  ["alerts", "/alerts"],
   ["places", "/places"],
   ["map", "/map"],
   ["offline", "/offline"],

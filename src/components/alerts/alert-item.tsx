@@ -1,4 +1,5 @@
 import { IconAlertOctagon, IconAlertTriangle } from "@tabler/icons-react";
+import Link from "next/link";
 import { describeAlert } from "@/lib/alerts/describe";
 import type { WeatherAlert } from "@/lib/alerts/types";
 import type { Units } from "@/lib/weather/types";
@@ -11,13 +12,15 @@ interface AlertItemProps {
   units: Units;
   /** The place's current local time, to phrase "until…" and "today/tomorrow" correctly. */
   now: string;
+  /** Names the place when alerts from several places are listed together. */
+  place?: { name: string; href: string };
 }
 
 /**
  * Severity is carried by icon + word + colour, never colour alone. Official warnings are
  * visibly distinct from our own forecast signals so nobody mistakes one for the other.
  */
-export function AlertItem({ alert, units, now }: AlertItemProps) {
+export function AlertItem({ alert, units, now, place }: AlertItemProps) {
   const description = describeAlert(alert, units, now);
   const isWarning = alert.severity === "warning";
   const Icon = isWarning ? IconAlertOctagon : IconAlertTriangle;
@@ -38,6 +41,14 @@ export function AlertItem({ alert, units, now }: AlertItemProps) {
         <span className={cn(captionClass, "text-muted-foreground")}>
           · {official ? `Official · ${alert.issuer}` : "Forecast signal"}
         </span>
+        {place && (
+          <Link
+            href={place.href}
+            className="text-sm font-medium underline decoration-border underline-offset-4 hover:decoration-foreground"
+          >
+            {place.name}
+          </Link>
+        )}
       </div>
 
       <p className="mt-1.5 text-lg font-medium">{description.title}</p>

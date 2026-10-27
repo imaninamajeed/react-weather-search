@@ -84,7 +84,18 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
         </Suspense>
       </SectionBoundary>
 
-      <Section id="alerts" title="Alerts">
+      <Section
+        id="alerts"
+        title="Alerts"
+        aside={
+          <Button asChild variant="outline" size="sm">
+            <Link href="/alerts">
+              All alerts
+              <IconArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
+        }
+      >
         <SectionBoundary title="Alerts">
           <Suspense fallback={<RowsSkeleton rows={1} />}>
             <AlertsOverview places={followed} units={units} />

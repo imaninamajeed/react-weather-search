@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { seedPlaces } from "./helpers";
 
 test.describe("alerts", () => {
   test("official warnings lead, forecast signals follow, and sources are named", async ({
@@ -16,11 +17,87 @@ test.describe("alerts", () => {
     await expect(alerts.getByText(/expected over the states of Selangor/)).toBeVisible();
   });
 
-  test("the dashboard gathers alerts across places", async ({ page }) => {
+  test("the dashboard summarises the most important alerts and names each place", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await seedPlaces(context, baseURL!);
     await page.goto("/");
     const alerts = page.getByRole("region", { name: "Alerts" });
-    await expect(alerts.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
+
+    // Two places, three alerts in all (one official warning and two forecast signals): all fit.
     await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
+    await expect(alerts.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
+    await expect(alerts.getByRole("link", { name: "Tokyo" })).toBeVisible();
+    await expect(alerts.getByRole("link", { name: /View all/ })).toHaveCount(0);
+
+    await alerts.getByRole("link", { name: /All alerts/ }).click();
+    await expect(page).toHaveURL(/\/alerts$/);
+  });
+
+  test("with more than three alerts the dashboard caps the list and links to the rest", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await context.addCookies([
+      {
+        name: "wx",
+        value: JSON.stringify({
+          units: "metric",
+          homeKey: "8504423-subang-jaya",
+          places: [
+            {
+              key: "8504423-subang-jaya",
+              name: "Subang Jaya",
+              region: "Selangor",
+              countryCode: "MY",
+              latitude: 3.04384,
+              longitude: 101.58062,
+            },
+            { key: "1850147-tokyo", name: "Tokyo", latitude: 35.6895, longitude: 139.69171 },
+            { key: "51.51,-0.13", name: "Pin", latitude: 51.51, longitude: -0.13 },
+          ],
+        }),
+        url: baseURL!,
+      },
+    ]);
+    await page.goto("/");
+    const alerts = page.getByRole("region", { name: "Alerts" });
+    await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
+    // Three shown, the fourth is behind the link, and the official warning is first.
+    await expect(alerts.getByRole("link", { name: "View all 4 alerts" })).toBeVisible();
+    // (Matching the card caption exactly: the "Checked: Forecast signals…" note also contains the words.)
+    await expect(alerts.getByText(/^· Forecast signal$/)).toHaveCount(2);
+
+    await alerts.getByRole("link", { name: "View all 4 alerts" }).click();
+    await expect(page).toHaveURL(/\/alerts$/);
+    await expect(page.getByRole("link", { name: "All alerts (4)" })).toBeVisible();
+  });
+
+  test("the alerts page lists everything by place and can show official warnings only", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await seedPlaces(context, baseURL!);
+    await page.goto("/alerts");
+    await expect(page.getByRole("heading", { level: 1, name: "Alerts" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Subang Jaya" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Tokyo" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "All alerts (3)" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+
+    await page.getByRole("link", { name: "Official warnings (1)" }).click();
+    await expect(page).toHaveURL(/\?show=official$/);
+    // Tokyo has only a forecast signal, so it drops out; Subang Jaya keeps its official warning.
+    await expect(page.getByRole("heading", { level: 2, name: "Subang Jaya" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Tokyo" })).toHaveCount(0);
+    await expect(page.getByText("Thunderstorms Warning")).toBeVisible();
+    await expect(page.getByText("Checked: Forecast signals, MET Malaysia.")).toBeVisible();
   });
 
   test("places with no matching warning say so", async ({ page }) => {

@@ -12,6 +12,7 @@ test.describe("desktop", () => {
 
     const sidebar = page.locator('[data-slot="sidebar"]').first();
     await expect(sidebar.getByRole("link", { name: "Dashboard" })).toBeVisible();
+    await expect(sidebar.getByRole("link", { name: "Alerts" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Places" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Radar map" })).toBeVisible();
     await expect(sidebar.getByRole("link", { name: "Subang Jaya" })).toBeVisible();

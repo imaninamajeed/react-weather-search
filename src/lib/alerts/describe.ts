@@ -117,16 +117,20 @@ export function describeAlert(alert: WeatherAlert, units: Units, now: string): A
 
 const SEVERITY_RANK = { warning: 0, advisory: 1 } as const;
 
+const startOf = (alert: WeatherAlert) =>
+  alert.source === "forecast" ? alert.start : (alert.starts ?? "");
+
 /** Official warnings first, then by severity, then by start time. */
-export function sortAlerts(alerts: WeatherAlert[]): WeatherAlert[] {
-  const start = (alert: WeatherAlert) =>
-    alert.source === "forecast" ? alert.start : (alert.starts ?? "");
-  return [...alerts].sort(
-    (a, b) =>
-      Number(a.source === "forecast") - Number(b.source === "forecast") ||
-      SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity] ||
-      start(a).localeCompare(start(b)),
+export function compareAlerts(a: WeatherAlert, b: WeatherAlert): number {
+  return (
+    Number(a.source === "forecast") - Number(b.source === "forecast") ||
+    SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity] ||
+    startOf(a).localeCompare(startOf(b))
   );
+}
+
+export function sortAlerts(alerts: WeatherAlert[]): WeatherAlert[] {
+  return [...alerts].sort(compareAlerts);
 }
 
 export function highestSeverity(alerts: WeatherAlert[]) {

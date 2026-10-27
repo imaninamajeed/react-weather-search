@@ -46,12 +46,13 @@ export async function expectNoSeriousViolations(page: Page) {
   expect(summary, summary.join("\n")).toEqual([]);
 }
 
-const savedPlace = (key: string, name: string, latitude: number, longitude: number) => ({
-  key,
-  name,
-  latitude,
-  longitude,
-});
+const savedPlace = (
+  key: string,
+  name: string,
+  latitude: number,
+  longitude: number,
+  extra: object = {},
+) => ({ key, name, latitude, longitude, ...extra });
 
 /** Starts a test with Subang Jaya (home) and Tokyo already saved, without clicking through the UI. */
 export async function seedPlaces(context: BrowserContext, baseURL: string) {
@@ -59,7 +60,14 @@ export async function seedPlaces(context: BrowserContext, baseURL: string) {
     units: "metric",
     homeKey: "8504423-subang-jaya",
     places: [
-      savedPlace("8504423-subang-jaya", "Subang Jaya", 3.04384, 101.58062),
+      // Full place data, as the app itself saves it: official-warning matching needs country and region.
+      savedPlace("8504423-subang-jaya", "Subang Jaya", 3.04384, 101.58062, {
+        region: "Selangor",
+        district: "Petaling",
+        country: "Malaysia",
+        countryCode: "MY",
+        timezone: "Asia/Kuala_Lumpur",
+      }),
       savedPlace("1850147-tokyo", "Tokyo", 35.6895, 139.69171),
     ],
   };
