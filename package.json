@@ -4,6 +4,7 @@
   "private": true,
   "description": "Weather dashboard with saved places, alerts, forecast confidence, history and live radar",
   "license": "MIT",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": ">=20.9"
   },
