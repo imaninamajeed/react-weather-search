@@ -7,13 +7,29 @@ import { chromium } from "@playwright/test";
 
 const base = process.argv[2] ?? "http://localhost:3000";
 const place = (key, name, region, country, countryCode, latitude, longitude, timezone) => ({
-  key, name, region, country, countryCode, latitude, longitude, timezone,
+  key,
+  name,
+  region,
+  country,
+  countryCode,
+  latitude,
+  longitude,
+  timezone,
 });
 const preferences = {
   units: "metric",
   homeKey: "8504423-subang-jaya",
   places: [
-    place("8504423-subang-jaya", "Subang Jaya", "Selangor", "Malaysia", "MY", 3.04384, 101.58062, "Asia/Kuala_Lumpur"),
+    place(
+      "8504423-subang-jaya",
+      "Subang Jaya",
+      "Selangor",
+      "Malaysia",
+      "MY",
+      3.04384,
+      101.58062,
+      "Asia/Kuala_Lumpur",
+    ),
     place("1735339-mukah", "Mukah", "Sarawak", "Malaysia", "MY", 2.89, 112.09, "Asia/Kuching"),
     place("1850147-tokyo", "Tokyo", "Tokyo", "Japan", "JP", 35.6895, 139.69171, "Asia/Tokyo"),
   ],
