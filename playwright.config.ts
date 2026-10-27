@@ -15,6 +15,9 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: `http://localhost:${PORT}`,
+    // First visits default their units from the browser language (en-US is imperial), so pin
+    // a metric locale for determinism; one test covers the en-US default explicitly.
+    locale: "en-GB",
     trace: "retain-on-failure",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],

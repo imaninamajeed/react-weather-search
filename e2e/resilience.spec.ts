@@ -6,7 +6,8 @@ test("unknown places show a helpful not-found page", async ({ page }) => {
     await expect(
       page.getByRole("heading", { level: 1, name: "We couldn't find that place" }),
     ).toBeVisible();
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    // Next.js emits the tag in both <head> and the streamed body.
+    await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
   }
 });
 

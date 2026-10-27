@@ -61,7 +61,11 @@ test("saving, setting home, reordering and removing with undo", async ({ page })
   await page.getByRole("button", { name: "Remove" }).first().click();
   await expect(page.getByText("Removed Subang Jaya")).toBeVisible();
   await expect(cards).toHaveText(["Tokyo"]);
-  await page.getByRole("button", { name: "Undo" }).click();
+  // Scope to this toast: earlier "Saved …" toasts also carry an Undo button.
+  await page
+    .locator("[data-sonner-toast]", { hasText: "Removed Subang Jaya" })
+    .getByRole("button", { name: "Undo" })
+    .click();
   await expect(cards).toHaveText(["Subang Jaya", "Tokyo"]);
 });
 
@@ -73,7 +77,10 @@ test("undoing the removal of the home place restores its home status", async ({ 
   await page.goto("/?manage=1");
   await page.getByRole("button", { name: "Remove" }).click();
   await expect(page.getByText("Removed Tokyo")).toBeVisible();
-  await page.getByRole("button", { name: "Undo" }).click();
+  await page
+    .locator("[data-sonner-toast]", { hasText: "Removed Tokyo" })
+    .getByRole("button", { name: "Undo" })
+    .click();
   await expect(page.locator("article:visible h3")).toHaveText(["Tokyo"]);
   await expect(page.getByRole("heading", { level: 2, name: "Tokyo" }).first()).toBeVisible();
 });
@@ -89,4 +96,17 @@ test("units switch between metric and imperial and persist", async ({ page }) =>
 
   await page.reload();
   await expect(page.getByText("°F", { exact: true }).first()).toBeVisible();
+});
+
+test.describe("first-visit units", () => {
+  test.use({ locale: "en-US" });
+
+  test("default to imperial for US browsers until the visitor chooses", async ({ page }) => {
+    await page.goto("/place/8504423-subang-jaya");
+    await expect(page.getByText("°F", { exact: true }).first()).toBeVisible();
+
+    await page.getByRole("button", { name: "Settings" }).click();
+    await page.getByRole("menuitemradio", { name: /Metric/ }).click();
+    await expect(page.getByText("°C", { exact: true }).first()).toBeVisible();
+  });
 });

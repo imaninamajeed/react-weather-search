@@ -162,14 +162,14 @@ export function SearchCommand() {
         {/* Results come from the server, so cmdk's own filtering is turned off. */}
         <Command shouldFilter={false}>
           <CommandInput value={input} onValueChange={setInput} placeholder="Search a city…" />
+          {/* Outside the listbox: a listbox may only contain options and groups. */}
+          <p
+            role="status"
+            className={status ? "px-3 py-3 text-sm text-muted-foreground" : "sr-only"}
+          >
+            {status}
+          </p>
           <CommandList>
-            <p
-              role="status"
-              className={status ? "px-3 py-3 text-sm text-muted-foreground" : "sr-only"}
-            >
-              {status}
-            </p>
-
             {places.length > 0 && (
               <CommandGroup heading="Places">
                 {places.map((place) => (
