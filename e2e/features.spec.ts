@@ -32,17 +32,52 @@ test.describe("alerts", () => {
   });
 });
 
-test("forecast confidence compares three models", async ({ page }) => {
-  await page.goto("/place/8504423-subang-jaya");
-  const section = page.getByRole("region", { name: "Forecast confidence" });
-  await expect(
-    section.getByRole("list", { name: "Confidence by day" }).getByRole("listitem"),
-  ).toHaveCount(7);
-  await expect(section.getByText(/GFS expects .* of rain/)).toBeVisible();
+test.describe("outlook", () => {
+  test("the forecast page teases three days and links to the full outlook", async ({ page }) => {
+    await page.goto("/place/8504423-subang-jaya");
+    const teaser = page.getByRole("region", { name: "Next 3 days" });
+    await expect(teaser.getByRole("listitem")).toHaveCount(3);
+    await expect(page.getByRole("heading", { name: "14-day outlook" })).toHaveCount(0);
 
-  await section.getByRole("radio", { name: "Rainfall" }).click();
-  await section.getByText("View as table").click();
-  await expect(section.getByRole("row")).toHaveCount(8); // header + 7 days
+    await teaser.getByRole("link", { name: /14-day outlook and confidence/ }).click();
+    await expect(page).toHaveURL(/\/place\/8504423-subang-jaya\/outlook$/);
+    await expect(page.getByRole("link", { name: "Outlook", exact: true })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  });
+
+  test("rates each day inline and explains how far to trust the week", async ({ page }) => {
+    await page.goto("/place/8504423-subang-jaya/outlook");
+    const daily = page.getByRole("region", { name: "14-day outlook" });
+    // 14 days listed; the models cover the first 7, each rated high, medium or low.
+    await expect(daily.getByText("Days 8–14: indicative only", { exact: false })).toBeVisible();
+    await expect(daily.getByText(/(High|Medium|Low) confidence/)).toHaveCount(7);
+
+    const section = page.getByRole("region", { name: "Forecast confidence" });
+    await expect(section.getByText(/GFS expects .* of rain/)).toBeVisible();
+    await section.getByRole("radio", { name: "Rainfall" }).click();
+    await section.getByText("View as table").click();
+    await expect(section.getByRole("row")).toHaveCount(8); // header + 7 days
+  });
+
+  test("moves between a place's three views", async ({ page }) => {
+    await page.goto("/place/8504423-subang-jaya");
+    await expect(page.getByRole("link", { name: "Forecast" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await page.getByRole("link", { name: "Outlook", exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Subang Jaya" })).toBeVisible();
+    await page.getByRole("link", { name: "Climate" }).click();
+    await expect(page).toHaveURL(/\/history$/);
+    await expect(page.getByRole("link", { name: "Climate" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await page.getByRole("link", { name: "Forecast" }).click();
+    await expect(page).toHaveURL(/\/place\/8504423-subang-jaya$/);
+  });
 });
 
 test("the 48-hour chart switches metric and has a table twin", async ({ page }) => {

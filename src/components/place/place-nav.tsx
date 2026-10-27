@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 
 const link = "rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent";
 
-/** Switches between a place's forecast and its climate history. */
+/** A place's three views: now and today, the two weeks ahead, and how it compares with normal. */
 export function PlaceNav({
   placeKey,
   current,
 }: {
   placeKey: string;
-  current: "forecast" | "history";
+  current: "forecast" | "outlook" | "history";
 }) {
   const base = placeHref({ key: placeKey });
   return (
@@ -23,11 +23,18 @@ export function PlaceNav({
         Forecast
       </Link>
       <Link
+        href={`${base}/outlook`}
+        aria-current={current === "outlook" ? "page" : undefined}
+        className={cn(link, current === "outlook" && "bg-accent font-medium")}
+      >
+        Outlook
+      </Link>
+      <Link
         href={`${base}/history`}
         aria-current={current === "history" ? "page" : undefined}
         className={cn(link, current === "history" && "bg-accent font-medium")}
       >
-        Climate history
+        Climate
       </Link>
     </nav>
   );

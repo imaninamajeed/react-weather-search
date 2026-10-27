@@ -4,9 +4,9 @@ import { HistoryStats } from "@/components/history/history-stats";
 import { DailyHighsChart, MonthlyRainChart } from "@/components/history/history-charts";
 import { HistoryTables } from "@/components/history/history-tables";
 import { PlaceNav } from "@/components/place/place-nav";
+import { SubpageHeader } from "@/components/place/subpage-header";
 import { Section } from "@/components/shared/section";
 import { ChartSkeleton, HeroSkeleton, RowsSkeleton } from "@/components/shared/skeletons";
-import { formatPlaceSubtitle } from "@/lib/format";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { getClimateNormals, getRecentDaily } from "@/lib/open-meteo/archive";
 import { getPreferences } from "@/lib/preferences";
@@ -40,14 +40,11 @@ async function HistoryRoute({ params }: Pick<PageProps<"/place/[key]/history">, 
 
   return (
     <div className="space-y-10">
-      <header>
-        <p className="label-caps">Climate history</p>
-        <h1 className="mt-2 font-heading text-5xl leading-[0.95] md:text-6xl">{place.name}</h1>
-        <p className="mt-2 text-muted-foreground">{formatPlaceSubtitle(place)}</p>
-        <p className="mt-4 max-w-prose text-lg text-balance">
-          The last twelve months compared with what is normal here, using 1991–2020 as the baseline.
-        </p>
-      </header>
+      <SubpageHeader
+        label="Climate"
+        place={place}
+        lead="The last twelve months compared with what is normal here, using 1991–2020 as the baseline."
+      />
 
       <Section id="summary" title="The year at a glance">
         <HistoryStats summary={summary} units={units} />

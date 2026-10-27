@@ -10,6 +10,7 @@ test.use({
 const PAGES = [
   ["dashboard", "/"],
   ["place", "/place/8504423-subang-jaya"],
+  ["outlook", "/place/8504423-subang-jaya/outlook"],
   ["history", "/place/8504423-subang-jaya/history"],
   ["map", "/map"],
   ["offline", "/offline"],

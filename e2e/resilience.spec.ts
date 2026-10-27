@@ -23,7 +23,11 @@ test("one failing upstream degrades a single card, not the page", async ({ page 
   await page.goto("/place/12.34,56.78");
   await expect(page.getByText("Air quality is unavailable")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Next 48 hours" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: "14-day outlook" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Next 3 days" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
   await expect(page.getByText("Humidity")).toBeVisible();
+
+  // The two-week outlook is its own page and survives too.
+  await page.goto("/place/12.34,56.78/outlook");
+  await expect(page.getByRole("heading", { level: 2, name: "14-day outlook" })).toBeVisible();
 });

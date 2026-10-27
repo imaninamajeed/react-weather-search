@@ -5,7 +5,10 @@ import { formatDayMonth, formatWeekday } from "@/lib/format";
 import { temperatureColor, temperatureGradient } from "@/lib/temperature-color";
 import { formatPrecipitation, formatTemperature } from "@/lib/units";
 import { describeWeather } from "@/lib/weather/codes";
+import type { ConfidenceLevel } from "@/lib/weather/confidence";
 import type { Forecast, Units } from "@/lib/weather/types";
+import { cn } from "@/lib/utils";
+import { CONFIDENCE_LABEL, ConfidenceDots } from "./confidence-dots";
 
 /** Beyond this many days the models drift apart too much for day-level detail to be firm. */
 const FIRM_DAYS = 7;
@@ -14,7 +17,19 @@ const FIRM_DAYS = 7;
  * 14 days on one shared temperature scale, so bars are comparable down the whole list.
  * The gradient inside each bar uses the same absolute colour ramp as the rest of the app.
  */
-export function DailyList({ forecast, units }: { forecast: Forecast; units: Units }) {
+export function DailyList({
+  forecast,
+  units,
+  limit,
+  confidence,
+}: {
+  forecast: Forecast;
+  units: Units;
+  /** Show only the first N days (the scale still spans all of them, so bars stay comparable). */
+  limit?: number;
+  /** Model agreement per date; adds a confidence column for the days the models cover. */
+  confidence?: Record<string, ConfidenceLevel | null>;
+}) {
   const { daily, current } = forecast;
   const scaleMin = Math.floor(Math.min(...daily.map((d) => d.temperatureMin)) - 1);
   const scaleMax = Math.ceil(Math.max(...daily.map((d) => d.temperatureMax)) + 1);
@@ -23,7 +38,7 @@ export function DailyList({ forecast, units }: { forecast: Forecast; units: Unit
 
   return (
     <ol className="divide-y divide-border/70">
-      {daily.map((day, index) => {
+      {daily.slice(0, limit).map((day, index) => {
         const weather = describeWeather(day.weatherCode);
         const left = position(day.temperatureMin);
         const width = Math.max(position(day.temperatureMax) - left, 2);
@@ -34,7 +49,14 @@ export function DailyList({ forecast, units }: { forecast: Forecast; units: Unit
                 Days {FIRM_DAYS + 1}–{daily.length}: indicative only, see forecast confidence below
               </li>
             )}
-            <li className="grid grid-cols-[3.5rem_1.75rem_3.25rem_1fr] items-center gap-x-3 py-2.5 sm:grid-cols-[5.5rem_11rem_4.5rem_1fr]">
+            <li
+              className={cn(
+                "grid items-center gap-x-3 py-2.5",
+                confidence
+                  ? "grid-cols-[3.5rem_1.75rem_3.25rem_1fr_2.5rem] sm:grid-cols-[5.5rem_11rem_4.5rem_1fr_6.5rem]"
+                  : "grid-cols-[3.5rem_1.75rem_3.25rem_1fr] sm:grid-cols-[5.5rem_11rem_4.5rem_1fr]",
+              )}
+            >
               <div>
                 <p className="text-sm font-medium">
                   {index === 0 ? "Today" : formatWeekday(day.date)}
@@ -84,6 +106,26 @@ export function DailyList({ forecast, units }: { forecast: Forecast; units: Unit
                   {formatTemperature(day.temperatureMax, units)}
                 </span>
               </div>
+
+              {confidence && (
+                <p className="flex items-center justify-end gap-2 text-sm">
+                  {confidence[day.date] ? (
+                    <>
+                      <ConfidenceDots level={confidence[day.date]} />
+                      <span className="hidden sm:inline">
+                        {CONFIDENCE_LABEL[confidence[day.date]!]}
+                      </span>
+                      <span className="sr-only">
+                        {CONFIDENCE_LABEL[confidence[day.date]!]} confidence
+                      </span>
+                    </>
+                  ) : (
+                    <span aria-hidden="true" className="text-muted-foreground">
+                      –
+                    </span>
+                  )}
+                </p>
+              )}
             </li>
           </Fragment>
         );

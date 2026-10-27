@@ -6,14 +6,9 @@ import {
   assessConfidence,
   summarizeConfidence,
 } from "@/lib/weather/confidence";
-import {
-  convertPrecipitation,
-  convertTemperature,
-  formatTemperature,
-  unitLabels,
-} from "@/lib/units";
+import { convertPrecipitation, convertTemperature, unitLabels } from "@/lib/units";
 import type { Units } from "@/lib/weather/types";
-import { CONFIDENCE_LABEL, ConfidenceDots } from "./confidence-dots";
+import { CONFIDENCE_LABEL } from "./confidence-dots";
 import { ConfidenceChart } from "./confidence-chart";
 
 /**
@@ -38,30 +33,6 @@ export async function ConfidencePanel({
   return (
     <div className="space-y-6">
       <p className="max-w-prose text-lg text-balance">{summarizeConfidence(days, units, today)}</p>
-
-      <div className="relative -mx-4 overflow-x-auto px-4 pb-1">
-        <ol className="grid min-w-[36rem] grid-cols-7 gap-2" aria-label="Confidence by day">
-          {days.map((day, index) => (
-            <li key={day.date} className="rounded-lg border border-border bg-card/60 p-3">
-              <p className="text-sm font-medium">
-                {index === 0 ? "Today" : formatWeekday(day.date)}
-              </p>
-              <p className="label-caps">{formatDayMonth(day.date)}</p>
-              <p className="mt-3 flex items-center gap-2 text-sm">
-                <ConfidenceDots level={day.level} />
-                <span>{day.level ? CONFIDENCE_LABEL[day.level] : "n/a"}</span>
-                <span className="sr-only"> confidence</span>
-              </p>
-              {day.temperatureRange && (
-                <p className="tnum mt-1 text-xs text-muted-foreground">
-                  {formatTemperature(day.temperatureRange[0], units).replace("°", "")}–
-                  {formatTemperature(day.temperatureRange[1], units)}
-                </p>
-              )}
-            </li>
-          ))}
-        </ol>
-      </div>
 
       <ConfidenceChart days={days} units={units} />
 

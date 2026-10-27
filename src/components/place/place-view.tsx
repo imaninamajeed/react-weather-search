@@ -1,12 +1,12 @@
+import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { PlaceAlerts } from "@/components/alerts/place-alerts";
 import { Section } from "@/components/shared/section";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { RowsSkeleton } from "@/components/shared/skeletons";
 import { getForecast } from "@/lib/open-meteo/forecast";
-import type { Place } from "@/lib/places";
+import { placeHref, type Place } from "@/lib/places";
 import type { Units } from "@/lib/weather/types";
-import { ConfidencePanel } from "./confidence-panel";
 import { ConditionsGrid } from "./conditions-grid";
 import { DailyList } from "./daily-list";
 import { PlaceHero } from "./hero";
@@ -51,21 +51,19 @@ export async function PlaceView({
         <HourlyTable hours={hours} units={units} />
       </Section>
 
-      <Section id="daily" title="14-day outlook">
-        <DailyList forecast={forecast} units={units} />
-      </Section>
-
-      <Section id="confidence" title="Forecast confidence">
-        <SectionBoundary title="Forecast confidence">
-          <Suspense fallback={<RowsSkeleton rows={3} />}>
-            <ConfidencePanel
-              latitude={forecast.latitude}
-              longitude={forecast.longitude}
-              units={units}
-              today={forecast.daily[0].date}
-            />
-          </Suspense>
-        </SectionBoundary>
+      <Section
+        id="next-days"
+        title="Next 3 days"
+        aside={
+          <Link
+            href={`${placeHref(resolved)}/outlook`}
+            className="text-sm font-medium underline decoration-border underline-offset-4 hover:decoration-foreground"
+          >
+            14-day outlook and confidence →
+          </Link>
+        }
+      >
+        <DailyList forecast={forecast} units={units} limit={3} />
       </Section>
     </div>
   );
