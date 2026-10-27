@@ -145,7 +145,8 @@
 
   --advisory: oklch(0.82 0.15 85);
   --advisory-foreground: oklch(0.25 0.05 80);
-  --warning: oklch(0.65 0.22 27);
+  /* 0.56: white text on the warning badge reaches 4.9:1 (0.65 was only 3.4:1); still 3.3:1 against the card as a border. */
+  --warning: oklch(0.56 0.22 27);
   --warning-foreground: oklch(0.98 0.01 27);
   --sidebar: oklch(0.21 0.006 285.885);
   --sidebar-foreground: oklch(0.987 0.002 197.1);

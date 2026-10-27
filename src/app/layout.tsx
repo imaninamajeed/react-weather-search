@@ -41,7 +41,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children, crumbs }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
@@ -74,7 +74,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <AppSidebar />
               <SidebarInset>
                 <OfflineBanner />
-                <TopBar />
+                <TopBar crumbs={crumbs} />
                 {children}
                 <SiteFooter />
               </SidebarInset>

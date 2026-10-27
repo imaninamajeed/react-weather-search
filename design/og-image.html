@@ -1,0 +1,699 @@
+<!doctype html>
+<!--
+  Source for src/app/opengraph-image.png (also the README banner). Render with:
+    node scripts/og-image.mjs
+
+  The isobars are real: the script below builds a synthetic sea-level pressure field (a deep low,
+  a high, troughs along the fronts), contours it every 4 hPa with marching squares, and draws the
+  fronts with standard synoptic symbols. The rain layer is the same storm drawn as radar echoes.
+  Move the low or the fronts and every line follows.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Isobar social image</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500&family=Oxanium:wght@500;600;700&display=block"
+    />
+    <style>
+      :root {
+        --bg: #06090c;
+        --teal: #2de2c8;
+        --violet: #a77bff;
+        --magenta: #ff2d95;
+        --amber: #f3c54b;
+        --blue: #5b8ff0;
+        --ink: #f3f6f7;
+        --muted: #8e9ca3;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        position: relative;
+        font-family: Outfit, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(520px 420px at 840px 255px, rgb(255 45 149 / 0.2), transparent 70%),
+          radial-gradient(620px 520px at 120px 60px, rgb(45 226 200 / 0.13), transparent 70%),
+          radial-gradient(900px 500px at 1100px 640px, rgb(91 143 240 / 0.12), transparent 70%),
+          var(--bg);
+      }
+      .layer {
+        position: absolute;
+        inset: 0;
+      }
+      canvas.layer {
+        filter: blur(0.6px);
+      }
+      .vignette {
+        background: radial-gradient(1400px 820px at 60% 45%, transparent 55%, rgb(0 0 0 / 0.55));
+      }
+      .shade {
+        background: linear-gradient(90deg, rgb(6 9 12 / 0.82) 0%, rgb(6 9 12 / 0.62) 38%, transparent 56%);
+      }
+
+      /* Wordmark block */
+      .brand {
+        position: absolute;
+        left: 64px;
+        top: 196px;
+        width: 560px;
+      }
+      .lockup {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      .tile {
+        width: 88px;
+        height: 88px;
+        border-radius: 24px;
+        background: url(marble-source.png) center / cover;
+        box-shadow:
+          0 0 0 1px rgb(255 255 255 / 0.18),
+          0 14px 40px -8px rgb(255 45 149 / 0.55),
+          -10px -6px 40px -10px rgb(45 226 200 / 0.5);
+      }
+      .wordmark {
+        font-family: Oxanium, sans-serif;
+        font-weight: 600;
+        font-size: 116px;
+        line-height: 1;
+        letter-spacing: -0.035em;
+        background: linear-gradient(180deg, #ffffff 30%, #c9d6dc);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .tagline {
+        margin-top: 30px;
+        font-size: 36px;
+        font-weight: 300;
+        line-height: 1.22;
+        color: #d3dde1;
+      }
+      .tagline em {
+        font-style: normal;
+        font-weight: 500;
+        background: linear-gradient(90deg, var(--teal), var(--violet) 55%, var(--magenta));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .features {
+        position: absolute;
+        left: 66px;
+        bottom: 54px;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #9fb0b7;
+      }
+      .features i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--c);
+        box-shadow: 0 0 10px var(--c);
+      }
+
+      /* Glass cards */
+      .card {
+        position: absolute;
+        border-radius: 20px;
+        padding: 16px 18px;
+        background: linear-gradient(155deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.035) 60%);
+        border: 1px solid rgb(255 255 255 / 0.16);
+        backdrop-filter: blur(16px) saturate(150%);
+        box-shadow:
+          0 24px 60px -24px rgb(0 0 0 / 0.9),
+          inset 0 1px 0 rgb(255 255 255 / 0.14);
+      }
+      .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #a6b4ba;
+      }
+      .now {
+        left: 912px;
+        top: 432px;
+        width: 248px;
+      }
+      .now .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 6px;
+      }
+      .now .temp {
+        font-family: Oxanium, sans-serif;
+        font-weight: 600;
+        font-size: 50px;
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+      .now .temp sup {
+        font-size: 22px;
+        font-weight: 500;
+        vertical-align: 22px;
+        color: #c3ced3;
+      }
+      .now .summary {
+        margin-top: 8px;
+        font-size: 14.5px;
+        line-height: 1.3;
+        color: #cfd9dd;
+      }
+      .alert {
+        position: absolute;
+        left: 934px;
+        top: 392px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 13px 7px 10px;
+        border-radius: 999px;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #ffe7a3;
+        background: rgb(243 197 75 / 0.16);
+        border: 1px solid rgb(243 197 75 / 0.45);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 24px -4px rgb(243 197 75 / 0.45);
+      }
+      .alert span {
+        color: rgb(255 231 163 / 0.65);
+        font-weight: 400;
+      }
+      .confidence {
+        left: 930px;
+        top: 38px;
+        width: 232px;
+        padding-bottom: 14px;
+      }
+      .confidence svg {
+        display: block;
+        margin-top: 10px;
+      }
+      .legend {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        color: #a6b4ba;
+      }
+      .legend b {
+        display: inline-block;
+        width: 10px;
+        height: 2px;
+        margin-right: 5px;
+        vertical-align: 3px;
+        border-radius: 1px;
+        background: var(--c);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas class="layer" id="radar" width="1200" height="630"></canvas>
+    <svg class="layer" id="chart" width="1200" height="630" viewBox="0 0 1200 630"></svg>
+    <div class="layer shade"></div>
+    <div class="layer vignette"></div>
+
+    <div class="brand">
+      <div class="lockup">
+        <div class="tile"></div>
+        <div class="wordmark">Isobar</div>
+      </div>
+      <p class="tagline">Forecasts, alerts, and <em>how far to trust them.</em></p>
+    </div>
+
+    <div class="features">
+      <i style="--c: var(--amber)"></i>Alerts <i style="--c: var(--violet)"></i>Confidence
+      <i style="--c: var(--teal)"></i>Climate <i style="--c: var(--magenta)"></i>Radar
+    </div>
+
+    <div class="card confidence">
+      <div class="eyebrow">Forecast confidence</div>
+      <svg id="spread" width="196" height="84" viewBox="0 0 196 84"></svg>
+      <div class="legend">
+        <span><b style="--c: var(--magenta)"></b>ECMWF</span>
+        <span><b style="--c: var(--amber)"></b>GFS</span>
+        <span><b style="--c: var(--blue)"></b>ICON</span>
+      </div>
+    </div>
+
+    <div class="card now">
+      <div class="eyebrow">Subang Jaya · 15:30</div>
+      <div class="row">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dfe8eb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+          <path d="M16 14v6" stroke="var(--teal)" />
+          <path d="M8 14v6" stroke="var(--teal)" />
+          <path d="M12 16v6" stroke="var(--teal)" />
+        </svg>
+        <div class="temp">26<sup>°C</sup></div>
+      </div>
+      <p class="summary">Heavy rain now, easing around 10&nbsp;PM.</p>
+    </div>
+
+    <div class="alert">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+        <path d="M12 9v4" />
+        <path d="M12 17h.01" />
+      </svg>
+      Heavy rain warning <span>· MET Malaysia</span>
+    </div>
+
+    <script>
+      const W = 1200;
+      const H = 630;
+      const NS = "http://www.w3.org/2000/svg";
+
+      // ---- The storm --------------------------------------------------------------------------
+      const LOW = { x: 840, y: 255, depth: 32 };
+      const HIGH = { x: 120, y: 70, height: 16, radius: 330 };
+      // Fronts as smooth curves through these points. The occlusion runs from the low to the
+      // triple point, where the cold and warm fronts split.
+      const occluded = [[840, 255], [872, 286], [893, 326]];
+      const cold = [[893, 326], [872, 398], [826, 466], [758, 532], [672, 592], [585, 650]];
+      const warm = [[893, 326], [968, 352], [1048, 364], [1130, 368], [1250, 370]];
+      const PIN = { x: 822, y: 471 };
+
+      const el = (name, attrs, parent) => {
+        const node = document.createElementNS(NS, name);
+        for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+        if (parent) parent.appendChild(node);
+        return node;
+      };
+
+      // Catmull-Rom through the points, as a cubic Bezier path.
+      function smoothPath(pts, closed = false) {
+        if (pts.length < 3) return `M${pts.map((p) => p.join(",")).join("L")}`;
+        const n = pts.length;
+        const at = (i) => (closed ? pts[(i + n) % n] : pts[Math.max(0, Math.min(n - 1, i))]);
+        let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+        for (let i = 0; i < (closed ? n : n - 1); i++) {
+          const [p0, p1, p2, p3] = [at(i - 1), at(i), at(i + 1), at(i + 2)];
+          const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+          const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+          d += `C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+        }
+        return d + (closed ? "Z" : "");
+      }
+
+      // Dense samples along each front, for distance queries.
+      const probe = el("path", {}, document.getElementById("chart"));
+      function sample(pts, step = 4) {
+        probe.setAttribute("d", smoothPath(pts));
+        const len = probe.getTotalLength();
+        const out = [];
+        for (let s = 0; s <= len; s += step) {
+          const p = probe.getPointAtLength(s);
+          out.push([p.x, p.y]);
+        }
+        return out;
+      }
+      const frontSamples = [sample(occluded), sample(cold), sample(warm)];
+      const allFront = frontSamples.flat();
+      const distTo = (samples, x, y) => {
+        let best = Infinity;
+        for (const [px, py] of samples) best = Math.min(best, (px - x) ** 2 + (py - y) ** 2);
+        return Math.sqrt(best);
+      };
+      const smoothstep = (a, b, v) => {
+        const t = Math.max(0, Math.min(1, (v - a) / (b - a)));
+        return t * t * (3 - 2 * t);
+      };
+
+      function pressure(x, y) {
+        // Twist the coordinates around the low so its asymmetric parts curl inwards.
+        let dx = x - LOW.x;
+        let dy = y - LOW.y;
+        const r = Math.hypot(dx, dy);
+        const twist = 0.5 * Math.exp(-r / 260);
+        [dx, dy] = [dx * Math.cos(twist) - dy * Math.sin(twist), dx * Math.sin(twist) + dy * Math.cos(twist)];
+        const tilt = -0.42;
+        const u = dx * Math.cos(tilt) - dy * Math.sin(tilt);
+        const v = dx * Math.sin(tilt) + dy * Math.cos(tilt);
+        const q = (u / 235) ** 2 + (v / 180) ** 2;
+        let p = 1014 - LOW.depth / (1 + q);
+        p += HIGH.height * Math.exp(-((x - HIGH.x) ** 2 + (y - HIGH.y) ** 2) / (2 * HIGH.radius ** 2));
+        p -= 7 / (1 + ((x - 1290) ** 2 + (y + 80) ** 2) / 200 ** 2);
+        p += (x - 600) * 0.003 + (y - 315) * 0.004;
+        // Troughs along the fronts put the classic kink in each isobar.
+        p -= 3.4 * Math.exp(-((distTo(allFront, x, y) / 20) ** 2)) * smoothstep(30, 110, r);
+        return p;
+      }
+
+      // ---- Marching squares -------------------------------------------------------------------
+      const STEP = 5;
+      const X0 = -40;
+      const Y0 = -40;
+      const NX = Math.ceil((W + 80) / STEP) + 1;
+      const NY = Math.ceil((H + 80) / STEP) + 1;
+      const field = new Float64Array(NX * NY);
+      for (let j = 0; j < NY; j++)
+        for (let i = 0; i < NX; i++) field[j * NX + i] = pressure(X0 + i * STEP, Y0 + j * STEP);
+      const F = (i, j) => field[j * NX + i];
+
+      function contour(level) {
+        // Edge ids: horizontal edge h:i:j joins (i,j)-(i+1,j); vertical v:i:j joins (i,j)-(i,j+1).
+        const point = new Map();
+        const edgePoint = (id) => {
+          if (point.has(id)) return id;
+          const [kind, si, sj] = id.split(":");
+          const i = +si;
+          const j = +sj;
+          const [a, b] = kind === "h" ? [F(i, j), F(i + 1, j)] : [F(i, j), F(i, j + 1)];
+          const t = (level - a) / (b - a);
+          const x = X0 + (i + (kind === "h" ? t : 0)) * STEP;
+          const y = Y0 + (j + (kind === "v" ? t : 0)) * STEP;
+          point.set(id, [x, y]);
+          return id;
+        };
+        const links = new Map();
+        const link = (a, b) => {
+          a = edgePoint(a);
+          b = edgePoint(b);
+          (links.get(a) ?? links.set(a, []).get(a)).push(b);
+          (links.get(b) ?? links.set(b, []).get(b)).push(a);
+        };
+        for (let j = 0; j < NY - 1; j++) {
+          for (let i = 0; i < NX - 1; i++) {
+            const tl = F(i, j) > level;
+            const tr = F(i + 1, j) > level;
+            const br = F(i + 1, j + 1) > level;
+            const bl = F(i, j + 1) > level;
+            const T = `h:${i}:${j}`;
+            const B = `h:${i}:${j + 1}`;
+            const Lf = `v:${i}:${j}`;
+            const R = `v:${i + 1}:${j}`;
+            const crossed = [];
+            if (tl !== tr) crossed.push(T);
+            if (tr !== br) crossed.push(R);
+            if (bl !== br) crossed.push(B);
+            if (tl !== bl) crossed.push(Lf);
+            if (crossed.length === 2) link(crossed[0], crossed[1]);
+            else if (crossed.length === 4) {
+              const centre = (F(i, j) + F(i + 1, j) + F(i + 1, j + 1) + F(i, j + 1)) / 4 > level;
+              if (centre === tl) {
+                link(T, R);
+                link(B, Lf);
+              } else {
+                link(T, Lf);
+                link(R, B);
+              }
+            }
+          }
+        }
+        // Walk the links into polylines.
+        const seen = new Set();
+        const lines = [];
+        for (const start of links.keys()) {
+          if (seen.has(start)) continue;
+          // Prefer starting at an open end so open lines come out whole.
+          let head = start;
+          let prev = null;
+          for (let guard = 0; guard < 100000; guard++) {
+            const next = links.get(head).find((n) => n !== prev);
+            if (links.get(head).length === 1 && prev !== null) break;
+            if (next === undefined || next === start) break;
+            [prev, head] = [head, next];
+            if (links.get(head).length === 1) break;
+          }
+          const chain = [head];
+          seen.add(head);
+          let cur = head;
+          let last = null;
+          for (;;) {
+            const next = links.get(cur).find((n) => n !== last && !seen.has(n));
+            if (next === undefined) break;
+            chain.push(next);
+            seen.add(next);
+            [last, cur] = [cur, next];
+          }
+          const closed = chain.length > 2 && links.get(cur).includes(head);
+          lines.push({ pts: chain.map((id) => point.get(id)), closed });
+        }
+        return lines;
+      }
+
+      // ---- Colour: pressure mapped onto the brand ramp, magenta at the core ---------------------
+      const RAMP = [
+        [984, [255, 45, 149]],
+        [996, [214, 92, 255]],
+        [1004, [120, 132, 255]],
+        [1012, [45, 226, 200]],
+        [1028, [45, 226, 200]],
+      ];
+      function rampColour(p) {
+        for (let k = 0; k < RAMP.length - 1; k++) {
+          const [p0, c0] = RAMP[k];
+          const [p1, c1] = RAMP[k + 1];
+          if (p <= p1) {
+            const t = Math.max(0, (p - p0) / (p1 - p0));
+            return `rgb(${c0.map((c, n) => Math.round(c + (c1[n] - c) * t)).join(" ")})`;
+          }
+        }
+        return `rgb(${RAMP.at(-1)[1].join(" ")})`;
+      }
+
+      // ---- Draw the chart ---------------------------------------------------------------------
+      const svg = document.getElementById("chart");
+      const defs = el("defs", {}, svg);
+      const glow = el("filter", { id: "glow", x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
+      el("feGaussianBlur", { stdDeviation: 5, result: "b" }, glow);
+      const merge = el("feMerge", {}, glow);
+      el("feMergeNode", { in: "b" }, merge);
+      el("feMergeNode", { in: "SourceGraphic" }, merge);
+
+      // Faint graticule, like the frame of a printed chart.
+      const grid = el("g", { stroke: "rgb(255 255 255 / 0.045)", "stroke-width": 1 }, svg);
+      for (let x = 50; x < W; x += 100) el("line", { x1: x, y1: 0, x2: x, y2: H }, grid);
+      for (let y = 15; y < H; y += 100) el("line", { x1: 0, y1: y, x2: W, y2: y }, grid);
+
+      // Isobar labels sit where each ring crosses a ray from the low, as on a printed chart.
+      const LABEL_ANGLE = (-128 * Math.PI) / 180;
+      const labelMask = el("mask", { id: "gaps", maskUnits: "userSpaceOnUse", x: 0, y: 0, width: W, height: H }, defs);
+      el("rect", { width: W, height: H, fill: "white" }, labelMask);
+      const isobars = el("g", { mask: "url(#gaps)", fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" }, svg);
+      const glowLayer = el("g", { filter: "url(#glow)", opacity: 0.9 }, isobars);
+      const labels = el("g", { "font-family": "JetBrains Mono", "font-size": 11, "font-weight": 500, "text-anchor": "middle", "dominant-baseline": "central" }, svg);
+
+      for (let level = 984; level <= 1028; level += 4) {
+        const colour = rampColour(level);
+        const core = Math.max(0, Math.min(1, (1012 - level) / 28));
+        for (const line of contour(level)) {
+          if (line.pts.length < 6) continue;
+          el(
+            "path",
+            {
+              d: smoothPath(line.pts, line.closed),
+              stroke: colour,
+              "stroke-width": 1.1 + core * 1.1,
+              "stroke-opacity": 0.5 + core * 0.45,
+            },
+            glowLayer,
+          );
+          // Label where this line meets the ray, if it does, and keep the text upright.
+          let best = null;
+          for (let k = 1; k < line.pts.length - 1; k++) {
+            const [x, y] = line.pts[k];
+            const a = Math.atan2(y - LOW.y, x - LOW.x);
+            const off = Math.abs(Math.atan2(Math.sin(a - LABEL_ANGLE), Math.cos(a - LABEL_ANGLE)));
+            if (off < 0.06 && x > 20 && y > 14 && x < W - 20 && (!best || off < best.off)) best = { k, x, y, off };
+          }
+          if (best && level < 1012) {
+            const [ax, ay] = line.pts[best.k - 1];
+            const [bx, by] = line.pts[best.k + 1];
+            let deg = (Math.atan2(by - ay, bx - ax) * 180) / Math.PI;
+            if (deg > 90) deg -= 180;
+            if (deg < -90) deg += 180;
+            const transform = `translate(${best.x} ${best.y}) rotate(${deg})`;
+            el("rect", { x: -18, y: -8, width: 36, height: 16, rx: 4, fill: "black", transform }, labelMask);
+            const text = el("text", { transform, fill: colour, "fill-opacity": 0.9 }, labels);
+            text.textContent = level;
+          }
+        }
+      }
+
+      // Pressure centres.
+      const centre = (x, y, letter, value, colour) => {
+        const g = el("g", { "font-family": "Oxanium", "text-anchor": "middle", filter: "url(#glow)" }, svg);
+        const t = el("text", { x, y: y + 12, "font-size": 40, "font-weight": 700, fill: colour }, g);
+        t.textContent = letter;
+        const v = el("text", { x, y: y + 34, "font-size": 12, "font-weight": 600, fill: colour, "fill-opacity": 0.85, "font-family": "JetBrains Mono" }, g);
+        v.textContent = value;
+      };
+
+      // Fronts with their symbols on the side they are moving towards.
+      function front(pts, colour, symbol, towards, gap = 30) {
+        const g = el("g", { filter: "url(#glow)" }, svg);
+        const d = smoothPath(pts);
+        el("path", { d, fill: "none", stroke: colour, "stroke-width": 3, "stroke-linecap": "round" }, g);
+        probe.setAttribute("d", d);
+        const len = probe.getTotalLength();
+        for (let s = gap * 0.6, n = 0; s < len - 8; s += gap, n++) {
+          const p = probe.getPointAtLength(s);
+          const q = probe.getPointAtLength(Math.min(len, s + 1));
+          let tx = q.x - p.x;
+          let ty = q.y - p.y;
+          const m = Math.hypot(tx, ty) || 1;
+          tx /= m;
+          ty /= m;
+          let nx = -ty;
+          let ny = tx;
+          if (nx * (towards[0] - p.x) + ny * (towards[1] - p.y) < 0) [nx, ny] = [-nx, -ny];
+          const kind = symbol === "occluded" ? (n % 2 ? "warm" : "cold") : symbol;
+          const size = 8;
+          if (kind === "cold") {
+            const pts = [
+              [p.x - tx * size, p.y - ty * size],
+              [p.x + nx * size * 1.35, p.y + ny * size * 1.35],
+              [p.x + tx * size, p.y + ty * size],
+            ];
+            el("path", { d: `M${pts.map((v) => v.join(",")).join("L")}Z`, fill: colour }, g);
+          } else {
+            const sweep = tx * ny - ty * nx > 0 ? 1 : 0;
+            el(
+              "path",
+              {
+                d: `M${p.x - tx * size},${p.y - ty * size}A${size},${size} 0 0 ${sweep} ${p.x + tx * size},${p.y + ty * size}Z`,
+                fill: colour,
+              },
+              g,
+            );
+          }
+        }
+      }
+      front(cold, "#3ad6ff", "cold", [1100, 640]);
+      front(warm, "#ff3d8b", "warm", [1100, 0]);
+      front(occluded, "#b26bff", "occluded", [1000, 150], 26);
+      centre(LOW.x, LOW.y, "L", "982", "#ff5aa9");
+      centre(HIGH.x + 40, HIGH.y + 4, "H", "1030", "#4fe8d2");
+
+      // Your place, on the squall line, pinned to its card.
+      const pin = el("g", {}, svg);
+      el("path", { d: `M${PIN.x + 14},${PIN.y} L896,${PIN.y + 24} L912,${PIN.y + 24}`, fill: "none", stroke: "rgb(255 255 255 / 0.35)", "stroke-width": 1 }, pin);
+      for (const [r, o] of [[30, 0.12], [20, 0.22], [11, 0.4]])
+        el("circle", { cx: PIN.x, cy: PIN.y, r, fill: "none", stroke: "#ffffff", "stroke-opacity": o, "stroke-width": 1.2 }, pin);
+      el("circle", { cx: PIN.x, cy: PIN.y, r: 5, fill: "#ffffff", filter: "url(#glow)" }, pin);
+
+      // ---- Radar echoes -----------------------------------------------------------------------
+      // Value noise, summed over octaves.
+      const hash = (x, y) => {
+        const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+        return s - Math.floor(s);
+      };
+      const vnoise = (x, y) => {
+        const xi = Math.floor(x);
+        const yi = Math.floor(y);
+        const xf = x - xi;
+        const yf = y - yi;
+        const u = xf * xf * (3 - 2 * xf);
+        const v = yf * yf * (3 - 2 * yf);
+        const a = hash(xi, yi);
+        const b = hash(xi + 1, yi);
+        const c = hash(xi, yi + 1);
+        const d = hash(xi + 1, yi + 1);
+        return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+      };
+      const fbm = (x, y) => {
+        let sum = 0;
+        let amp = 0.55;
+        let f = 1;
+        for (let o = 0; o < 5; o++) {
+          sum += amp * vnoise(x * f, y * f);
+          f *= 2.03;
+          amp *= 0.5;
+        }
+        return sum;
+      };
+      const [occS, coldS, warmS] = frontSamples;
+      function rain(x, y) {
+        const dc = distTo(coldS, x - 10, y + 4);
+        const dw = distTo(warmS, x, y + 34);
+        const dx = x - LOW.x;
+        const dy = y - LOW.y;
+        const r = Math.hypot(dx, dy);
+        const a = Math.atan2(dy, dx);
+        // A comma head wrapped around the north and west of the low.
+        const head = Math.exp(-(((r - 105) / 48) ** 2)) * smoothstep(-0.2, 0.9, Math.cos(a + 1.9)) * 0.9;
+        const squall = Math.exp(-((dc / 24) ** 2)) * smoothstep(660, 560, -y + 1000) * 1.05;
+        const ahead = y < 380 ? Math.exp(-((dw / 46) ** 2)) * 0.75 * smoothstep(870, 960, x) : 0;
+        const occ = Math.exp(-((distTo(occS, x, y) / 30) ** 2)) * 0.8;
+        const band = Math.max(head, squall, ahead, occ);
+        if (band < 0.05) return 0;
+        return band * (0.25 + 1.05 * fbm(x / 70, y / 70));
+      }
+      const STOPS = [
+        [0.3, [45, 226, 200, 0.16]],
+        [0.42, [45, 226, 200, 0.3]],
+        [0.56, [243, 197, 75, 0.42]],
+        [0.7, [255, 128, 72, 0.5]],
+        [0.84, [255, 45, 149, 0.62]],
+      ];
+      const ctx = document.getElementById("radar").getContext("2d");
+      const img = ctx.createImageData(W, H);
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const v = rain(x, y);
+          let stop = null;
+          for (const s of STOPS) if (v >= s[0]) stop = s[1];
+          if (!stop) continue;
+          const o = (y * W + x) * 4;
+          img.data[o] = stop[0];
+          img.data[o + 1] = stop[1];
+          img.data[o + 2] = stop[2];
+          img.data[o + 3] = stop[3] * 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+
+      // ---- Forecast-confidence spread: three models agree, then fan out ---------------------------
+      const spread = document.getElementById("spread");
+      const models = [
+        ["#ff2d95", [31, 31, 30, 31, 30, 29, 30]],
+        ["#f3c54b", [31, 31, 30, 32, 29, 27, 31.5]],
+        ["#5b8ff0", [31, 30.6, 30.2, 30, 31.4, 30.6, 28]],
+      ];
+      const sx = (k) => 6 + k * 30.6;
+      const sy = (t) => 8 + (32.5 - t) * 9;
+      const lo = [];
+      const hi = [];
+      for (let k = 0; k < 7; k++) {
+        const vals = models.map((m) => m[1][k]);
+        lo.push([sx(k), sy(Math.min(...vals)) + 3]);
+        hi.push([sx(k), sy(Math.max(...vals)) - 3]);
+      }
+      el("path", { d: `${smoothPath(hi)}L${smoothPath(lo.reverse()).slice(1)}Z`, fill: "rgb(255 255 255 / 0.07)" }, spread);
+      for (const [colour, vals] of models)
+        el("path", { d: smoothPath(vals.map((t, k) => [sx(k), sy(t)])), fill: "none", stroke: colour, "stroke-width": 1.8, "stroke-linecap": "round" }, spread);
+      // Day-by-day verdict: high, high, high, medium, medium, low, low.
+      const verdict = ["#2de2c8", "#2de2c8", "#2de2c8", "#f3c54b", "#f3c54b", "#ff2d95", "#ff2d95"];
+      verdict.forEach((c, k) => el("rect", { x: sx(k) - 12, y: 76, width: 24, height: 4, rx: 2, fill: c }, spread));
+
+      document.fonts.ready.then(() => document.body.setAttribute("data-ready", ""));
+    </script>
+  </body>
+</html>

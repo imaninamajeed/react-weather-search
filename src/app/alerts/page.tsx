@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AlertsView } from "@/components/alerts/alerts-view";
-import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { PageHeader } from "@/components/shared/page-header";
 import { RowsSkeleton } from "@/components/shared/skeletons";
 import { getPreferences } from "@/lib/preferences";
@@ -30,7 +29,6 @@ export default function AlertsPage(props: PageProps<"/alerts">) {
   return (
     <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
       <div className="space-y-6">
-        <PageBreadcrumb trail={[{ label: "Dashboard", href: "/" }, { label: "Alerts" }]} />
         <PageHeader
           label="Stay safe"
           title="Alerts"

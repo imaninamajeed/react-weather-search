@@ -141,13 +141,13 @@ export function SearchCommand() {
     <>
       <Button
         variant="outline"
-        className="h-9 w-full justify-start gap-2 text-muted-foreground"
+        className="size-9 justify-center gap-0 px-0 text-muted-foreground sm:w-full sm:justify-start sm:gap-2 sm:px-2.5"
         onClick={() => setOpen(true)}
         aria-label="Search places"
         aria-keyshortcuts="Control+K Meta+K /"
       >
         <IconSearch aria-hidden="true" className="size-4" />
-        <span className="flex-1 text-left font-normal">Search places</span>
+        <span className="hidden flex-1 text-left font-normal sm:inline">Search places</span>
         <kbd className="hidden rounded border border-border px-1.5 font-mono text-[0.6875rem] sm:inline">
           /
         </kbd>

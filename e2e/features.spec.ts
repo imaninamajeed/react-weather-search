@@ -28,8 +28,9 @@ test.describe("alerts", () => {
 
     // Two places, three alerts in all (one official warning and two forecast signals): all fit.
     await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
-    await expect(alerts.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
-    await expect(alerts.getByRole("link", { name: "Tokyo" })).toBeVisible();
+    // Every alert names its place, so a place with two alerts is linked twice.
+    await expect(alerts.getByRole("link", { name: "Subang Jaya" }).first()).toBeVisible();
+    await expect(alerts.getByRole("link", { name: "Tokyo" }).first()).toBeVisible();
     await expect(alerts.getByRole("link", { name: /View all/ })).toHaveCount(0);
 
     await alerts.getByRole("link", { name: /All alerts/ }).click();

@@ -30,7 +30,7 @@ export function PageBreadcrumb({ trail }: { trail: Crumb[] }) {
 
   return (
     <Breadcrumb>
-      <BreadcrumbList>
+      <BreadcrumbList className="flex-nowrap">
         {collapsible.length > 0 && (
           <>
             <BreadcrumbItem className="sm:hidden">
@@ -49,12 +49,16 @@ export function PageBreadcrumb({ trail }: { trail: Crumb[] }) {
           const hidden = isCollapsed(index);
           return (
             <Fragment key={`${crumb.label}-${index}`}>
-              <BreadcrumbItem className={cn(hidden && hideOnMobile)}>
+              <BreadcrumbItem className={cn("min-w-0", hidden && hideOnMobile)}>
                 {last || !crumb.href ? (
-                  <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                  <BreadcrumbPage className="block max-w-36 truncate sm:max-w-64">
+                    {crumb.label}
+                  </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link href={crumb.href}>{crumb.label}</Link>
+                    <Link href={crumb.href} className="block max-w-36 truncate sm:max-w-64">
+                      {crumb.label}
+                    </Link>
                   </BreadcrumbLink>
                 )}
                 {crumb.switcher && (

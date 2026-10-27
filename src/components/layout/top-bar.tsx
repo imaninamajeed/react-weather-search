@@ -1,6 +1,4 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { SearchCommand } from "@/components/search/search-command";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -13,19 +11,18 @@ async function Settings() {
   return <SettingsMenu units={units} />;
 }
 
-export function TopBar() {
+/**
+ * The sidebar trigger, the page's breadcrumb (rendered by the @crumbs slot, which knows the route and
+ * the place), then search and settings.
+ */
+export function TopBar({ crumbs }: { crumbs: ReactNode }) {
   return (
     <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/85 px-4 backdrop-blur">
       <SidebarTrigger aria-label="Toggle sidebar" />
-      {/* The sidebar carries the brand on desktop; on mobile it is tucked in the drawer. */}
-      <Link
-        href="/"
-        className="flex shrink-0 items-center gap-2 md:hidden"
-        aria-label="Isobar home"
-      >
-        <Image src="/brand/mark.webp" alt="" width={28} height={28} className="rounded-md" />
-      </Link>
-      <div className="ml-auto w-full max-w-xs">
+      <div className="min-w-0 flex-1">
+        <Suspense fallback={null}>{crumbs}</Suspense>
+      </div>
+      <div className="shrink-0 sm:w-64">
         <SearchCommand />
       </div>
       <Suspense
