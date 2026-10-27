@@ -42,6 +42,10 @@ export async function PlaceView({
         </SectionBoundary>
       </Section>
 
+      <Section id="conditions" title="Right now">
+        <ConditionsGrid forecast={forecast} units={units} />
+      </Section>
+
       <Section id="hourly" title="Next 48 hours">
         <HourlyChart hours={hours} units={units} />
         <HourlyTable hours={hours} units={units} />
@@ -62,10 +66,6 @@ export async function PlaceView({
             />
           </Suspense>
         </SectionBoundary>
-      </Section>
-
-      <Section id="conditions" title="Right now">
-        <ConditionsGrid forecast={forecast} units={units} />
       </Section>
     </div>
   );

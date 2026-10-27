@@ -29,6 +29,8 @@ interface WeatherMapProps {
   radar: RadarData | null;
   units: Units;
   center: { latitude: number; longitude: number };
+  /** Opened on one specific place: stay centred on it instead of fitting all markers. */
+  focused?: boolean;
 }
 
 const STYLES = {
@@ -149,7 +151,7 @@ function popupContent(
 
 const noopSubscribe = () => () => {};
 
-export function WeatherMap({ places, radar, units, center }: WeatherMapProps) {
+export function WeatherMap({ places, radar, units, center, focused = false }: WeatherMapProps) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const theme: Theme = resolvedTheme === "dark" ? "dark" : "light";
@@ -226,7 +228,7 @@ export function WeatherMap({ places, radar, units, center }: WeatherMapProps) {
           container: containerRef.current,
           style: STYLES[live.current.theme],
           center: [center.longitude, center.latitude],
-          zoom: places.length > 1 ? 3 : 6,
+          zoom: focused || places.length <= 1 ? 6 : 3,
           attributionControl: { compact: true },
           fadeDuration: 0,
         });
@@ -256,7 +258,7 @@ export function WeatherMap({ places, radar, units, center }: WeatherMapProps) {
               .addTo(current),
           );
         }
-        if (places.length > 1) {
+        if (places.length > 1 && !focused) {
           const bounds = new maplibre.LngLatBounds();
           places.forEach((place) => bounds.extend([place.longitude, place.latitude]));
           current.fitBounds(bounds, { padding: 90, maxZoom: 6, duration: 0 });

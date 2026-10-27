@@ -45,3 +45,13 @@ test("clicking the map shows the weather at that spot", async ({ page }) => {
   await expect(popup.getByText("Open forecast →")).toBeVisible();
   await expect(popup.getByText(/Rain \d+%/)).toBeVisible();
 });
+
+test("opens centred on a place from its forecast page", async ({ page }) => {
+  await mockMapNetwork(page);
+  await page.goto("/place/1850147-tokyo");
+  await page.getByRole("link", { name: "Radar for Tokyo" }).click();
+
+  await expect(page).toHaveURL(/\/map\?place=1850147-tokyo$/);
+  // Tokyo isn't saved, but the focused place is still shown (and visible, i.e. in view).
+  await expect(page.locator(".maplibregl-marker").getByText("Tokyo")).toBeVisible();
+});

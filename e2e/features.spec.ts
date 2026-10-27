@@ -73,3 +73,10 @@ test("climate history compares the year with normals", async ({ page }) => {
   await page.getByRole("link", { name: "Forecast" }).click();
   await expect(page).toHaveURL(/\/place\/8504423-subang-jaya$/);
 });
+
+test("current conditions come before the charts on the forecast page", async ({ page }) => {
+  await page.goto("/place/8504423-subang-jaya");
+  const top = async (name: string) =>
+    (await page.getByRole("heading", { level: 2, name }).boundingBox())!.y;
+  expect(await top("Right now")).toBeLessThan(await top("Next 48 hours"));
+});

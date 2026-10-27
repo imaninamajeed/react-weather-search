@@ -1,10 +1,11 @@
 "use client";
 
-import { IconBookmark, IconBookmarkFilled, IconHome } from "@tabler/icons-react";
+import { IconBookmark, IconBookmarkFilled, IconHome, IconRadar } from "@tabler/icons-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { removePlace, restorePlace, savePlace, setHome } from "@/app/actions";
 import { useOnlineStatus } from "@/components/pwa/use-online-status";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 interface PlaceActionsProps {
@@ -50,7 +51,16 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
   }
 
   return (
-    <div className="flex shrink-0 items-center gap-2">
+    <div className="flex shrink-0 flex-wrap items-center gap-2">
+      <Button asChild variant="ghost" size="sm">
+        <Link
+          href={`/map?place=${encodeURIComponent(placeKey)}`}
+          aria-label={`Radar for ${placeName}`}
+        >
+          <IconRadar aria-hidden="true" />
+          Radar
+        </Link>
+      </Button>
       <Button
         variant="outline"
         size="sm"
