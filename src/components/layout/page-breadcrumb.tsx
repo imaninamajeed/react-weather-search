@@ -51,9 +51,7 @@ export function PageBreadcrumb({ trail }: { trail: Crumb[] }) {
             <Fragment key={`${crumb.label}-${index}`}>
               <BreadcrumbItem className={cn("min-w-0", hidden && hideOnMobile)}>
                 {last || !crumb.href ? (
-                  <BreadcrumbPage className="block max-w-36 truncate sm:max-w-64">
-                    {crumb.label}
-                  </BreadcrumbPage>
+                  <BreadcrumbPage className="block whitespace-nowrap">{crumb.label}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
                     <Link href={crumb.href} className="block max-w-36 truncate sm:max-w-64">

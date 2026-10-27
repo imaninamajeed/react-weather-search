@@ -42,7 +42,7 @@
         font-family: Outfit, sans-serif;
         color: var(--ink);
         background:
-          radial-gradient(520px 420px at 840px 255px, rgb(255 45 149 / 0.2), transparent 70%),
+          radial-gradient(420px 340px at 840px 255px, rgb(255 45 149 / 0.16), transparent 70%),
           radial-gradient(620px 520px at 120px 60px, rgb(45 226 200 / 0.13), transparent 70%),
           radial-gradient(900px 500px at 1100px 640px, rgb(91 143 240 / 0.12), transparent 70%),
           var(--bg);
@@ -52,13 +52,18 @@
         inset: 0;
       }
       canvas.layer {
-        filter: blur(0.6px);
+        width: 1200px;
+        height: 630px;
+        mix-blend-mode: screen;
+      }
+      #radar {
+        filter: blur(0.7px);
       }
       .vignette {
         background: radial-gradient(1400px 820px at 60% 45%, transparent 55%, rgb(0 0 0 / 0.55));
       }
       .shade {
-        background: linear-gradient(90deg, rgb(6 9 12 / 0.82) 0%, rgb(6 9 12 / 0.62) 38%, transparent 56%);
+        background: radial-gradient(620px 330px at 300px 340px, rgb(6 9 12 / 0.78), transparent 78%);
       }
 
       /* Wordmark block */
@@ -183,8 +188,8 @@
       }
       .alert {
         position: absolute;
-        left: 934px;
-        top: 392px;
+        left: 912px;
+        top: 390px;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -233,7 +238,8 @@
     </style>
   </head>
   <body>
-    <canvas class="layer" id="radar" width="1200" height="630"></canvas>
+    <canvas class="layer" id="radar" width="2400" height="1260"></canvas>
+    <canvas class="layer" id="wind" width="2400" height="1260"></canvas>
     <svg class="layer" id="chart" width="1200" height="630" viewBox="0 0 1200 630"></svg>
     <div class="layer shade"></div>
     <div class="layer vignette"></div>
@@ -243,7 +249,7 @@
         <div class="tile"></div>
         <div class="wordmark">Isobar</div>
       </div>
-      <p class="tagline">Forecasts, alerts, and <em>how far to trust them.</em></p>
+      <p class="tagline">Forecasts, alerts, and<br /><em>how far to trust them.</em></p>
     </div>
 
     <div class="features">
@@ -253,7 +259,7 @@
 
     <div class="card confidence">
       <div class="eyebrow">Forecast confidence</div>
-      <svg id="spread" width="196" height="84" viewBox="0 0 196 84"></svg>
+      <svg id="spread" width="196" height="94" viewBox="0 0 196 94"></svg>
       <div class="legend">
         <span><b style="--c: var(--magenta)"></b>ECMWF</span>
         <span><b style="--c: var(--amber)"></b>GFS</span>
@@ -281,7 +287,7 @@
         <path d="M12 9v4" />
         <path d="M12 17h.01" />
       </svg>
-      Heavy rain warning <span>· MET Malaysia</span>
+      Heavy rain warning <span>· until 10 PM</span>
     </div>
 
     <script>
@@ -294,7 +300,7 @@
       const HIGH = { x: 120, y: 70, height: 16, radius: 330 };
       // Fronts as smooth curves through these points. The occlusion runs from the low to the
       // triple point, where the cold and warm fronts split.
-      const occluded = [[840, 255], [872, 286], [893, 326]];
+      const occluded = [[856, 270], [878, 292], [893, 326]];
       const cold = [[893, 326], [872, 398], [826, 466], [758, 532], [672, 592], [585, 650]];
       const warm = [[893, 326], [968, 352], [1048, 364], [1130, 368], [1250, 370]];
       const PIN = { x: 822, y: 471 };
@@ -350,12 +356,14 @@
         let dx = x - LOW.x;
         let dy = y - LOW.y;
         const r = Math.hypot(dx, dy);
-        const twist = 0.5 * Math.exp(-r / 260);
+        const twist = 0.85 * Math.exp(-r / 240);
         [dx, dy] = [dx * Math.cos(twist) - dy * Math.sin(twist), dx * Math.sin(twist) + dy * Math.cos(twist)];
         const tilt = -0.42;
         const u = dx * Math.cos(tilt) - dy * Math.sin(tilt);
         const v = dx * Math.sin(tilt) + dy * Math.cos(tilt);
-        const q = (u / 235) ** 2 + (v / 180) ** 2;
+        const ang = Math.atan2(v, u);
+        const q =
+          ((u / 235) ** 2 + (v / 180) ** 2) * (1 + 0.13 * Math.sin(2 * ang + 1) + 0.08 * Math.sin(3 * ang - 0.5));
         let p = 1014 - LOW.depth / (1 + q);
         p += HIGH.height * Math.exp(-((x - HIGH.x) ** 2 + (y - HIGH.y) ** 2) / (2 * HIGH.radius ** 2));
         p -= 7 / (1 + ((x - 1290) ** 2 + (y + 80) ** 2) / 200 ** 2);
@@ -375,6 +383,18 @@
       for (let j = 0; j < NY; j++)
         for (let i = 0; i < NX; i++) field[j * NX + i] = pressure(X0 + i * STEP, Y0 + j * STEP);
       const F = (i, j) => field[j * NX + i];
+      // Bilinear lookup into the grid, for anything that needs the pressure between grid points.
+      function fieldAt(x, y) {
+        const gx = Math.max(0, Math.min(NX - 1.001, (x - X0) / STEP));
+        const gy = Math.max(0, Math.min(NY - 1.001, (y - Y0) / STEP));
+        const i = Math.floor(gx);
+        const j = Math.floor(gy);
+        const tx = gx - i;
+        const ty = gy - j;
+        const top = F(i, j) + (F(i + 1, j) - F(i, j)) * tx;
+        const bottom = F(i, j + 1) + (F(i + 1, j + 1) - F(i, j + 1)) * tx;
+        return top + (bottom - top) * ty;
+      }
 
       function contour(level) {
         // Edge ids: horizontal edge h:i:j joins (i,j)-(i+1,j); vertical v:i:j joins (i,j)-(i,j+1).
@@ -630,55 +650,111 @@
         return sum;
       };
       const [occS, coldS, warmS] = frontSamples;
-      function rain(x, y) {
-        const dc = distTo(coldS, x - 10, y + 4);
-        const dw = distTo(warmS, x, y + 34);
+      // Where rain can fall: a narrow squall line on the cold front, a broad shield ahead of the
+      // warm front, and a comma head wrapped around the north-west of the low.
+      function band(x, y) {
         const dx = x - LOW.x;
         const dy = y - LOW.y;
         const r = Math.hypot(dx, dy);
         const a = Math.atan2(dy, dx);
-        // A comma head wrapped around the north and west of the low.
-        const head = Math.exp(-(((r - 105) / 48) ** 2)) * smoothstep(-0.2, 0.9, Math.cos(a + 1.9)) * 0.9;
-        const squall = Math.exp(-((dc / 24) ** 2)) * smoothstep(660, 560, -y + 1000) * 1.05;
-        const ahead = y < 380 ? Math.exp(-((dw / 46) ** 2)) * 0.75 * smoothstep(870, 960, x) : 0;
-        const occ = Math.exp(-((distTo(occS, x, y) / 30) ** 2)) * 0.8;
-        const band = Math.max(head, squall, ahead, occ);
-        if (band < 0.05) return 0;
-        return band * (0.25 + 1.05 * fbm(x / 70, y / 70));
+        const head = Math.exp(-(((r - 112) / 34) ** 2)) * smoothstep(-0.1, 0.85, Math.cos(a + 1.75)) * 0.95;
+        const squall = Math.exp(-((distTo(coldS, x - 8, y + 2) / 15) ** 2)) * smoothstep(330, 420, y) * 1.1;
+        const ahead = Math.exp(-((distTo(warmS, x, y + 30) / 30) ** 2)) * smoothstep(400, 330, y) * smoothstep(880, 960, x) * 0.85;
+        const occ = Math.exp(-((distTo(occS, x + 6, y) / 20) ** 2)) * 0.9;
+        return Math.max(head, squall, ahead, occ);
       }
+      const BS = 4;
+      const BX = W / BS + 1;
+      const BY = Math.ceil(H / BS) + 1;
+      const bands = new Float32Array(BX * BY);
+      for (let j = 0; j < BY; j++) for (let i = 0; i < BX; i++) bands[j * BX + i] = band(i * BS, j * BS);
+      function bandAt(x, y) {
+        const gx = Math.min(BX - 1.001, x / BS);
+        const gy = Math.min(BY - 1.001, y / BS);
+        const i = Math.floor(gx);
+        const j = Math.floor(gy);
+        const tx = gx - i;
+        const ty = gy - j;
+        const b = (i2, j2) => bands[j2 * BX + i2];
+        const top = b(i, j) + (b(i + 1, j) - b(i, j)) * tx;
+        return top + (b(i, j + 1) + (b(i + 1, j + 1) - b(i, j + 1)) * tx - top) * ty;
+      }
+      // Reflectivity steps, light to extreme, on the brand ramp.
       const STOPS = [
-        [0.3, [45, 226, 200, 0.16]],
-        [0.42, [45, 226, 200, 0.3]],
-        [0.56, [243, 197, 75, 0.42]],
-        [0.7, [255, 128, 72, 0.5]],
-        [0.84, [255, 45, 149, 0.62]],
+        [0.24, [24, 190, 196, 0.22]],
+        [0.36, [45, 226, 200, 0.42]],
+        [0.5, [243, 197, 75, 0.62]],
+        [0.63, [255, 112, 72, 0.72]],
+        [0.76, [255, 45, 149, 0.9]],
       ];
-      const ctx = document.getElementById("radar").getContext("2d");
-      const img = ctx.createImageData(W, H);
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          const v = rain(x, y);
+      const radar = document.getElementById("radar").getContext("2d");
+      const img = radar.createImageData(W * 2, H * 2);
+      for (let py = 0; py < H * 2; py++) {
+        for (let px = 0; px < W * 2; px++) {
+          const x = px / 2;
+          const y = py / 2;
+          const b = bandAt(x, y);
+          if (b < 0.12) continue;
+          const v = b * (0.1 + 0.95 * smoothstep(0.34, 0.82, fbm(x / 24, y / 24)));
           let stop = null;
           for (const s of STOPS) if (v >= s[0]) stop = s[1];
           if (!stop) continue;
-          const o = (y * W + x) * 4;
+          const o = (py * W * 2 + px) * 4;
           img.data[o] = stop[0];
           img.data[o + 1] = stop[1];
           img.data[o + 2] = stop[2];
           img.data[o + 3] = stop[3] * 255;
         }
       }
-      ctx.putImageData(img, 0, 0);
+      radar.putImageData(img, 0, 0);
+
+      // ---- Wind: geostrophic, so it runs along the isobars, anticlockwise round the low ---------
+      const wind = document.getElementById("wind").getContext("2d");
+      wind.scale(2, 2);
+      wind.lineCap = "round";
+      const flow = (x, y) => {
+        const gx = (fieldAt(x + 2, y) - fieldAt(x - 2, y)) / 4;
+        const gy = (fieldAt(x, y + 2) - fieldAt(x, y - 2)) / 4;
+        return [gy, -gx];
+      };
+      for (let sy = 0; sy < H; sy += 26) {
+        for (let sx = 330; sx < W; sx += 30) {
+          let x = sx + hash(sx, sy) * 30;
+          let y = sy + hash(sy, sx) * 26;
+          const [u0, v0] = flow(x, y);
+          const speed = Math.min(1, Math.hypot(u0, v0) / 0.22);
+          if (speed < 0.12 || Math.hypot(x - LOW.x, y - LOW.y) < 34) continue;
+          const steps = Math.round(5 + 22 * speed);
+          const trail = [[x, y]];
+          for (let k = 0; k < steps; k++) {
+            const [u, v] = flow(x, y);
+            const m = Math.hypot(u, v) || 1;
+            x += (u / m) * 2.2;
+            y += (v / m) * 2.2;
+            trail.push([x, y]);
+          }
+          const colour = rampColour(fieldAt(x, y)).slice(4, -1).split(" ").join(",");
+          for (let k = 1; k < trail.length; k++) {
+            const t = k / (trail.length - 1);
+            wind.strokeStyle = `rgba(${colour},${(0.06 + 0.5 * speed) * t ** 1.6})`;
+            wind.lineWidth = 0.6 + 1.1 * t;
+            wind.beginPath();
+            wind.moveTo(...trail[k - 1]);
+            wind.lineTo(...trail[k]);
+            wind.stroke();
+          }
+        }
+      }
 
       // ---- Forecast-confidence spread: three models agree, then fan out ---------------------------
       const spread = document.getElementById("spread");
       const models = [
-        ["#ff2d95", [31, 31, 30, 31, 30, 29, 30]],
-        ["#f3c54b", [31, 31, 30, 32, 29, 27, 31.5]],
-        ["#5b8ff0", [31, 30.6, 30.2, 30, 31.4, 30.6, 28]],
+        ["#ff2d95", [30.8, 31, 30.6, 30.8, 30.6, 30.9, 30.5]],
+        ["#f3c54b", [30.8, 31, 30.7, 31.3, 31.9, 32.4, 32.9]],
+        ["#5b8ff0", [30.7, 30.9, 30.5, 30.2, 29.6, 29, 28.6]],
       ];
-      const sx = (k) => 6 + k * 30.6;
-      const sy = (t) => 8 + (32.5 - t) * 9;
+      const sx = (k) => 12 + k * 28.6;
+      const sy = (t) => 36 - (t - 30.7) * 10.5;
       const lo = [];
       const hi = [];
       for (let k = 0; k < 7; k++) {
@@ -691,7 +767,11 @@
         el("path", { d: smoothPath(vals.map((t, k) => [sx(k), sy(t)])), fill: "none", stroke: colour, "stroke-width": 1.8, "stroke-linecap": "round" }, spread);
       // Day-by-day verdict: high, high, high, medium, medium, low, low.
       const verdict = ["#2de2c8", "#2de2c8", "#2de2c8", "#f3c54b", "#f3c54b", "#ff2d95", "#ff2d95"];
-      verdict.forEach((c, k) => el("rect", { x: sx(k) - 12, y: 76, width: 24, height: 4, rx: 2, fill: c }, spread));
+      verdict.forEach((c, k) => el("rect", { x: sx(k) - 11, y: 72, width: 22, height: 4, rx: 2, fill: c }, spread));
+      for (const [x, anchor, c, word] of [[1, "start", "#2de2c8", "HIGH"], [195, "end", "#ff2d95", "LOW"]]) {
+        const t = el("text", { x, y: 90, "text-anchor": anchor, fill: c, "font-family": "JetBrains Mono", "font-size": 9.5, "font-weight": 600, "letter-spacing": 1.2 }, spread);
+        t.textContent = word;
+      }
 
       document.fonts.ready.then(() => document.body.setAttribute("data-ready", ""));
     </script>

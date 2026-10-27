@@ -1,3 +1,5 @@
+![Isobar: forecasts, alerts, and how far to trust them](src/app/opengraph-image.jpg)
+
 # Isobar
 
 Weather that tells you what's happening, what's coming, and **how far to trust it**.
@@ -42,6 +44,7 @@ No API keys or environment variables are needed: every data source is keyless.
 | `pnpm test`                                    | Unit and component tests (Vitest).                                             |
 | `pnpm test:e2e`                                | End-to-end tests (Playwright). **Build first**: `pnpm build && pnpm test:e2e`. |
 | `node scripts/screenshots.mjs <url>`           | Regenerates the PWA install screenshots from a running build.                  |
+| `node scripts/og-image.mjs`                    | Re-renders the link-preview image from `design/og-image.html`.                 |
 
 `dev` and `build` also copy MapLibre's web worker into `public/` and (for `build`) bundle the
 service worker into `public/sw.js`; both are generated and git-ignored.
