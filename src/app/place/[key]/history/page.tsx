@@ -42,7 +42,7 @@ async function HistoryRoute({ params }: Pick<PageProps<"/place/[key]/history">, 
     <div className="space-y-10">
       <header>
         <p className="label-caps">Climate history</p>
-        <h1 className="mt-2 font-display text-5xl leading-[0.95] md:text-6xl">{place.name}</h1>
+        <h1 className="mt-2 font-heading text-5xl leading-[0.95] md:text-6xl">{place.name}</h1>
         <p className="mt-2 text-muted-foreground">{formatPlaceSubtitle(place)}</p>
         <p className="mt-4 max-w-prose text-lg text-balance">
           The last twelve months compared with what is normal here, using 1991–2020 as the baseline.

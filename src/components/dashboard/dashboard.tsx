@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { IconArrowRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AlertsOverview } from "./alerts-overview";
@@ -33,7 +33,7 @@ async function HomeHero({ place, units }: { place: Place; units: Units }) {
             <Button asChild variant="outline" size="sm">
               <Link href={placeHref(place)}>
                 Full forecast
-                <ArrowRight aria-hidden="true" />
+                <IconArrowRight aria-hidden="true" />
               </Link>
             </Button>
           </div>

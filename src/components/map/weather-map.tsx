@@ -2,7 +2,7 @@
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Map as MapLibreMap, Marker, Popup } from "maplibre-gl";
-import { Pause, Play } from "lucide-react";
+import { IconPlayerPause, IconPlayerPlay } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
@@ -354,7 +354,11 @@ export function WeatherMap({ places, radar, units, center }: WeatherMapProps) {
                 setPlaying((value) => !value);
               }}
             >
-              {playing ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
+              {playing ? (
+                <IconPlayerPause aria-hidden="true" />
+              ) : (
+                <IconPlayerPlay aria-hidden="true" />
+              )}
             </Button>
             <div className="min-w-0 flex-1">
               <Slider

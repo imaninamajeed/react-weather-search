@@ -21,7 +21,7 @@ export default function Error({
       className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-start justify-center gap-4 px-4 py-24"
     >
       <p className="label-caps">Something went wrong</p>
-      <h1 className="font-display text-5xl md:text-6xl">The forecast didn&apos;t load</h1>
+      <h1 className="font-heading text-5xl md:text-6xl">The forecast didn&apos;t load</h1>
       <p className="max-w-prose text-muted-foreground">
         Our weather provider didn&apos;t respond in time. This is usually temporary.
         {error.digest && (

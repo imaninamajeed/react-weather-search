@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, BookmarkCheck, House } from "lucide-react";
+import { IconBookmark, IconBookmarkFilled, IconHome } from "@tabler/icons-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { removePlace, restorePlace, savePlace, setHome } from "@/app/actions";
@@ -59,12 +59,12 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
         title={offlineHint}
         onClick={toggleSaved}
       >
-        {saved ? <BookmarkCheck aria-hidden="true" /> : <Bookmark aria-hidden="true" />}
+        {saved ? <IconBookmarkFilled aria-hidden="true" /> : <IconBookmark aria-hidden="true" />}
         {saved ? "Saved" : "Save"}
       </Button>
       {isHome ? (
         <span className="inline-flex h-7 items-center gap-1 px-2 text-[0.8rem] text-muted-foreground">
-          <House aria-hidden="true" className="size-3.5" />
+          <IconHome aria-hidden="true" className="size-3.5" />
           Home
         </span>
       ) : (
@@ -75,7 +75,7 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
           title={offlineHint}
           onClick={makeHome}
         >
-          <House aria-hidden="true" />
+          <IconHome aria-hidden="true" />
           Set as home
         </Button>
       )}

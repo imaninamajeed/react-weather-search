@@ -141,5 +141,5 @@ original marble logo (kept as the brand mark), documentation, and a Vercel-targe
 
 - The core flow: search a city, see current conditions and a forecast.
 - **Subang Jaya as the default city.**
-- The marble logo and its turquoise/magenta palette, which now drives the UI.
+- The marble logo, which remains the brand mark and app icon (its turquoise and magenta still inform the temperature ramp). The UI theme itself now comes from a shadcn preset; see ARCHITECTURE.
 - Credit to the original author in the footer and licence.

@@ -1,4 +1,4 @@
-import { ArrowUp } from "lucide-react";
+import { IconArrowUp } from "@tabler/icons-react";
 import { Suspense, type ReactNode } from "react";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { TileSkeleton } from "@/components/shared/skeletons";
@@ -50,7 +50,7 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
       unit={labels.speed}
       caption={`Gusts ${formatSpeed(current.windGusts, units)} · from ${compassPoint(current.windDirection)}`}
     >
-      <ArrowUp
+      <IconArrowUp
         aria-hidden="true"
         className="mt-3 size-5 text-muted-foreground"
         // The arrow points where the wind is blowing *to*, opposite of the compass "from" bearing.

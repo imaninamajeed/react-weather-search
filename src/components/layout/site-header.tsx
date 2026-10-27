@@ -1,4 +1,4 @@
-import { Map as MapIcon } from "lucide-react";
+import { IconMap } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -26,11 +26,11 @@ export function SiteHeader() {
             className="rounded-md"
             priority
           />
-          <span className="font-display text-2xl leading-none">Isobar</span>
+          <span className="font-heading text-2xl leading-none">Isobar</span>
         </Link>
         <Button asChild variant="ghost" size="sm" className="ml-auto shrink-0">
           <Link href="/map" aria-label="Map">
-            <MapIcon aria-hidden="true" />
+            <IconMap aria-hidden="true" />
             <span className="hidden sm:inline">Map</span>
           </Link>
         </Button>

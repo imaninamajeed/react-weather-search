@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, SlidersHorizontal } from "lucide-react";
+import { IconAdjustmentsHorizontal, IconDownload } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
 import { useTransition } from "react";
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ export function SettingsMenu({ units }: { units: Units }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" aria-label="Settings" disabled={pending}>
-          <SlidersHorizontal aria-hidden="true" />
+          <IconAdjustmentsHorizontal aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
@@ -62,7 +62,7 @@ export function SettingsMenu({ units }: { units: Units }) {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => void install()}>
-              <Download aria-hidden="true" />
+              <IconDownload aria-hidden="true" />
               Install app
             </DropdownMenuItem>
           </>

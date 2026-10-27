@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Clock, LocateFixed, MapPin, Search } from "lucide-react";
+import { IconClock, IconCurrentLocation, IconMapPin, IconSearch } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -146,7 +146,7 @@ export function SearchCommand() {
         aria-label="Search places"
         aria-keyshortcuts="Control+K Meta+K /"
       >
-        <Search aria-hidden="true" className="size-4" />
+        <IconSearch aria-hidden="true" className="size-4" />
         <span className="flex-1 text-left font-normal">Search places</span>
         <kbd className="hidden rounded border border-border px-1.5 font-mono text-[0.6875rem] sm:inline">
           /
@@ -173,7 +173,7 @@ export function SearchCommand() {
             {places.length > 0 && (
               <CommandGroup heading="Places">
                 {places.map((place) => (
-                  <PlaceItem key={place.key} place={place} icon={MapPin} onSelect={go} />
+                  <PlaceItem key={place.key} place={place} icon={IconMapPin} onSelect={go} />
                 ))}
               </CommandGroup>
             )}
@@ -181,7 +181,7 @@ export function SearchCommand() {
             {!searchable && recents.length > 0 && (
               <CommandGroup heading="Recent">
                 {recents.map((place) => (
-                  <PlaceItem key={place.key} place={place} icon={Clock} onSelect={go} />
+                  <PlaceItem key={place.key} place={place} icon={IconClock} onSelect={go} />
                 ))}
               </CommandGroup>
             )}
@@ -189,7 +189,7 @@ export function SearchCommand() {
             {!searchable && (
               <CommandGroup heading="Nearby">
                 <CommandItem value="my-location" onSelect={locate}>
-                  <LocateFixed aria-hidden="true" />
+                  <IconCurrentLocation aria-hidden="true" />
                   Use my location
                 </CommandItem>
               </CommandGroup>
@@ -207,7 +207,7 @@ function PlaceItem({
   onSelect,
 }: {
   place: Place;
-  icon: typeof MapPin;
+  icon: typeof IconMapPin;
   onSelect: (place: Place) => void;
 }) {
   return (

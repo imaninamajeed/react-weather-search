@@ -152,6 +152,27 @@ MapLibre GL with OpenFreeMap tiles (following the theme) and RainViewer radar.
 - Registration is production-only so development never serves stale caches. `/sw.js` is served
   `no-cache` with `Service-Worker-Allowed: /`.
 
+## Design system
+
+The UI is built on shadcn/ui and themed by the preset **`b5sh7fs7oA`** (`radix-luma` style, `mist` base,
+Tabler icons, Outfit for text and Oxanium for headings), applied with `shadcn apply`. Components
+live in `src/components/ui/` as owned code.
+
+A preset replaces theme tokens and re-generates the primitives, so a few things are deliberately
+kept on top of it. **After re-applying a preset, re-check these:**
+
+| Kept                                                                                 | Why                                                                                                                                                                                                                                                    | Where                                |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Categorical `--chart-1…5` hues                                                       | The preset ships a single-hue ramp, which makes multi-series charts (temperature vs feels-like, the three weather models) indistinguishable. These were validated for colour-blind separation and contrast against the theme's surfaces in both modes. | `globals.css`                        |
+| Darker light-mode `--muted-foreground` (0.52 instead of 0.56)                        | The preset's value reaches only ~4.2:1 on tinted surfaces such as alert cards; this clears 4.5:1 everywhere (caught by the axe tests).                                                                                                                 | `globals.css`                        |
+| `thumbLabel` / `valueText` on `Slider`                                               | Radix doesn't pass `aria-label` to the thumb, so the radar scrubber would have no accessible name.                                                                                                                                                     | `ui/slider.tsx`                      |
+| Dialog title inside `DialogContent` in `CommandDialog`                               | Otherwise a stray heading exists on every page while the dialog is closed.                                                                                                                                                                             | `ui/command.tsx`                     |
+| Lucide for the 12 weather-condition glyphs                                           | Tabler has no partly-cloudy, drizzle or hail icons; substituting would make "partly cloudy" look like "overcast". Every other icon is Tabler.                                                                                                          | `components/shared/weather-icon.tsx` |
+| Semantic `--advisory` / `--warning` tokens and the `.label-caps` / `.tnum` utilities | App-specific; not part of any preset.                                                                                                                                                                                                                  | `globals.css`                        |
+
+The end-to-end suite (axe-core in both themes) and the typechecker catch most regressions here: the
+first two rows fail the accessibility checks, and a lost `thumbLabel` fails `tsc`.
+
 ## Testing strategy
 
 - **Pure logic** gets table-driven unit tests against _real_ captured responses (including awkward

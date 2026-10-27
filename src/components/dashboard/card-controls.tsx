@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp, House, X } from "lucide-react";
+import { IconArrowDown, IconArrowUp, IconHome, IconX } from "@tabler/icons-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { movePlace, removePlace, restorePlace, setHome } from "@/app/actions";
@@ -51,7 +51,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         disabled={busy || isFirst}
         onClick={() => run(() => movePlace(placeKey, "up"))}
       >
-        <ArrowUp aria-hidden="true" />
+        <IconArrowUp aria-hidden="true" />
       </Button>
       <Button
         variant="ghost"
@@ -60,7 +60,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         disabled={busy || isLast}
         onClick={() => run(() => movePlace(placeKey, "down"))}
       >
-        <ArrowDown aria-hidden="true" />
+        <IconArrowDown aria-hidden="true" />
       </Button>
       {!isHome && (
         <Button
@@ -69,7 +69,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
           disabled={busy}
           onClick={() => run(() => setHome(placeKey))}
         >
-          <House aria-hidden="true" />
+          <IconHome aria-hidden="true" />
           Set as home
         </Button>
       )}
@@ -80,7 +80,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         disabled={busy}
         onClick={remove}
       >
-        <X aria-hidden="true" />
+        <IconX aria-hidden="true" />
         Remove
       </Button>
     </div>

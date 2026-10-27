@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Outfit, Oxanium } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { OfflineBanner } from "@/components/pwa/offline-banner";
@@ -8,17 +8,11 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
-const sans = Instrument_Sans({
-  variable: "--font-instrument-sans",
-  subsets: ["latin"],
-});
-
-const display = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin"],
-  weight: "400",
-});
+// Body and heading faces come from the shadcn preset; the mono face is for data labels.
+const oxaniumHeading = Oxanium({ subsets: ["latin"], variable: "--font-heading" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 
 const mono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -39,8 +33,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: "light dark",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f6f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#10151f" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#090b0c" },
   ],
 };
 
@@ -49,7 +43,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sans.variable} ${display.variable} ${mono.variable} h-full antialiased`}
+      className={cn(
+        "h-full",
+        "antialiased",
+        "font-sans",
+        outfit.variable,
+        oxaniumHeading.variable,
+        mono.variable,
+      )}
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider

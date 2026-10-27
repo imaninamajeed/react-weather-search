@@ -1,6 +1,6 @@
 "use client";
 
-import { WifiOff } from "lucide-react";
+import { IconWifiOff } from "@tabler/icons-react";
 import { useOnlineStatus } from "./use-online-status";
 
 /**
@@ -14,7 +14,7 @@ export function OfflineBanner() {
   return (
     <div role="status" className="border-b border-border bg-advisory/20">
       <p className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-2 text-sm">
-        <WifiOff aria-hidden="true" className="size-4 shrink-0" />
+        <IconWifiOff aria-hidden="true" className="size-4 shrink-0" />
         You&apos;re offline. Showing what was last loaded on this device; search, saving places and
         live radar need a connection.
       </p>

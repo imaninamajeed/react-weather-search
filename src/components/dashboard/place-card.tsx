@@ -61,7 +61,7 @@ export function PlaceCard({ place, units, isHome, manage }: PlaceCardProps) {
     <article className="relative rounded-lg border border-border bg-card/60 p-4 transition-colors focus-within:bg-card hover:bg-card">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="truncate font-display text-2xl leading-tight">
+          <h3 className="truncate font-heading text-2xl leading-tight">
             {/* Stretched link: the whole card is clickable while the controls stay on top of it. */}
             <Link href={placeHref(place)} className="after:absolute after:inset-0">
               {place.name}

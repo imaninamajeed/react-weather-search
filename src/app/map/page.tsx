@@ -61,7 +61,7 @@ export default function MapPage() {
     <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
       <header className="mb-6">
         <p className="label-caps">Live radar</p>
-        <h1 className="mt-2 font-display text-5xl leading-[0.95] md:text-6xl">Map</h1>
+        <h1 className="mt-2 font-heading text-5xl leading-[0.95] md:text-6xl">Map</h1>
         <p className="mt-3 max-w-prose text-muted-foreground">
           Rain radar for the last two hours, with the places you follow. Click anywhere for the
           weather at that spot.

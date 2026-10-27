@@ -18,7 +18,7 @@ export function Section({ id, title, aside, className, children }: SectionProps)
       className={cn("border-t border-border pt-6", className)}
     >
       <header className="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-        <h2 id={`${id}-title`} className="font-display text-3xl leading-none">
+        <h2 id={`${id}-title`} className="font-heading text-3xl leading-none">
           {title}
         </h2>
         {aside}

@@ -48,7 +48,7 @@ export function PlaceHero({ place, forecast, units, actions, headingLevel = 1 }:
           </div>
           <Heading
             id="place-title"
-            className="mt-3 font-display text-5xl leading-[0.95] md:text-7xl"
+            className="mt-3 font-heading text-5xl leading-[0.95] md:text-7xl"
           >
             {place.name}
           </Heading>

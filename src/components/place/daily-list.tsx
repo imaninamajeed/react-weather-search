@@ -1,4 +1,4 @@
-import { Droplets } from "lucide-react";
+import { IconDroplets } from "@tabler/icons-react";
 import { Fragment } from "react";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { formatDayMonth, formatWeekday } from "@/lib/format";
@@ -52,7 +52,7 @@ export function DailyList({ forecast, units }: { forecast: Forecast; units: Unit
                 className="flex items-center gap-1 text-sm text-muted-foreground"
                 title={formatPrecipitation(day.precipitationSum, units)}
               >
-                <Droplets aria-hidden="true" className="size-3.5" />
+                <IconDroplets aria-hidden="true" className="size-3.5" />
                 <span className="tnum">{day.precipitationProbabilityMax}%</span>
                 <span className="sr-only">chance of rain</span>
               </p>
