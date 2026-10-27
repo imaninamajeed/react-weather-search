@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { WeatherMap, type MapPlace } from "@/components/map/weather-map";
+import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { PageHeader } from "@/components/shared/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getForecast } from "@/lib/open-meteo/forecast";
@@ -70,7 +71,8 @@ async function MapContent({ searchParams }: Pick<PageProps<"/map">, "searchParam
 export default function MapPage(props: PageProps<"/map">) {
   return (
     <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-      <div className="mb-6">
+      <div className="mb-6 space-y-6">
+        <PageBreadcrumb trail={[{ label: "Dashboard", href: "/" }, { label: "Radar map" }]} />
         <PageHeader
           label="Live radar"
           title="Map"

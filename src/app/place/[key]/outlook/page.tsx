@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { ConfidencePanel } from "@/components/place/confidence-panel";
 import { DailyList } from "@/components/place/daily-list";
 import { OutlookDaily } from "@/components/place/outlook-daily";
+import { PlaceBreadcrumb } from "@/components/place/place-breadcrumb";
 import { PlaceNav } from "@/components/place/place-nav";
 import { SubpageHeader } from "@/components/place/subpage-header";
 import { Section } from "@/components/shared/section";
@@ -59,8 +60,14 @@ async function OutlookRoute({ params }: Pick<PageProps<"/place/[key]/outlook">, 
 
 async function Nav({ params }: Pick<PageProps<"/place/[key]/outlook">, "params">) {
   const { key } = await params;
-  const place = await lookupPlace(key);
-  return place ? <PlaceNav placeKey={place.key} current="outlook" /> : null;
+  const [place, preferences] = await Promise.all([lookupPlace(key), getPreferences()]);
+  if (!place) return null;
+  return (
+    <div className="space-y-3">
+      <PlaceBreadcrumb place={place} view="Outlook" saved={preferences.places} />
+      <PlaceNav placeKey={place.key} current="outlook" />
+    </div>
+  );
 }
 
 export default function OutlookPage(props: PageProps<"/place/[key]/outlook">) {

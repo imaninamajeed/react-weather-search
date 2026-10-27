@@ -36,12 +36,13 @@ test.describe("outlook", () => {
   test("the forecast page teases three days and links to the full outlook", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
     const teaser = page.getByRole("region", { name: "Next 3 days" });
+    const tabs = page.getByRole("navigation", { name: "Place sections" });
     await expect(teaser.getByRole("listitem")).toHaveCount(3);
     await expect(page.getByRole("heading", { name: "14-day outlook" })).toHaveCount(0);
 
     await teaser.getByRole("link", { name: /14-day outlook and confidence/ }).click();
     await expect(page).toHaveURL(/\/place\/8504423-subang-jaya\/outlook$/);
-    await expect(page.getByRole("link", { name: "Outlook", exact: true })).toHaveAttribute(
+    await expect(tabs.getByRole("link", { name: "Outlook" })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -63,19 +64,23 @@ test.describe("outlook", () => {
 
   test("moves between a place's three views", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
-    await expect(page.getByRole("link", { name: "Forecast" })).toHaveAttribute(
+    const tabs = page.getByRole("navigation", { name: "Place sections" });
+    await expect(tabs.getByRole("link", { name: "Forecast" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    await page.getByRole("link", { name: "Outlook", exact: true }).click();
-    await expect(page.getByRole("heading", { level: 1, name: "Subang Jaya" })).toBeVisible();
-    await page.getByRole("link", { name: "Climate" }).click();
+    await tabs.getByRole("link", { name: "Outlook" }).click();
+    await expect(page).toHaveURL(/\/outlook$/);
+    await expect(page.getByText("Plan ahead")).toBeVisible();
+    // Let the new view finish loading before moving on; navigating mid-stream is what made this flaky.
+    await page.waitForLoadState("networkidle");
+    await tabs.getByRole("link", { name: "Climate" }).click();
     await expect(page).toHaveURL(/\/history$/);
-    await expect(page.getByRole("link", { name: "Climate" })).toHaveAttribute(
+    await expect(tabs.getByRole("link", { name: "Climate" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    await page.getByRole("link", { name: "Forecast" }).click();
+    await tabs.getByRole("link", { name: "Forecast" }).click();
     await expect(page).toHaveURL(/\/place\/8504423-subang-jaya$/);
   });
 });
@@ -104,8 +109,11 @@ test("climate history compares the year with normals", async ({ page }) => {
     page.getByRole("table", { name: "Monthly rainfall against normal" }).getByRole("row"),
   ).toHaveCount(13);
 
-  // Navigation between the two views of a place.
-  await page.getByRole("link", { name: "Forecast" }).click();
+  // Navigation between a place's views.
+  await page
+    .getByRole("navigation", { name: "Place sections" })
+    .getByRole("link", { name: "Forecast" })
+    .click();
   await expect(page).toHaveURL(/\/place\/8504423-subang-jaya$/);
 });
 

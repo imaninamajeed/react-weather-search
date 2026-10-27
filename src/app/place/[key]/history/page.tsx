@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { HistoryStats } from "@/components/history/history-stats";
 import { DailyHighsChart, MonthlyRainChart } from "@/components/history/history-charts";
 import { HistoryTables } from "@/components/history/history-tables";
+import { PlaceBreadcrumb } from "@/components/place/place-breadcrumb";
 import { PlaceNav } from "@/components/place/place-nav";
 import { SubpageHeader } from "@/components/place/subpage-header";
 import { Section } from "@/components/shared/section";
@@ -82,8 +83,14 @@ function HistorySkeleton() {
 
 async function Nav({ params }: Pick<PageProps<"/place/[key]/history">, "params">) {
   const { key } = await params;
-  const place = await lookupPlace(key);
-  return place ? <PlaceNav placeKey={place.key} current="history" /> : null;
+  const [place, preferences] = await Promise.all([lookupPlace(key), getPreferences()]);
+  if (!place) return null;
+  return (
+    <div className="space-y-3">
+      <PlaceBreadcrumb place={place} view="Climate" saved={preferences.places} />
+      <PlaceNav placeKey={place.key} current="history" />
+    </div>
+  );
 }
 
 export default function HistoryPage(props: PageProps<"/place/[key]/history">) {

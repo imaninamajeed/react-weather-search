@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { PlaceBreadcrumb } from "@/components/place/place-breadcrumb";
 import { PlaceNav } from "@/components/place/place-nav";
 import { PlaceActions } from "@/components/place/place-actions";
 import { PlaceView } from "@/components/place/place-view";
@@ -25,7 +26,10 @@ async function PlaceRoute({ params }: Pick<PageProps<"/place/[key]">, "params">)
 
   return (
     <div className="space-y-6">
-      <PlaceNav placeKey={place.key} current="forecast" />
+      <div className="space-y-3">
+        <PlaceBreadcrumb place={place} view="Forecast" saved={preferences.places} />
+        <PlaceNav placeKey={place.key} current="forecast" />
+      </div>
       <PlaceView
         place={place}
         units={preferences.units}
