@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const linkClass = "underline decoration-border underline-offset-4 hover:text-foreground";
 
 export function SiteFooter() {
@@ -14,7 +16,10 @@ export function SiteFooter() {
           >
             Open-Meteo.com
           </a>{" "}
-          (CC BY 4.0).
+          (CC BY 4.0).{" "}
+          <Link href="/about" className={linkClass}>
+            About this data
+          </Link>
         </p>
         <p>
           Built by{" "}

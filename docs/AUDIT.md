@@ -134,12 +134,13 @@ shadcn/ui, native `fetch`, pnpm.
 Boilerplate README, `<title>React App</title>` and CRA meta description, duplicated CSS rules, a
 435 KB PNG used as a 150 px logo, and a footer pointing at a Netlify deployment.
 
-_Resolution:_ real metadata and Open Graph image, a manifest and icon set generated from the
-original marble logo (kept as the brand mark), documentation, and a Vercel-targeted setup.
+_Resolution:_ real metadata and Open Graph image, a manifest and icon set (first generated from
+the original marble logo, since redrawn as the isobar mark), documentation, and a Vercel-targeted
+setup.
 
 ## Kept from the original
 
 - The core flow: search a city, see current conditions and a forecast.
 - **Subang Jaya as the default city.**
-- The marble logo, which remains the brand mark and app icon (its turquoise and magenta still inform the temperature ramp). The UI theme itself now comes from a shadcn preset; see ARCHITECTURE.
+- The marble logo's turquoise and magenta, which inform the temperature ramp and are the outer and inner rings of the isobar mark that replaced it as the brand mark and app icon. The UI theme itself now comes from a shadcn preset; see ARCHITECTURE.
 - Credit to the original author in the footer and licence.

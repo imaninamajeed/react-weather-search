@@ -15,6 +15,7 @@ const PAGES = [
   ["alerts", "/alerts"],
   ["places", "/places"],
   ["map", "/map"],
+  ["about", "/about"],
   ["offline", "/offline"],
   ["not found", "/place/nope"],
 ] as const;

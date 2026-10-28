@@ -1,12 +1,13 @@
 import {
   IconAlertTriangle,
+  IconInfoCircle,
   IconLayoutDashboard,
   IconListDetails,
   IconMap,
 } from "@tabler/icons-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { IsobarMark } from "@/components/shared/isobar-mark";
 import {
   Sidebar,
   SidebarContent,
@@ -43,16 +44,16 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild tooltip="Isobar">
-              <Link href="/" aria-label="Isobar home">
-                <Image
-                  src="/brand/mark.webp"
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="rounded-lg"
-                  priority
-                />
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              tooltip="Isobar"
+              // Collapsed, the button shrinks to the mark; use its corner so the button doesn't clip it.
+              className="group-data-[collapsible=icon]:rounded-[22.6%]"
+            >
+              <Link href="/" aria-label="Isobar home" className="group/brand">
+                {/* size-8! beats the menu button's [&_svg]:size-4 for nav icons. */}
+                <IsobarMark detail="compact" animated className="size-8!" />
                 <span className="font-heading text-xl leading-none">Isobar</span>
               </Link>
             </SidebarMenuButton>
@@ -92,6 +93,11 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
+        <SidebarMenu>
+          <SidebarNavLink href="/about" icon={<IconInfoCircle aria-hidden="true" />}>
+            About &amp; data sources
+          </SidebarNavLink>
+        </SidebarMenu>
         <p className="px-2 text-xs text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
           Weather data by{" "}
           <a

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { formatDayMonth, formatWeekday } from "@/lib/format";
 import { getModelDays } from "@/lib/open-meteo/models";
 import {
@@ -107,7 +108,14 @@ export async function ConfidencePanel({
           within {CONFIDENCE_THRESHOLDS.highMaxSpread}°C of each other, confidence is high; within{" "}
           {CONFIDENCE_THRESHOLDS.mediumMaxSpread}°C, medium; wider, low. It drops one more step when
           the models split on whether it will rain at all, or when their rainfall totals differ
-          widely. The shaded band on the chart is the range between the lowest and highest model.
+          widely. The shaded band on the chart is the range between the lowest and highest model.{" "}
+          <Link
+            href="/about#confidence"
+            className="underline decoration-border underline-offset-4 hover:decoration-foreground"
+          >
+            More on our methods
+          </Link>
+          .
         </p>
       </details>
     </div>

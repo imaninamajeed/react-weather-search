@@ -29,13 +29,14 @@ Each route is a prerendered static shell with `<Suspense>` holes that stream in:
 - Data fetchers are `"use cache"` functions with an explicit `cacheLife`, so they are shared across
   visitors and never fetch twice.
 
-| Route                                                | Rendering                  | Notes                                |
-| ---------------------------------------------------- | -------------------------- | ------------------------------------ |
-| `/`                                                  | shell + streamed dashboard | reads cookie and `?manage=`          |
-| `/place/[key]`, `/place/[key]/history`               | shell + streamed content   | `params` awaited inside `<Suspense>` |
-| `/map`                                               | shell + streamed map       | needs the cookie for markers         |
-| `/offline`, `/manifest.webmanifest`, icons, OG image | static                     |                                      |
-| `/api/places/search`, `/api/weather/point`           | dynamic                    | thin wrappers over cached fetchers   |
+| Route                                                          | Rendering                  | Notes                                                       |
+| -------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------- |
+| `/`                                                            | shell + streamed dashboard | reads the cookie                                            |
+| `/places`, `/alerts`                                           | shell + streamed content   | read the cookie; `/alerts` reads `?show=`                   |
+| `/place/[key]` and its `/outlook`, `/history`                  | shell + streamed content   | `params` awaited inside `<Suspense>`                        |
+| `/map`                                                         | shell + streamed map       | needs the cookie for markers                                |
+| `/about`, `/offline`, `/manifest.webmanifest`, icons, OG image | static                     | `/about` thresholds are built from the code's own constants |
+| `/api/places/search`, `/api/weather/point`                     | dynamic                    | thin wrappers over cached fetchers                          |
 
 Every section that depends on a different upstream has its **own Suspense boundary and error
 boundary** (`catchError`, so `notFound()`/`redirect()` still work). The forecast is the page's core:
@@ -140,6 +141,13 @@ Two details come from Cache Components:
 - **The active-link highlight reads the URL**, which is request-time data on dynamic routes, so each
   link renders without the highlight in the prerendered shell and gains it when it streams in
   (`SidebarNavLink` wraps `ActiveNavLink` in `<Suspense>`).
+
+**Breadcrumbs are a parallel route.** `layout.tsx` receives a `crumbs` slot (`app/@crumbs`) and passes it to
+the `TopBar`, so the trail sits in the header beside the sidebar toggle while each page owns its own
+trail in `@crumbs/<route>/page.tsx` (with a `default.tsx` that renders nothing). Place pages need the place's
+name, which requires awaiting `params` and the cookie, so those crumbs stream inside `<Suspense>` with the
+generic trail as the fallback. See [INFORMATION_ARCHITECTURE](INFORMATION_ARCHITECTURE.md) for why the app is
+split into these pages.
 
 The sidebar remembers collapsed/expanded in a cookie it expects the _server_ to read. Doing that in the
 root layout would make every route dynamic, so `SidebarStateRestore` applies the saved state on the client

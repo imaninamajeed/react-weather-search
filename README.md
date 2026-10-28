@@ -22,6 +22,7 @@ installable offline-capable PWA.
 | **Climate history**     | "Is this normal?": the last 12 months of daily highs and rainfall against 1991–2020 normals.                                                                                                                  |
 | **Dashboard**           | "How are my places?": home forecast, saved places (up to 10, reorderable), alerts across all of them, and a week-ahead comparison for trip planning. No account: saved in a cookie.                           |
 | **Radar map**           | "Is it about to rain on me?": two hours of live radar, your places on the map, click anywhere for the weather there.                                                                                          |
+| **About**               | "Why should I believe this?": every source, the exact alert and confidence thresholds (generated from the code), how climate normals are computed, privacy and limitations.                                   |
 | **PWA**                 | "Does it work on a train?": installable; places you've opened keep working offline.                                                                                                                           |
 
 ## Quick start
@@ -45,6 +46,7 @@ No API keys or environment variables are needed: every data source is keyless.
 | `pnpm test:e2e`                                | End-to-end tests (Playwright). **Build first**: `pnpm build && pnpm test:e2e`. |
 | `node scripts/screenshots.mjs <url>`           | Regenerates the PWA install screenshots from a running build.                  |
 | `node scripts/og-image.mjs`                    | Re-renders the link-preview image from `design/og-image.html`.                 |
+| `node scripts/brand-icons.mjs`                 | Re-renders the favicon, apple and PWA icons from the `IsobarMark` component.   |
 
 `dev` and `build` also copy MapLibre's web worker into `public/` and (for `build`) bundle the
 service worker into `public/sw.js`; both are generated and git-ignored.
@@ -63,7 +65,11 @@ Everything is optional; see [`.env.example`](.env.example).
 1. Import the repository in Vercel. The framework (Next.js) and package manager (pnpm, from the
    lockfile and the `packageManager` field) are detected automatically.
 2. No environment variables are required. Deploy.
-3. If Vercel's default pnpm differs from `pnpm@11.25.0` and the install step complains, add the
+3. [vercel.json](vercel.json) pins the framework to Next.js and clears any Output Directory override.
+   If a project was first created from an older Create React App setup, its dashboard still says
+   `build`, which fails with `STATIC_BUILD_NO_OUT_DIR`; in Project Settings → Build & Development,
+   set the Framework Preset to Next.js and leave Output Directory empty.
+4. If Vercel's default pnpm differs from `pnpm@11.25.0` and the install step complains, add the
    environment variable `ENABLE_EXPERIMENTAL_COREPACK=1` so Vercel honours `packageManager`.
 
 > **Not verified:** I could not deploy from the environment this was built in, so the Vercel
@@ -117,12 +123,14 @@ Only Chromium is covered by the automated tests; Firefox and Safari have not bee
 
 - [`docs/AUDIT.md`](docs/AUDIT.md): what was wrong with the original app and how each issue was resolved.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): how it's built and why.
+- [`docs/INFORMATION_ARCHITECTURE.md`](docs/INFORMATION_ARCHITECTURE.md): the site map and why each module is (or isn't) its own page.
 
 ## Project layout
 
 ```
 src/
-  app/            routes: / (dashboard), /place/[key], /place/[key]/history, /map, /offline, API routes
+  app/            routes: / (dashboard), /places, /alerts, /place/[key] (+ /outlook, /history), /map, /about, /offline, API routes
+                  · @crumbs/ is the parallel slot that renders each page's breadcrumb in the header
   components/     ui (shadcn, re-themed) · place · dashboard · alerts · history · map · search · layout · pwa
   lib/            open-meteo (server-only fetchers) · alerts · weather (pure domain logic) · map · units, format, places, preferences
   sw/             the service worker and its routing rules
