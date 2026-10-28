@@ -129,29 +129,26 @@ renders personalised with no loading flash and no login.
 
 ### App shell
 
-`SidebarProvider` wraps the app in `layout.tsx`: a collapsible `AppSidebar` (navigation, plus the home
-and saved places), and a `SidebarInset` holding the offline banner, a slim `TopBar` (sidebar trigger,
-search, settings), the page and the footer. On mobile the sidebar is a drawer that closes when you
-navigate.
+`layout.tsx` stacks the offline banner, a sticky `TopBar` (brand, the four destinations, a "Your places"
+dropdown, search, settings), a `CrumbBar`, the page and the footer. Below `lg` the destinations move out
+of the top bar into a fixed bottom tab bar (`MainNav variant="tabs"`), the places dropdown is hidden
+(the Places tab covers it), and the shell gets bottom padding so the footer isn't covered. Toasts are
+lifted above the tab bar in `globals.css`.
 
 Two details come from Cache Components:
 
-- **The saved places in the sidebar read the cookie**, so they stream in behind a skeleton instead of
-  making every route dynamic.
+- **The places dropdown reads the cookie**, so it streams in behind a disabled placeholder button
+  instead of making every route dynamic.
 - **The active-link highlight reads the URL**, which is request-time data on dynamic routes, so each
   link renders without the highlight in the prerendered shell and gains it when it streams in
-  (`SidebarNavLink` wraps `ActiveNavLink` in `<Suspense>`).
+  (`MainNav` wraps `ActiveMainNav` in `<Suspense>`).
 
 **Breadcrumbs are a parallel route.** `layout.tsx` receives a `crumbs` slot (`app/@crumbs`) and passes it to
-the `TopBar`, so the trail sits in the header beside the sidebar toggle while each page owns its own
+the `CrumbBar`, so the trail sits in its own row under the top bar while each page owns its own
 trail in `@crumbs/<route>/page.tsx` (with a `default.tsx` that renders nothing). Place pages need the place's
 name, which requires awaiting `params` and the cookie, so those crumbs stream inside `<Suspense>` with the
 generic trail as the fallback. See [INFORMATION_ARCHITECTURE](INFORMATION_ARCHITECTURE.md) for why the app is
 split into these pages.
-
-The sidebar remembers collapsed/expanded in a cookie it expects the _server_ to read. Doing that in the
-root layout would make every route dynamic, so `SidebarStateRestore` applies the saved state on the client
-instead, at the cost of a brief expanded flash for visitors who keep it collapsed.
 
 ## The map
 
@@ -188,15 +185,14 @@ live in `src/components/ui/` as owned code.
 A preset replaces theme tokens and re-generates the primitives, so a few things are deliberately
 kept on top of it. **After re-applying a preset, re-check these:**
 
-| Kept                                                                                                               | Why                                                                                                                                                                                                                                                    | Where                                   |
-| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| Categorical `--chart-1…5` hues                                                                                     | The preset ships a single-hue ramp, which makes multi-series charts (temperature vs feels-like, the three weather models) indistinguishable. These were validated for colour-blind separation and contrast against the theme's surfaces in both modes. | `globals.css`                           |
-| Darker light-mode `--muted-foreground` (0.52 instead of 0.56)                                                      | The preset's value reaches only ~4.2:1 on tinted surfaces such as alert cards; this clears 4.5:1 everywhere (caught by the axe tests).                                                                                                                 | `globals.css`                           |
-| `thumbLabel` / `valueText` on `Slider`                                                                             | Radix doesn't pass `aria-label` to the thumb, so the radar scrubber would have no accessible name.                                                                                                                                                     | `ui/slider.tsx`                         |
-| Dialog title inside `DialogContent` in `CommandDialog`                                                             | Otherwise a stray heading exists on every page while the dialog is closed.                                                                                                                                                                             | `ui/command.tsx`                        |
-| Lucide for the 12 weather-condition glyphs                                                                         | Tabler has no partly-cloudy, drizzle or hail icons; substituting would make "partly cloudy" look like "overcast". Every other icon is Tabler.                                                                                                          | `components/shared/weather-icon.tsx`    |
-| `SidebarInset` renders a `div`, deterministic `SidebarMenuSkeleton` width, `useIsMobile` on `useSyncExternalStore` | The generated sidebar nests a second `<main>` inside every page, uses `Math.random()` (rejected in a prerendered shell) and sets state in an effect (rejected by the React Compiler lint).                                                             | `ui/sidebar.tsx`, `hooks/use-mobile.ts` |
-| Semantic `--advisory` / `--warning` tokens and the `.label-caps` / `.tnum` utilities                               | App-specific; not part of any preset.                                                                                                                                                                                                                  | `globals.css`                           |
+| Kept                                                                                 | Why                                                                                                                                                                                                                                                    | Where                                |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Categorical `--chart-1…5` hues                                                       | The preset ships a single-hue ramp, which makes multi-series charts (temperature vs feels-like, the three weather models) indistinguishable. These were validated for colour-blind separation and contrast against the theme's surfaces in both modes. | `globals.css`                        |
+| Darker light-mode `--muted-foreground` (0.52 instead of 0.56)                        | The preset's value reaches only ~4.2:1 on tinted surfaces such as alert cards; this clears 4.5:1 everywhere (caught by the axe tests).                                                                                                                 | `globals.css`                        |
+| `thumbLabel` / `valueText` on `Slider`                                               | Radix doesn't pass `aria-label` to the thumb, so the radar scrubber would have no accessible name.                                                                                                                                                     | `ui/slider.tsx`                      |
+| Dialog title inside `DialogContent` in `CommandDialog`                               | Otherwise a stray heading exists on every page while the dialog is closed.                                                                                                                                                                             | `ui/command.tsx`                     |
+| Lucide for the 12 weather-condition glyphs                                           | Tabler has no partly-cloudy, drizzle or hail icons; substituting would make "partly cloudy" look like "overcast". Every other icon is Tabler.                                                                                                          | `components/shared/weather-icon.tsx` |
+| Semantic `--advisory` / `--warning` tokens and the `.label-caps` / `.tnum` utilities | App-specific; not part of any preset.                                                                                                                                                                                                                  | `globals.css`                        |
 
 The end-to-end suite (axe-core in both themes) and the typechecker catch most regressions here: the
 first two rows fail the accessibility checks, and a lost `thumbLabel` fails `tsc`.

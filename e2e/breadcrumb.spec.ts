@@ -63,30 +63,24 @@ test.describe("desktop", () => {
     ).toHaveAttribute("aria-current", "page");
   });
 
-  test("sits in the header beside the sidebar toggle, on every page including the dashboard", async ({
+  test("sits in its own row under the top bar, on every page including the dashboard", async ({
     page,
   }) => {
     await page.goto("/");
-    const header = page.getByRole("banner");
-    await expect(header.getByRole("button", { name: "Toggle sidebar" })).toBeVisible();
-    const trail = header.getByRole("navigation", { name: "breadcrumb" });
+    const trail = page.getByRole("navigation", { name: "breadcrumb" });
     await expect(trail.getByText("Dashboard")).toHaveAttribute("aria-current", "page");
 
-    // It follows you as you move, and the page body no longer repeats it.
+    // It follows you as you move, and the page body doesn't repeat it.
     await page.goto("/place/8504423-subang-jaya/history");
-    await expect(
-      header.getByRole("navigation", { name: "breadcrumb" }).getByText("Climate"),
-    ).toBeVisible();
+    await expect(trail.getByText("Climate")).toBeVisible();
     await expect(
       page.getByRole("main").getByRole("navigation", { name: "breadcrumb" }),
     ).toHaveCount(0);
 
     // Client-side navigation updates it too.
-    await header.getByRole("link", { name: "Places" }).click();
+    await page.getByRole("banner").getByRole("link", { name: "Places" }).click();
     await expect(page).toHaveURL(/\/places$/);
-    await expect(
-      header.getByRole("navigation", { name: "breadcrumb" }).getByText("Places"),
-    ).toHaveAttribute("aria-current", "page");
+    await expect(trail.getByText("Places")).toHaveAttribute("aria-current", "page");
   });
 
   test("the open dropdown is accessible", async ({ page }) => {

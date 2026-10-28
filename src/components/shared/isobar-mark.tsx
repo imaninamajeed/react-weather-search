@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  *
  * Three optical sizes, one shape:
  *   full     48 px and up: app icons, splash screens, the social image
- *   compact  24–47 px: the sidebar
+ *   compact  24–47 px: the top bar
  *   small    up to 23 px: the browser tab
  * Static icons (favicon, apple-icon, PWA icons) are rendered from this component by
  * scripts/brand-icons.mjs, so change it here and re-run that script.

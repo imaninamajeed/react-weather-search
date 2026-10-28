@@ -6,17 +6,17 @@ to. Otherwise it belongs inside the page where the decision it informs is made.*
 
 ## Site map
 
-| Route                  | Purpose                                                              | Sidebar              | Breadcrumb                              |
-| ---------------------- | -------------------------------------------------------------------- | -------------------- | --------------------------------------- |
-| `/`                    | Dashboard: home forecast, alerts summary, saved places, week ahead   | Dashboard            | Dashboard                               |
-| `/places`              | Manage places: add, reorder, remove, set home; week-ahead comparison | Places               | Dashboard › Places                      |
-| `/alerts`              | Every alert across every place, filterable to official warnings      | Alerts               | Dashboard › Alerts                      |
-| `/map`                 | Radar and a map of your places                                       | Radar map            | Dashboard › Radar map                   |
-| `/place/[key]`         | Forecast: now, next 48 hours, a three-day teaser, conditions         | Your places          | Dashboard › Places › _Place_ › Forecast |
-| `/place/[key]/outlook` | 14-day outlook with per-day model confidence                         | Your places          | … › Outlook                             |
-| `/place/[key]/history` | Climate: the last year against 1991–2020 normals                     | Your places          | … › Climate                             |
-| `/about`               | Sources, how alerts, confidence and climate are computed, privacy    | About & data sources | Dashboard › About                       |
-| `/offline`             | Fallback when a page isn't cached                                    | —                    | —                                       |
+| Route                  | Purpose                                                              | Main nav         | Breadcrumb                              |
+| ---------------------- | -------------------------------------------------------------------- | ---------------- | --------------------------------------- |
+| `/`                    | Dashboard: home forecast, alerts summary, saved places, week ahead   | Dashboard        | Dashboard                               |
+| `/places`              | Manage places: add, reorder, remove, set home; week-ahead comparison | Places           | Dashboard › Places                      |
+| `/alerts`              | Every alert across every place, filterable to official warnings      | Alerts           | Dashboard › Alerts                      |
+| `/map`                 | Radar and a map of your places                                       | Map              | Dashboard › Radar map                   |
+| `/place/[key]`         | Forecast: now, next 48 hours, a three-day teaser, conditions         | Your places menu | Dashboard › Places › _Place_ › Forecast |
+| `/place/[key]/outlook` | 14-day outlook with per-day model confidence                         | Your places menu | … › Outlook                             |
+| `/place/[key]/history` | Climate: the last year against 1991–2020 normals                     | Your places menu | … › Climate                             |
+| `/about`               | Sources, how alerts, confidence and climate are computed, privacy    | Footer link      | Dashboard › About                       |
+| `/offline`             | Fallback when a page isn't cached                                    | —                | —                                       |
 
 Search and settings are not pages: they are available from the header everywhere.
 
@@ -37,9 +37,11 @@ Search and settings are not pages: they are available from the header everywhere
 
 ## Navigation model
 
-- **Sidebar** is for destinations: Dashboard, Alerts, Places, Radar map, then the places you follow.
-  About sits in its footer. It collapses to icons on desktop and is a drawer on mobile.
-- **Breadcrumbs** live in the header beside the sidebar toggle, rendered by a parallel route slot
+- **Main navigation** is the four destinations: Dashboard, Alerts, Places, Map. On desktop (lg and up)
+  they are links in the top bar, next to a "Your places" dropdown (the home place first, then the
+  places you follow). On phones and tablets they are a bottom tab bar, one tap from anywhere; the
+  Places tab does the dropdown's job. About is linked from the footer.
+- **Breadcrumbs** sit in their own row under the top bar, rendered by a parallel route slot
   (`app/@crumbs`) so each page defines its own trail without the layout knowing about it. Inside a
   place, the place's crumb is a dropdown to switch to another saved place while staying on the same
   view (Forecast, Outlook or Climate).

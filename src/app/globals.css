@@ -249,3 +249,11 @@
 .maplibregl-map .maplibregl-ctrl-attrib a {
   color: inherit;
 }
+
+/* Toasts (with their Undo) sit above the bottom tab bar, which is shown below lg. */
+@media (max-width: 1023px) {
+  [data-sonner-toaster] {
+    --offset-bottom: 5rem !important;
+    --mobile-offset-bottom: 5rem !important;
+  }
+}

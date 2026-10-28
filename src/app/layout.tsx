@@ -5,10 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { OfflineBanner } from "@/components/pwa/offline-banner";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SidebarStateRestore } from "@/components/layout/sidebar-state-restore";
-import { TopBar } from "@/components/layout/top-bar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { MainNav } from "@/components/layout/main-nav";
+import { CrumbBar, TopBar } from "@/components/layout/top-bar";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -69,16 +67,15 @@ export default function RootLayout({ children, crumbs }: LayoutProps<"/">) {
             >
               Skip to content
             </a>
-            <SidebarProvider>
-              <SidebarStateRestore />
-              <AppSidebar />
-              <SidebarInset>
-                <OfflineBanner />
-                <TopBar crumbs={crumbs} />
-                {children}
-                <SiteFooter />
-              </SidebarInset>
-            </SidebarProvider>
+            {/* Room for the bottom tab bar, which only exists below lg. */}
+            <div className="flex flex-1 flex-col pb-16 lg:pb-0">
+              <OfflineBanner />
+              <TopBar />
+              <CrumbBar crumbs={crumbs} />
+              {children}
+              <SiteFooter />
+            </div>
+            <MainNav variant="tabs" />
             <Toaster />
             <ServiceWorkerRegister />
           </TooltipProvider>

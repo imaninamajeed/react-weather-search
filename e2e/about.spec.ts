@@ -48,14 +48,11 @@ test("methods are one click from where they matter", async ({ page }) => {
   await expect(page).toHaveURL(/\/about#alerts$/);
 });
 
-test("the sidebar and footer link to the about page, with breadcrumbs", async ({ page }) => {
+test("the footer links to the about page, with breadcrumbs", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "About & data sources" }).click();
+  await page.getByRole("contentinfo").getByRole("link", { name: "About this data" }).click();
   await expect(page).toHaveURL(/\/about$/);
   const crumbs = page.getByRole("navigation", { name: "breadcrumb" });
   await expect(crumbs.getByRole("link", { name: "Dashboard" })).toBeVisible();
   await expect(crumbs.getByText("About")).toBeVisible();
-  await expect(
-    page.getByRole("contentinfo").getByRole("link", { name: "About this data" }),
-  ).toBeVisible();
 });
