@@ -165,7 +165,7 @@ MapLibre GL with OpenFreeMap tiles (following the theme) and RainViewer radar.
 
 ## PWA
 
-- Manifest with maskable icon, shortcuts and install screenshots; "Install app" in the settings menu.
+- Manifest with maskable icon, shortcuts and install screenshots; "Install app" button in the header when the browser offers it.
 - The service worker uses the `serwist` runtime, bundled by esbuild into `public/sw.js` at build
   time. It uses **runtime caching only**, so no build manifest has to be injected:
   fingerprinted assets and map tiles cache-first, pages and API network-first (3–4 s timeout),

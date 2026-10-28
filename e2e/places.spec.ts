@@ -139,15 +139,17 @@ test("the dashboard says how to add a second place when only home is followed", 
 
 test("units switch between metric and imperial and persist", async ({ page }) => {
   await page.goto("/place/8504423-subang-jaya");
-  await expect(page.getByText("°C", { exact: true }).first()).toBeVisible();
+  const units = page.getByRole("radiogroup", { name: "Units" });
+  await expect(units.getByRole("radio", { name: /Metric/ })).toBeChecked();
+  await expect(page.getByText(/km\/h/).first()).toBeVisible();
 
-  await page.getByRole("button", { name: "Settings" }).click();
-  await page.getByRole("menuitemradio", { name: /Imperial/ }).click();
-  await expect(page.getByText("°F", { exact: true }).first()).toBeVisible();
+  await units.getByRole("radio", { name: /Imperial/ }).click();
+  await expect(units.getByRole("radio", { name: /Imperial/ })).toBeChecked();
   await expect(page.getByText(/mph/).first()).toBeVisible();
 
   await page.reload();
-  await expect(page.getByText("°F", { exact: true }).first()).toBeVisible();
+  await expect(units.getByRole("radio", { name: /Imperial/ })).toBeChecked();
+  await expect(page.getByText(/mph/).first()).toBeVisible();
 });
 
 test.describe("first-visit units", () => {
@@ -155,10 +157,12 @@ test.describe("first-visit units", () => {
 
   test("default to imperial for US browsers until the visitor chooses", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
-    await expect(page.getByText("°F", { exact: true }).first()).toBeVisible();
+    const units = page.getByRole("radiogroup", { name: "Units" });
+    await expect(units.getByRole("radio", { name: /Imperial/ })).toBeChecked();
+    await expect(page.getByText(/mph/).first()).toBeVisible();
 
-    await page.getByRole("button", { name: "Settings" }).click();
-    await page.getByRole("menuitemradio", { name: /Metric/ }).click();
-    await expect(page.getByText("°C", { exact: true }).first()).toBeVisible();
+    await units.getByRole("radio", { name: /Metric/ }).click();
+    await expect(units.getByRole("radio", { name: /Metric/ })).toBeChecked();
+    await expect(page.getByText(/km\/h/).first()).toBeVisible();
   });
 });

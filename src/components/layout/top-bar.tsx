@@ -2,21 +2,20 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { SearchCommand } from "@/components/search/search-command";
 import { IsobarMark } from "@/components/shared/isobar-mark";
-import { Button } from "@/components/ui/button";
 import { getPreferences } from "@/lib/preferences";
 import { MainNav } from "./main-nav";
 import { PlacesStrip } from "./places-strip";
-import { SettingsMenu } from "./settings-menu";
+import { InstallButton, ThemeToggle, UnitsToggle } from "./preference-toggles";
 
-/** Units live in a cookie, so the menu streams in behind a same-size placeholder. */
-async function Settings() {
+/** Units live in a cookie, so the toggle streams in behind a disabled copy of itself. */
+async function Units() {
   const { units } = await getPreferences();
-  return <SettingsMenu units={units} />;
+  return <UnitsToggle units={units} />;
 }
 
 /**
  * The brand and the four destinations on desktop (smaller screens get a bottom tab bar instead), then
- * search and settings.
+ * search, the units and theme toggles, and an install button when the browser offers one.
  */
 export function TopBar() {
   return (
@@ -32,14 +31,14 @@ export function TopBar() {
         </Link>
         <MainNav variant="top" />
         <div className="min-w-0 flex-1" />
-        <div className="shrink-0 sm:w-64">
+        <div className="shrink-0 sm:w-64 lg:w-44 xl:w-64">
           <SearchCommand />
         </div>
-        <Suspense
-          fallback={<Button variant="outline" size="icon" disabled aria-label="Settings loading" />}
-        >
-          <Settings />
+        <Suspense fallback={<UnitsToggle units={null} />}>
+          <Units />
         </Suspense>
+        <ThemeToggle />
+        <InstallButton />
       </div>
     </header>
   );

@@ -9,7 +9,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 /**
- * Captures the browser's install prompt so the app can offer "Install" from its own menu.
+ * Captures the browser's install prompt so the app can offer "Install" from its own button.
  * `install` is null when installing isn't possible (already installed, or an unsupported
  * browser such as Safari, which installs through its share sheet instead).
  */

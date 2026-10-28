@@ -114,3 +114,33 @@ test.describe("mobile", () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe("preferences", () => {
+  test("units and theme are visible toggles, not a menu", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: "Settings" })).toHaveCount(0);
+
+    const theme = page.getByRole("radiogroup", { name: "Theme" });
+    await expect(theme.getByRole("radio", { name: "System theme" })).toBeChecked();
+    await theme.getByRole("radio", { name: "Dark theme" }).click();
+    await expect(theme.getByRole("radio", { name: "Dark theme" })).toBeChecked();
+    await expect(page.locator("html")).toHaveClass(/dark/);
+
+    await page.reload();
+    await expect(theme.getByRole("radio", { name: "Dark theme" })).toBeChecked();
+  });
+
+  test.describe("on a phone", () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("the toggles still fit the header without horizontal scroll", async ({ page }) => {
+      await page.goto("/");
+      await expect(page.getByRole("radiogroup", { name: "Units" })).toBeVisible();
+      await expect(page.getByRole("radiogroup", { name: "Theme" })).toBeVisible();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  });
+});
