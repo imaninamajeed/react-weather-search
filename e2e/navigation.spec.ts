@@ -39,37 +39,47 @@ test.describe("desktop", () => {
     await expect(page.getByRole("banner").getByRole("navigation", { name: "Main" })).toBeVisible();
   });
 
-  test("the places menu jumps to the home place or a saved one", async ({
+  test("a toggle per place switches between them and keeps the view you are on", async ({
     page,
     context,
     baseURL,
   }) => {
     await seedPlaces(context, baseURL!);
-    await page.goto("/place/1850147-tokyo");
+    await page.goto("/place/1850147-tokyo/outlook");
 
-    await page.getByRole("button", { name: "Your places" }).click();
-    const menu = page.getByRole("menu");
-    await expect(menu.getByRole("menuitem", { name: /Tokyo/ })).toContainText("Current");
-    await expect(menu.getByRole("menuitem", { name: /Subang Jaya/ })).not.toContainText("Current");
-    await expect(menu.getByRole("menuitem", { name: "All places" })).toBeVisible();
+    const places = page.getByRole("navigation", { name: "Your places" });
+    await expect(places.getByRole("link", { name: "Tokyo" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(places.getByRole("link", { name: "Subang Jaya" })).not.toHaveAttribute(
+      "aria-current",
+      "page",
+    );
 
-    await menu.getByRole("menuitem", { name: /Subang Jaya/ }).click();
-    await expect(page).toHaveURL(/\/place\/8504423-subang-jaya$/);
+    await places.getByRole("link", { name: "Subang Jaya" }).click();
+    await expect(page).toHaveURL(/\/place\/8504423-subang-jaya\/outlook$/);
+    await expect(places.getByRole("link", { name: "Subang Jaya" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   });
 
-  test("the places menu shows the default home place when nothing is saved", async ({ page }) => {
+  test("the place toggles show the default home place when nothing is saved", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Your places" }).click();
-    const menu = page.getByRole("menu");
-    await expect(menu.getByRole("menuitem", { name: "Subang Jaya" })).toBeVisible();
-    await expect(menu.getByText("Save a place from its forecast page")).toBeVisible();
+    const places = page.getByRole("navigation", { name: "Your places" });
+    await expect(places.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
+    await expect(places.getByRole("link", { name: "Subang Jaya" })).not.toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   });
 });
 
 test.describe("mobile", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("a bottom tab bar replaces the top-bar links and the places menu", async ({ page }) => {
+  test("a bottom tab bar replaces the top-bar links and the place toggles", async ({ page }) => {
     await mockMapNetwork(page);
     await page.goto("/");
 
@@ -79,7 +89,7 @@ test.describe("mobile", () => {
       "aria-current",
       "page",
     );
-    await expect(page.getByRole("button", { name: "Your places" })).toBeHidden();
+    await expect(page.getByRole("navigation", { name: "Your places" })).toBeHidden();
 
     // One tap to get anywhere.
     await tabs.getByRole("link", { name: "Map" }).click();

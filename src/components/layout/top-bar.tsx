@@ -5,7 +5,7 @@ import { IsobarMark } from "@/components/shared/isobar-mark";
 import { Button } from "@/components/ui/button";
 import { getPreferences } from "@/lib/preferences";
 import { MainNav } from "./main-nav";
-import { PlacesSwitcher } from "./places-switcher";
+import { PlacesStrip } from "./places-strip";
 import { SettingsMenu } from "./settings-menu";
 
 /** Units live in a cookie, so the menu streams in behind a same-size placeholder. */
@@ -15,8 +15,8 @@ async function Settings() {
 }
 
 /**
- * The brand, the four destinations and your places on desktop (phones get a bottom tab bar instead),
- * then search and settings.
+ * The brand and the four destinations on desktop (smaller screens get a bottom tab bar instead), then
+ * search and settings.
  */
 export function TopBar() {
   return (
@@ -32,7 +32,6 @@ export function TopBar() {
         </Link>
         <MainNav variant="top" />
         <div className="min-w-0 flex-1" />
-        <PlacesSwitcher />
         <div className="shrink-0 sm:w-64">
           <SearchCommand />
         </div>
@@ -46,13 +45,17 @@ export function TopBar() {
   );
 }
 
-/** Where you are in the app. The @crumbs slot knows the route and the place; this just gives it a row. */
+/**
+ * Where you are in the app (the @crumbs slot knows the route and the place), and on desktop a toggle per
+ * place you follow.
+ */
 export function CrumbBar({ crumbs }: { crumbs: ReactNode }) {
   return (
-    <div className="mx-auto flex h-10 w-full max-w-6xl items-center px-4">
+    <div className="mx-auto flex h-10 w-full max-w-6xl items-center gap-4 px-4">
       <div className="min-w-0 flex-1">
         <Suspense fallback={null}>{crumbs}</Suspense>
       </div>
+      <PlacesStrip />
     </div>
   );
 }

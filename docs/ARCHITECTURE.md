@@ -129,16 +129,16 @@ renders personalised with no loading flash and no login.
 
 ### App shell
 
-`layout.tsx` stacks the offline banner, a sticky `TopBar` (brand, the four destinations, a "Your places"
-dropdown, search, settings), a `CrumbBar`, the page and the footer. Below `lg` the destinations move out
-of the top bar into a fixed bottom tab bar (`MainNav variant="tabs"`), the places dropdown is hidden
-(the Places tab covers it), and the shell gets bottom padding so the footer isn't covered. Toasts are
+`layout.tsx` stacks the offline banner, a sticky `TopBar` (brand, the four destinations, search,
+settings), a `CrumbBar` (the breadcrumb, plus a toggle per place you follow on desktop), the page and the
+footer. Below `lg` the destinations move out of the top bar into a fixed bottom tab bar
+(`MainNav variant="tabs"`), the place toggles are hidden (the Places tab covers them), and the shell gets bottom padding so the footer isn't covered. Toasts are
 lifted above the tab bar in `globals.css`.
 
 Two details come from Cache Components:
 
-- **The places dropdown reads the cookie**, so it streams in behind a disabled placeholder button
-  instead of making every route dynamic.
+- **The place toggles read the cookie**, so they stream in behind a skeleton instead of making every
+  route dynamic.
 - **The active-link highlight reads the URL**, which is request-time data on dynamic routes, so each
   link renders without the highlight in the prerendered shell and gains it when it streams in
   (`MainNav` wraps `ActiveMainNav` in `<Suspense>`).
