@@ -141,12 +141,15 @@ type IsobarMarkProps = SVGProps<SVGSVGElement> & {
   square?: boolean;
   /** Swing the isobars when an ancestor with `group/brand` is hovered or focused. */
   animated?: boolean;
+  /** Just the isobars and the low's core, with no tile, ink background or frame, to lay over your own. */
+  bare?: boolean;
 };
 
 export function IsobarMark({
   detail = "full",
   square = false,
   animated = false,
+  bare = false,
   className,
   ...props
 }: IsobarMarkProps) {
@@ -190,11 +193,11 @@ export function IsobarMark({
           </filter>
         )}
       </defs>
-      <g clipPath={`url(#${id}tile)`}>
-        <rect width="512" height="512" fill={INK} />
-        <rect width="512" height="512" fill={`url(#${id}high)`} />
-        <rect width="512" height="512" fill={`url(#${id}low)`} />
-        {grid && <path d={GRID} stroke="#fff" strokeOpacity="0.06" strokeWidth="3" />}
+      <g clipPath={bare ? undefined : `url(#${id}tile)`}>
+        {!bare && <rect width="512" height="512" fill={INK} />}
+        {!bare && <rect width="512" height="512" fill={`url(#${id}high)`} />}
+        {!bare && <rect width="512" height="512" fill={`url(#${id}low)`} />}
+        {grid && !bare && <path d={GRID} stroke="#fff" strokeOpacity="0.06" strokeWidth="3" />}
         <g fill="none" filter={glow > 0 ? `url(#${id}glow)` : undefined}>
           {rings.map((ring, i) => (
             <path
@@ -219,7 +222,7 @@ export function IsobarMark({
         />
         <circle cx={cx} cy={cy} r={coreRadius} fill="#fff" />
       </g>
-      {!square && (
+      {!square && !bare && (
         <rect
           x="2"
           y="2"

@@ -96,6 +96,13 @@
 
   --radius: 0.625rem;
 
+  /* The app mark's palette (see components/shared/isobar-mark.tsx), for hero art and accents. */
+  --brand-ink: #06090c;
+  --brand-magenta: #ff2d95;
+  --brand-violet: #a77bff;
+  --brand-indigo: #7884ff;
+  --brand-teal: #2de2c8;
+
   --background: oklch(1 0 0);
 
   --foreground: oklch(0.148 0.004 228.8);

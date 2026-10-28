@@ -58,7 +58,7 @@ interface PlaceCardProps {
  */
 export function PlaceCard({ place, units, isHome, manage }: PlaceCardProps) {
   return (
-    <article className="relative rounded-lg border border-border bg-card/60 p-4 transition-colors focus-within:bg-card hover:bg-card">
+    <article className="relative h-full rounded-3xl bg-linear-to-t from-primary/5 to-card p-5 text-card-foreground shadow-xs ring-1 ring-foreground/5 transition-shadow focus-within:shadow-md hover:shadow-md dark:ring-foreground/10">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="truncate font-heading text-2xl leading-tight">

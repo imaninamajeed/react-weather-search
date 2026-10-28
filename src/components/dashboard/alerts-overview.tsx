@@ -1,3 +1,4 @@
+import { IconShieldCheck } from "@tabler/icons-react";
 import Link from "next/link";
 import { AlertItem } from "@/components/alerts/alert-item";
 import { loadAlerts } from "@/components/alerts/load-alerts";
@@ -24,7 +25,13 @@ export async function AlertsOverview({ places, units }: { places: Place[]; units
   return (
     <div>
       {all.length === 0 ? (
-        <p>
+        <p className="flex items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[color-mix(in_oklch,var(--brand-teal)_20%,transparent)] text-chart-4"
+          >
+            <IconShieldCheck className="size-5" />
+          </span>
           No active alerts across your {places.length === 1 ? "place" : `${places.length} places`}.
         </p>
       ) : (
