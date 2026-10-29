@@ -1,22 +1,21 @@
-import { IconArrowUp } from "@tabler/icons-react";
+import { IconCloud, IconDroplet, IconEye, IconGauge, IconSun } from "@tabler/icons-react";
 import { Suspense, type ReactNode } from "react";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { TileSkeleton } from "@/components/shared/skeletons";
-import { formatDuration, formatHourRange, formatTime } from "@/lib/format";
+import { formatHourRange } from "@/lib/format";
 import {
-  compassPoint,
   convertDistance,
   convertPressure,
-  convertSpeed,
   formatDistance,
-  formatSpeed,
   formatTemperature,
   unitLabels,
 } from "@/lib/units";
 import type { Forecast, Units } from "@/lib/weather/types";
 import { uvCategory, uvProtectionWindow } from "@/lib/weather/uv";
 import { AirQualityTile } from "./air-quality";
+import { SunArc } from "./sun-arc";
 import { Meter, Tile, type MeterTone } from "./tile";
+import { WindCompass } from "./wind-compass";
 
 const UV_TONES: MeterTone[] = ["good", "good", "advisory", "warning", "warning"];
 
@@ -35,31 +34,17 @@ function describeCloudCover(percent: number) {
 }
 
 export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units: Units }) {
-  const { current, daily, hourly } = forecast;
-  const today = daily[0];
+  const { current, hourly } = forecast;
   const uv = uvCategory(current.uvIndex);
   const protection = uvProtectionWindow(hourly, current.time);
   const labels = unitLabels(units);
-  const windSpeed = Math.round(convertSpeed(current.windSpeed, units));
 
   const tiles: ReactNode[] = [
     <Tile
-      key="wind"
-      label="Wind"
-      value={windSpeed}
-      unit={labels.speed}
-      caption={`Gusts ${formatSpeed(current.windGusts, units)} · from ${compassPoint(current.windDirection)}`}
-    >
-      <IconArrowUp
-        aria-hidden="true"
-        className="mt-3 size-5 text-muted-foreground"
-        // The arrow points where the wind is blowing *to*, opposite of the compass "from" bearing.
-        style={{ transform: `rotate(${(current.windDirection + 180) % 360}deg)` }}
-      />
-    </Tile>,
-    <Tile
       key="humidity"
       label="Humidity"
+      icon={IconDroplet}
+      accent="var(--brand-indigo)"
       value={Math.round(current.humidity)}
       unit="%"
       caption={`Dew point ${formatTemperature(current.dewPoint, units)}`}
@@ -67,6 +52,8 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
     <Tile
       key="uv"
       label="UV index"
+      icon={IconSun}
+      accent="var(--brand-violet)"
       value={Math.round(current.uvIndex)}
       unit={uv.label}
       caption={
@@ -92,6 +79,8 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
     <Tile
       key="pressure"
       label="Pressure"
+      icon={IconGauge}
+      accent="var(--brand-magenta)"
       value={
         units === "imperial"
           ? convertPressure(current.pressure, units).toFixed(2)
@@ -103,24 +92,28 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
     <Tile
       key="visibility"
       label="Visibility"
+      icon={IconEye}
+      accent="var(--brand-teal-text)"
       value={Number(convertDistance(current.visibility, units).toFixed(1))}
       unit={labels.distance}
       caption={`${describeVisibility(current.visibility)} · ${formatDistance(current.visibility, units)}`}
     />,
     <Tile
-      key="sun"
-      label="Daylight"
-      value={formatDuration(today.daylightSeconds)}
-      caption={`Sunrise ${formatTime(today.sunrise)} · Sunset ${formatTime(today.sunset)}`}
-    />,
-    <Tile
       key="cloud"
       label="Cloud cover"
+      icon={IconCloud}
+      accent="var(--brand-indigo)"
       value={Math.round(current.cloudCover)}
       unit="%"
       caption={describeCloudCover(current.cloudCover)}
     />,
   ];
 
-  return <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{tiles}</div>;
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <SunArc forecast={forecast} className="sm:col-span-2" />
+      <WindCompass forecast={forecast} units={units} />
+      {tiles}
+    </div>
+  );
 }

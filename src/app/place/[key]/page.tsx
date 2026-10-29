@@ -24,7 +24,7 @@ async function PlaceRoute({ params }: Pick<PageProps<"/place/[key]">, "params">)
   const [place, preferences] = await Promise.all([resolvePlace(key), getPreferences()]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PlaceNav placeKey={place.key} current="forecast" />
       <PlaceView
         place={place}
@@ -44,7 +44,7 @@ async function PlaceRoute({ params }: Pick<PageProps<"/place/[key]">, "params">)
 
 export default function PlacePage(props: PageProps<"/place/[key]">) {
   return (
-    <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+    <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pt-2 pb-8">
       <Suspense fallback={<PlaceSkeleton />}>
         <PlaceRoute params={props.params} />
       </Suspense>

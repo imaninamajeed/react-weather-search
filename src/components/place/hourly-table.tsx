@@ -6,7 +6,7 @@ import type { HourlyPoint, Units } from "@/lib/weather/types";
 export function HourlyTable({ hours, units }: { hours: HourlyPoint[]; units: Units }) {
   const labels = unitLabels(units);
   return (
-    <details className="group mt-4 rounded-lg border border-border">
+    <details className="group mt-4 overflow-hidden rounded-2xl border border-border">
       <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
         View as table
       </summary>

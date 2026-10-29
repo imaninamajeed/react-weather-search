@@ -26,15 +26,19 @@ export function RowsSkeleton({ rows = 7 }: { rows?: number }) {
 }
 
 export function TileSkeleton() {
-  return <Skeleton aria-hidden="true" className="h-32 w-full" />;
+  return <Skeleton aria-hidden="true" className="h-32 w-full rounded-3xl" />;
 }
 
 export function PlaceSkeleton() {
   return (
-    <div role="status" aria-label="Loading forecast" className="space-y-10">
+    <div role="status" aria-label="Loading forecast" className="space-y-4">
       <HeroSkeleton />
-      <ChartSkeleton />
-      <RowsSkeleton />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }, (_, i) => (
+          <Skeleton key={i} className="h-40 rounded-4xl" />
+        ))}
+      </div>
+      <Skeleton className="h-96 rounded-4xl" />
     </div>
   );
 }

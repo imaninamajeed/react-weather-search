@@ -1,9 +1,12 @@
+import { IconArrowRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { PlaceAlerts } from "@/components/alerts/place-alerts";
-import { Section } from "@/components/shared/section";
+import { SectionCard } from "@/components/shared/section-card";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { RowsSkeleton } from "@/components/shared/skeletons";
+import { Button } from "@/components/ui/button";
+import { StatCards } from "@/components/dashboard/stat-cards";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { placeHref, type Place } from "@/lib/places";
 import type { Units } from "@/lib/weather/types";
@@ -31,40 +34,55 @@ export async function PlaceView({
   const resolved: Place = { ...place, timezone: place.timezone ?? forecast.timezone };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-4">
       <PlaceHero place={resolved} forecast={forecast} units={units} actions={actions} />
 
-      <Section id="alerts" title="Alerts">
+      <StatCards forecast={forecast} units={units} />
+
+      <SectionCard
+        id="alerts"
+        title="Alerts"
+        description={`Warnings and signals for ${resolved.name}`}
+      >
         <SectionBoundary title="Alerts">
           <Suspense fallback={<RowsSkeleton rows={1} />}>
             <PlaceAlerts place={resolved} forecast={forecast} units={units} />
           </Suspense>
         </SectionBoundary>
-      </Section>
+      </SectionCard>
 
-      <Section id="conditions" title="Right now">
+      <SectionCard
+        id="conditions"
+        title="Right now"
+        description="The sun, the wind and the air at this moment"
+      >
         <ConditionsGrid forecast={forecast} units={units} />
-      </Section>
+      </SectionCard>
 
-      <Section id="hourly" title="Next 48 hours">
+      <SectionCard
+        id="hourly"
+        title="Next 48 hours"
+        description="Switch between temperature, rain and wind"
+      >
         <HourlyChart hours={hours} units={units} />
         <HourlyTable hours={hours} units={units} />
-      </Section>
+      </SectionCard>
 
-      <Section
+      <SectionCard
         id="next-days"
         title="Next 3 days"
+        description="Each bar spans the day's low to high on one shared scale"
         aside={
-          <Link
-            href={`${placeHref(resolved)}/outlook`}
-            className="text-sm font-medium underline decoration-border underline-offset-4 hover:decoration-foreground"
-          >
-            14-day outlook and confidence →
-          </Link>
+          <Button asChild variant="outline" size="sm">
+            <Link href={`${placeHref(resolved)}/outlook`}>
+              14-day outlook and confidence
+              <IconArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
         }
       >
         <DailyList forecast={forecast} units={units} limit={3} />
-      </Section>
+      </SectionCard>
     </div>
   );
 }

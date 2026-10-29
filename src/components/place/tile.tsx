@@ -1,5 +1,23 @@
-import type { ReactNode } from "react";
+import type { Icon } from "@tabler/icons-react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+
+/** The surface every reading sits on: inset in its card, with the card's own hairline ring. */
+export const PANEL =
+  "rounded-3xl bg-muted/50 p-4 ring-1 ring-foreground/5 dark:bg-white/5 dark:ring-white/10";
+
+/** A round chip for a reading's icon, tinted by one of the app mark's colours. */
+export function IconChip({ icon: ChipIcon, accent }: { icon: Icon; accent: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      style={{ "--accent-color": accent } as CSSProperties}
+      className="grid size-7 shrink-0 place-items-center rounded-full bg-[color-mix(in_oklch,var(--accent-color)_16%,transparent)] text-[color-mix(in_oklch,var(--accent-color)_70%,var(--foreground))]"
+    >
+      <ChipIcon className="size-4" />
+    </span>
+  );
+}
 
 interface TileProps {
   label: string;
@@ -8,15 +26,31 @@ interface TileProps {
   /** Meter, arrow, or other supporting graphic between the value and the caption. */
   children?: ReactNode;
   caption?: ReactNode;
+  /** With `accent`, puts a tinted icon chip before the label. */
+  icon?: Icon;
+  /** One of the app mark's colours, for the icon chip. */
+  accent?: string;
   className?: string;
 }
 
 /** One reading in the conditions grid. */
-export function Tile({ label, value, unit, children, caption, className }: TileProps) {
+export function Tile({
+  label,
+  value,
+  unit,
+  children,
+  caption,
+  icon,
+  accent,
+  className,
+}: TileProps) {
   return (
-    <div className={cn("rounded-lg border border-border bg-card/60 p-4", className)}>
-      <p className="label-caps">{label}</p>
-      <p className="mt-2 text-3xl leading-none font-semibold">
+    <div className={cn(PANEL, className)}>
+      <p className="label-caps flex items-center gap-2">
+        {icon && accent && <IconChip icon={icon} accent={accent} />}
+        {label}
+      </p>
+      <p className="mt-3 text-3xl leading-none font-semibold tabular-nums">
         {value}
         {unit && <span className="ml-1 text-base font-normal text-muted-foreground">{unit}</span>}
       </p>
