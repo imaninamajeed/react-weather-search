@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 const HOURS = 12;
 
 /**
- * The next twelve hours as a horizontally scrolling strip. `glass` is for sitting on the dark hero:
- * translucent tiles, light text, and a teal chance-of-rain.
+ * The next twelve hours as a horizontally scrolling strip. `glass` is for sitting on the hero:
+ * translucent tiles and a teal chance-of-rain, in either theme.
  */
 export function HourStrip({
   forecast,
@@ -36,8 +36,9 @@ export function HourStrip({
               "flex min-w-16 shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-2 py-3",
               glass
                 ? cn(
-                    "border-white/10 bg-white/5 text-white backdrop-blur-sm",
-                    now && "border-(--brand-teal)/50 bg-white/10",
+                    "border-border bg-background/60 backdrop-blur-sm dark:border-white/10 dark:bg-white/5",
+                    now &&
+                      "border-(--brand-teal-text)/50 bg-background dark:border-(--brand-teal)/50 dark:bg-white/10",
                   )
                 : "border-border/60 bg-card/50",
             )}
@@ -45,12 +46,13 @@ export function HourStrip({
             <span
               className={cn(
                 "font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase",
-                glass ? "text-white/70" : "text-muted-foreground",
+                "text-muted-foreground",
+                glass && "dark:text-white/80",
               )}
             >
               {now ? "Now" : formatHour(hour.time)}
             </span>
-            <WeatherIcon name={weather.icon} className={cn("size-5", glass && "text-white/90")} />
+            <WeatherIcon name={weather.icon} className="size-5" />
             <span className="sr-only">{weather.label}</span>
             <span className="text-base font-medium">
               {formatTemperature(hour.temperature, units)}
@@ -58,7 +60,7 @@ export function HourStrip({
             <span
               className={cn(
                 "tnum text-xs",
-                glass ? "text-(--brand-teal)" : "text-muted-foreground",
+                glass ? "text-(--brand-teal-text)" : "text-muted-foreground",
               )}
             >
               {hour.precipitationProbability >= 20 ? `${hour.precipitationProbability}%` : " "}

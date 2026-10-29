@@ -102,6 +102,8 @@
   --brand-violet: #a77bff;
   --brand-indigo: #7884ff;
   --brand-teal: #2de2c8;
+  /* The teal as *text* or a thin icon: the bright logo teal is far too pale on white, so light mode uses a deep one. */
+  --brand-teal-text: oklch(0.42 0.09 185);
 
   --background: oklch(1 0 0);
 
@@ -125,6 +127,7 @@
 }
 
 .dark {
+  --brand-teal-text: var(--brand-teal);
   --background: oklch(0.148 0.004 228.8);
   --foreground: oklch(0.987 0.002 197.1);
   --card: oklch(0.218 0.008 223.9);

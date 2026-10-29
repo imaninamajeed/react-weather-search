@@ -141,7 +141,7 @@ type IsobarMarkProps = SVGProps<SVGSVGElement> & {
   square?: boolean;
   /** Swing the isobars when an ancestor with `group/brand` is hovered or focused. */
   animated?: boolean;
-  /** Just the isobars and the low's core, with no tile, ink background or frame, to lay over your own. */
+  /** Just the isobars: no tile, ink background, frame or white core, to lay under your own content. */
   bare?: boolean;
 };
 
@@ -212,15 +212,19 @@ export function IsobarMark({
             />
           ))}
         </g>
-        <circle
-          cx={cx}
-          cy={cy}
-          r={coreRadius * 2.6}
-          fill={`url(#${id}halo)`}
-          className={animated ? cn(EASE, SWELL) : undefined}
-          style={animated ? pivot : undefined}
-        />
-        <circle cx={cx} cy={cy} r={coreRadius} fill="#fff" />
+        {!bare && (
+          <>
+            <circle
+              cx={cx}
+              cy={cy}
+              r={coreRadius * 2.6}
+              fill={`url(#${id}halo)`}
+              className={animated ? cn(EASE, SWELL) : undefined}
+              style={animated ? pivot : undefined}
+            />
+            <circle cx={cx} cy={cy} r={coreRadius} fill="#fff" />
+          </>
+        )}
       </g>
       {!square && !bare && (
         <rect

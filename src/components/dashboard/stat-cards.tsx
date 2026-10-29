@@ -53,7 +53,7 @@ function StatCard({
         <CardDescription className="flex items-center gap-2">
           <span
             aria-hidden="true"
-            className="grid size-7 place-items-center rounded-full bg-[color-mix(in_oklch,var(--accent-color)_16%,transparent)] text-(--accent-color)"
+            className="grid size-7 place-items-center rounded-full bg-[color-mix(in_oklch,var(--accent-color)_16%,transparent)] text-[color-mix(in_oklch,var(--accent-color)_70%,var(--foreground))]"
           >
             <StatIcon className="size-4" />
           </span>
@@ -121,7 +121,7 @@ export function StatCards({ forecast, units }: { forecast: Forecast; units: Unit
       />
       <StatCard
         icon={IconWind}
-        accent="var(--brand-teal)"
+        accent="var(--brand-teal-text)"
         label="Wind"
         value={formatSpeed(current.windSpeed, units)}
         badge={

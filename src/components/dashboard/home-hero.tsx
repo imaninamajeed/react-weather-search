@@ -12,12 +12,14 @@ import { summarizeToday } from "@/lib/weather/summary";
 import type { Forecast, Units } from "@/lib/weather/types";
 import { HourStrip } from "./hour-strip";
 
-/** The caption style used on dark surfaces. */
-const caption = "font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-white/70 uppercase";
+const caption =
+  "font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase dark:text-white/75";
 
 /**
- * The dashboard's opening panel: the home place on the app mark's own ink, lit by its magenta and teal,
- * with the isobars of its logo drawn large behind. It is always dark, in both themes, like the mark.
+ * The dashboard's opening panel: the home place lit by the app mark's magenta and teal, with the
+ * isobars of its logo drawn large in the top-right corner. Dark mode uses the mark's own ink; light mode
+ * is a white panel with the same colours washed out. The art is faded out well before the text, which
+ * always sits on a plain, low-chroma surface.
  */
 export function HomeHero({
   place,
@@ -34,14 +36,14 @@ export function HomeHero({
   const localTimeLine = `${formatWeekdayClock(current.time)} · local time (${formatUtcOffset(forecast.utcOffsetSeconds)})`;
 
   return (
-    <header className="relative isolate overflow-hidden rounded-4xl bg-(--brand-ink) text-white shadow-md ring-1 ring-white/10">
+    <header className="relative isolate overflow-hidden rounded-4xl bg-card text-card-foreground shadow-md ring-1 ring-foreground/5 [--glow-magenta:10%] [--glow-teal:10%] dark:bg-(--brand-ink) dark:text-white dark:ring-white/10 dark:[--glow-magenta:30%] dark:[--glow-teal:18%]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           backgroundImage: [
-            "radial-gradient(55% 90% at 100% 0%, color-mix(in oklch, var(--brand-magenta) 34%, transparent), transparent 70%)",
-            "radial-gradient(50% 80% at 0% 100%, color-mix(in oklch, var(--brand-teal) 22%, transparent), transparent 70%)",
+            "radial-gradient(55% 90% at 100% 0%, color-mix(in oklch, var(--brand-magenta) var(--glow-magenta), transparent), transparent 70%)",
+            "radial-gradient(50% 80% at 0% 100%, color-mix(in oklch, var(--brand-teal) var(--glow-teal), transparent), transparent 70%)",
           ].join(", "),
         }}
       />
@@ -56,12 +58,14 @@ export function HomeHero({
           <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
             <p className={caption}>{localTimeLine}</p>
             <div className="flex shrink-0 items-center gap-2">
-              <Badge className="bg-white/10 text-white">Home</Badge>
+              <Badge variant="secondary" className="dark:bg-white/10 dark:text-white">
+                Home
+              </Badge>
               <Button
                 asChild
                 variant="outline"
                 size="sm"
-                className="border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white"
+                className="dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15 dark:hover:text-white"
               >
                 <Link href={placeHref(place)}>
                   Full forecast
@@ -73,16 +77,16 @@ export function HomeHero({
           <h2 id="place-title" className="mt-3 font-heading text-5xl leading-[0.95] md:text-7xl">
             {place.name}
           </h2>
-          <p className="mt-2 text-white/70">{formatPlaceSubtitle(place)}</p>
-          <p className="mt-6 max-w-prose text-lg text-balance text-white/90">
-            {summarizeToday(forecast, units)}
+          <p className="mt-2 text-muted-foreground dark:text-white/80">
+            {formatPlaceSubtitle(place)}
           </p>
+          <p className="mt-6 max-w-prose text-lg text-balance">{summarizeToday(forecast, units)}</p>
         </div>
 
         <div className="flex items-center gap-5">
           <WeatherIcon
             name={weather.icon}
-            className="size-16 text-(--brand-teal) drop-shadow-[0_0_18px_var(--brand-teal)] md:size-24"
+            className="size-16 text-(--brand-teal-text) md:size-24 dark:drop-shadow-[0_0_18px_var(--brand-teal)]"
           />
           <div>
             <p className="text-7xl leading-none font-medium tracking-tight md:text-9xl">
@@ -91,17 +95,17 @@ export function HomeHero({
               </span>
               <span aria-hidden="true">
                 {temperature}
-                <span className="align-top text-3xl font-normal text-(--brand-teal) md:text-5xl">
+                <span className="align-top text-3xl font-normal text-(--brand-teal-text) md:text-5xl">
                   {units === "metric" ? "°C" : "°F"}
                 </span>
               </span>
             </p>
-            <p className="mt-1 text-lg text-white/90">{weather.label}</p>
+            <p className="mt-1 text-lg">{weather.label}</p>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-white/10 px-6 pt-4 pb-5 md:px-10">
+      <div className="border-t border-border px-6 pt-4 pb-5 md:px-10 dark:border-white/10">
         <HourStrip forecast={forecast} units={units} tone="glass" />
       </div>
     </header>

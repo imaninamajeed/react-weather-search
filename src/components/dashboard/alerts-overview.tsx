@@ -28,7 +28,7 @@ export async function AlertsOverview({ places, units }: { places: Place[]; units
         <p className="flex items-center gap-3">
           <span
             aria-hidden="true"
-            className="grid size-9 shrink-0 place-items-center rounded-full bg-[color-mix(in_oklch,var(--brand-teal)_20%,transparent)] text-chart-4"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[color-mix(in_oklch,var(--brand-teal)_20%,transparent)] text-(--brand-teal-text)"
           >
             <IconShieldCheck className="size-5" />
           </span>
