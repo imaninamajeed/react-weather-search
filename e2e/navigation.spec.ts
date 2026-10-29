@@ -130,6 +130,30 @@ test.describe("preferences", () => {
     await expect(theme.getByRole("radio", { name: "Dark theme" })).toBeChecked();
   });
 
+  test("D flips the theme from anywhere, and the command palette offers it too", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto("/");
+    const theme = page.getByRole("radiogroup", { name: "Theme" });
+    // The toggle only shows a selection once the page has hydrated, so the key listener is live.
+    await expect(theme.getByRole("radio", { name: "System theme" })).toBeChecked();
+
+    await page.keyboard.press("d");
+    await expect(page.locator("html")).toHaveClass(/dark/);
+    await expect(theme.getByRole("radio", { name: "Dark theme" })).toBeChecked();
+
+    await page.keyboard.press("/");
+    await page.getByRole("option", { name: /Switch to light theme/ }).click();
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    await expect(theme.getByRole("radio", { name: "Light theme" })).toBeChecked();
+
+    // Typing the letter in the search box must not flip anything.
+    await page.keyboard.press("/");
+    await page.getByPlaceholder("Search a city…").pressSequentially("dd");
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+  });
+
   test.describe("on a phone", () => {
     test.use({ viewport: { width: 390, height: 844 } });
 

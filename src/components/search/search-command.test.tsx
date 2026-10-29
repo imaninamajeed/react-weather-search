@@ -8,6 +8,11 @@ import { SearchCommand } from "./search-command";
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
+const theme = vi.hoisted(() => ({ resolved: "light", setTheme: vi.fn() }));
+vi.mock("next-themes", () => ({
+  useTheme: () => ({ resolvedTheme: theme.resolved, setTheme: theme.setTheme }),
+}));
+
 const place = (id: number, name: string): Place => ({
   key: `${id}-${name.toLowerCase()}`,
   name,
@@ -39,6 +44,8 @@ beforeAll(() => {
 beforeEach(() => {
   window.localStorage.clear();
   push.mockReset();
+  theme.setTheme.mockReset();
+  theme.resolved = "light";
 });
 
 afterEach(() => vi.unstubAllGlobals());
@@ -66,6 +73,60 @@ describe("SearchCommand", () => {
     await user.click(document.body);
     await user.keyboard("/");
     expect(await screen.findByPlaceholderText("Search a city…")).toBeInTheDocument();
+  });
+
+  it("flips the theme with D, but not while typing or with a modifier", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <input aria-label="other" />
+        <SearchCommand />
+      </>,
+    );
+    await user.click(screen.getByLabelText("other"));
+    await user.keyboard("d");
+    expect(theme.setTheme).not.toHaveBeenCalled();
+
+    await user.click(document.body);
+    await user.keyboard("{Control>}d{/Control}");
+    expect(theme.setTheme).not.toHaveBeenCalled();
+
+    await user.keyboard("d");
+    expect(theme.setTheme).toHaveBeenCalledExactlyOnceWith("dark");
+  });
+
+  it("flips from dark back to light", async () => {
+    theme.resolved = "dark";
+    const user = userEvent.setup();
+    render(<SearchCommand />);
+    await user.keyboard("D");
+    expect(theme.setTheme).toHaveBeenCalledExactlyOnceWith("light");
+  });
+
+  it("offers the theme command in the palette, with its D hint, and closes after using it", async () => {
+    const { user } = await openDialog();
+    const item = screen.getByRole("option", { name: /Switch to dark theme/ });
+    expect(item).toHaveTextContent("D");
+
+    await user.click(item);
+    expect(theme.setTheme).toHaveBeenCalledExactlyOnceWith("dark");
+    expect(screen.queryByPlaceholderText("Search a city…")).not.toBeInTheDocument();
+  });
+
+  it("finds the theme command by typing, and hides it for a plain place search", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ places: [] })));
+    const { user, input } = await openDialog();
+
+    await user.type(input, "dark");
+    expect(await screen.findByRole("option", { name: /Switch to dark theme/ })).toBeVisible();
+
+    await user.clear(input);
+    await user.type(input, "tokyo");
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("option", { name: /Switch to dark theme/ }),
+      ).not.toBeInTheDocument(),
+    );
   });
 
   it("debounces typing into a single request and navigates on select", async () => {

@@ -1,8 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { IconClock, IconCurrentLocation, IconMapPin, IconSearch } from "@tabler/icons-react";
+import { useTheme } from "next-themes";
+import { useEffect, useRef, useState } from "react";
+import {
+  IconClock,
+  IconCurrentLocation,
+  IconMapPin,
+  IconMoon,
+  IconSearch,
+  IconSun,
+} from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -11,6 +19,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandShortcut,
 } from "@/components/ui/command";
 import { formatPlaceSubtitle } from "@/lib/format";
 import { normalizeQuery, MIN_QUERY_LENGTH } from "@/lib/open-meteo/geocoding-query";
@@ -47,17 +56,37 @@ export function SearchCommand() {
   const [notice, setNotice] = useState("");
   const online = useOnlineStatus();
 
+  const { resolvedTheme, setTheme } = useTheme();
+
+  // Read through a ref so the key listener (registered once) always flips from the current theme.
+  const toggleThemeRef = useRef(() => {});
+  useEffect(() => {
+    toggleThemeRef.current = () => setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  }, [resolvedTheme, setTheme]);
+
   const query = normalizeQuery(input);
   const searchable = query.length >= MIN_QUERY_LENGTH;
+  // Typing "theme", "dark" etc. also surfaces the command, since there is no filtering to find it.
+  const showTheme = !searchable || /theme|dark|light|mode|appearance/i.test(query);
 
-  // ⌘K / Ctrl+K anywhere, or "/" when not typing in a field.
+  // ⌘K / Ctrl+K anywhere, or "/" when not typing in a field. "D" flips the theme under the same rule.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const isShortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
       const isSlash = event.key === "/" && !isEditable(event.target);
+      const isTheme =
+        event.key.toLowerCase() === "d" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.repeat &&
+        !isEditable(event.target);
       if (isShortcut || isSlash) {
         event.preventDefault();
         setOpen(true);
+      } else if (isTheme) {
+        event.preventDefault();
+        toggleThemeRef.current();
       }
     }
     const openFromEvent = () => setOpen(true);
@@ -191,6 +220,26 @@ export function SearchCommand() {
                 <CommandItem value="my-location" onSelect={locate}>
                   <IconCurrentLocation aria-hidden="true" />
                   Use my location
+                </CommandItem>
+              </CommandGroup>
+            )}
+
+            {showTheme && (
+              <CommandGroup heading="Appearance">
+                <CommandItem
+                  value="toggle-theme"
+                  onSelect={() => {
+                    toggleThemeRef.current();
+                    handleOpenChange(false);
+                  }}
+                >
+                  {resolvedTheme === "dark" ? (
+                    <IconSun aria-hidden="true" />
+                  ) : (
+                    <IconMoon aria-hidden="true" />
+                  )}
+                  Switch to {resolvedTheme === "dark" ? "light" : "dark"} theme
+                  <CommandShortcut aria-hidden="true">D</CommandShortcut>
                 </CommandItem>
               </CommandGroup>
             )}
