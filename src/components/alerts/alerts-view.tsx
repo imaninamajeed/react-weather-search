@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   ChartLine,
+  ChevronDown,
   House,
   OctagonAlert,
   ShieldCheck,
@@ -13,9 +14,10 @@ import { loadAlerts } from "@/components/alerts/load-alerts";
 import { SourceNote } from "@/components/alerts/source-note";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { compareBySeverity } from "@/lib/alerts/describe";
 import { formatPlaceSubtitle } from "@/lib/format";
 import { placeHref, type Place } from "@/lib/places";
+import { cn } from "@/lib/utils";
 import type { Units } from "@/lib/weather/types";
 import { AlertsFilter } from "./alerts-filter";
 import { AlertsSummary } from "./alerts-summary";
@@ -70,12 +72,20 @@ export async function AlertsView({
   const totalOfficial = official(everyAlert).length;
   const warnings = everyAlert.filter((a) => a.severity === "warning").length;
 
+  // Most serious first: within a place, and between places (most warnings, then most alerts). The sort
+  // is stable, so places that tie stay in the order you follow them, home first.
+  const warningCount = (alerts: { severity: string }[]) =>
+    alerts.filter((a) => a.severity === "warning").length;
   const groups = entries
     .map((entry) => ({
       ...entry,
-      alerts: officialOnly ? official(entry.alerts) : entry.alerts,
+      alerts: (officialOnly ? official(entry.alerts) : entry.alerts).toSorted(compareBySeverity),
     }))
-    .filter((entry) => entry.alerts.length > 0);
+    .filter((entry) => entry.alerts.length > 0)
+    .toSorted(
+      (a, b) =>
+        warningCount(b.alerts) - warningCount(a.alerts) || b.alerts.length - a.alerts.length,
+    );
 
   return (
     <div className="flex flex-col gap-4 fit:gap-3">
@@ -85,20 +95,27 @@ export async function AlertsView({
           advisories={totalAll - warnings}
           affected={entries.filter((entry) => entry.alerts.length > 0).length}
           places={places.length}
+          failed={failed}
+          incomplete={failed > 0 || sources.some((source) => source.status === "unavailable")}
+          checked={entries.map((entry) => entry.place)}
         />
       </div>
 
       <div className="mt-4 flex min-w-0 flex-col gap-4">
-        <div className="rise" style={rise(1)}>
-          <AlertsFilter
-            totalAll={totalAll}
-            totalOfficial={totalOfficial}
-            officialOnly={officialOnly}
-          />
-        </div>
+        {/* With no alerts there is nothing to filter, so the control would only offer two zeros. */}
+        {totalAll > 0 && (
+          <div className="rise" style={rise(1)}>
+            <AlertsFilter
+              totalAll={totalAll}
+              totalOfficial={totalOfficial}
+              officialOnly={officialOnly}
+            />
+          </div>
+        )}
 
         {groups.length === 0 ? (
-          // With no alerts at all the summary already says "All clear"; only a filter needs a word here.
+          // With no alerts at all the banner already says so; only a filter needs a word here.
+          totalAll > 0 &&
           officialOnly && (
             <div
               className="rise flex flex-wrap items-center gap-x-3 gap-y-2 rounded-3xl border border-border px-4 py-3"
@@ -116,23 +133,29 @@ export async function AlertsView({
                   Forecast signals are listed under All alerts.
                 </span>
               </p>
-              {totalAll > 0 && (
-                <Button asChild variant="outline" size="sm" className="ml-auto">
-                  <Link href="/alerts">
-                    All Alerts
-                    <ArrowRight aria-hidden="true" />
-                  </Link>
-                </Button>
-              )}
+              <Button asChild variant="outline" size="sm" className="ml-auto">
+                <Link href="/alerts">
+                  All Alerts
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
             </div>
           )
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,28rem),1fr))] items-start gap-4">
+          // Cards flow into balanced columns and pack under one another, so places with one alert and
+          // places with ten sit together without gaps; one place stays one wide column.
+          <div
+            className={cn(
+              "gap-4",
+              groups.length > 1 && "md:columns-2",
+              groups.length > 2 && "2xl:columns-3",
+            )}
+          >
             {groups.map(({ place, alerts, now }, index) => (
               <section
                 key={place.key}
                 aria-labelledby={`alerts-${place.key}`}
-                className="rise"
+                className="rise mb-4 break-inside-avoid"
                 style={rise(index + 2)}
               >
                 <Card>
@@ -171,66 +194,71 @@ export async function AlertsView({
         )}
       </div>
 
-      <aside aria-label="About These Alerts" className="rise" style={rise(groups.length + 2)}>
-        <Card size="sm" className="bg-transparent shadow-none ring-border">
-          <CardHeader>
-            <CardTitle role="heading" aria-level={2} className="text-lg">
-              Reading Alerts
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm">
-            <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
-              <LegendRow
-                term="Warning"
-                icon={
-                  <span className="grid size-6 place-items-center rounded-full bg-warning text-warning-foreground">
-                    <OctagonAlert className="size-3.5" />
-                  </span>
-                }
-              >
-                Serious or damaging conditions.
-              </LegendRow>
-              <LegendRow
-                term="Advisory"
-                icon={
-                  <span className="grid size-6 place-items-center rounded-full bg-advisory text-advisory-foreground">
-                    <TriangleAlert className="size-3.5" />
-                  </span>
-                }
-              >
-                Worth planning around.
-              </LegendRow>
-              <LegendRow
-                term="Official"
-                icon={<ShieldCheck className="size-6 p-1 text-(--brand-teal-text)" />}
-              >
-                Issued by a national weather service.
-              </LegendRow>
-              <LegendRow
-                term="Forecast Signal"
-                icon={<ChartLine className="size-6 p-1 text-muted-foreground" />}
-              >
-                Our own check of the forecast against set thresholds.
-              </LegendRow>
-            </dl>
+      <aside
+        aria-label="About These Alerts"
+        className="rise flex flex-col gap-3 text-sm"
+        style={rise(groups.length + 2)}
+      >
+        {/* Folded away: the legend is for the first visit, not for every one. */}
+        <details className="group rounded-3xl border border-border px-4 py-2.5">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-md font-medium marker:content-none [&::-webkit-details-marker]:hidden">
+            Reading Alerts
+            <ChevronDown
+              aria-hidden="true"
+              className="size-4 text-muted-foreground transition-transform group-open:rotate-180"
+            />
+          </summary>
+          <dl className="mt-4 mb-2 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+            <LegendRow
+              term="Warning"
+              icon={
+                <span className="grid size-6 place-items-center rounded-full bg-warning text-warning-foreground">
+                  <OctagonAlert className="size-3.5" />
+                </span>
+              }
+            >
+              Serious or damaging conditions.
+            </LegendRow>
+            <LegendRow
+              term="Advisory"
+              icon={
+                <span className="grid size-6 place-items-center rounded-full bg-advisory text-advisory-foreground">
+                  <TriangleAlert className="size-3.5" />
+                </span>
+              }
+            >
+              Worth planning around.
+            </LegendRow>
+            <LegendRow
+              term="Official"
+              icon={<ShieldCheck className="size-6 p-1 text-(--brand-teal-text)" />}
+            >
+              Issued by a national weather service.
+            </LegendRow>
+            <LegendRow
+              term="Forecast Signal"
+              icon={<ChartLine className="size-6 p-1 text-muted-foreground" />}
+            >
+              Our own check of the forecast against set thresholds.
+            </LegendRow>
+          </dl>
+        </details>
 
-            {(failed > 0 || sources.length > 0) && <Separator />}
-
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-              {failed > 0 && (
-                <p className="flex items-center gap-2 font-medium">
-                  <TriangleAlert aria-hidden="true" className="size-4 shrink-0 text-warning" />
-                  Couldn&apos;t check {failed === 1 ? "one place" : `${failed} places`} just now.
-                </p>
-              )}
-              {sources.length > 0 && (
-                <div className="[&_p]:mt-0">
-                  <SourceNote sources={sources} />
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {(failed > 0 || sources.length > 0) && (
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 px-1">
+            {failed > 0 && (
+              <p className="flex items-center gap-2 font-medium">
+                <TriangleAlert aria-hidden="true" className="size-4 shrink-0 text-warning" />
+                Couldn&apos;t check {failed === 1 ? "one place" : `${failed} places`} just now.
+              </p>
+            )}
+            {sources.length > 0 && (
+              <div className="[&_p]:mt-0">
+                <SourceNote sources={sources} />
+              </div>
+            )}
+          </div>
+        )}
       </aside>
     </div>
   );

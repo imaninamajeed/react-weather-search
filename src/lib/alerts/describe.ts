@@ -129,6 +129,15 @@ export function compareAlerts(a: WeatherAlert, b: WeatherAlert): number {
   );
 }
 
+/** Most serious first, whoever says so; official before forecast signals only among equals, then by start time. */
+export function compareBySeverity(a: WeatherAlert, b: WeatherAlert): number {
+  return (
+    SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity] ||
+    Number(a.source === "forecast") - Number(b.source === "forecast") ||
+    startOf(a).localeCompare(startOf(b))
+  );
+}
+
 export function sortAlerts(alerts: WeatherAlert[]): WeatherAlert[] {
   return [...alerts].sort(compareAlerts);
 }
