@@ -281,6 +281,13 @@ body:has([data-wide]) {
 .maplibregl-map .maplibregl-popup-anchor-right .maplibregl-popup-tip {
   border-left-color: var(--popover);
 }
+/* MapLibre's own stylesheet sets Helvetica/Arial on the map, which becomes Liberation Sans on Linux.
+   The map and everything inside it (pop-ups, controls, credits) use the app's text face instead. */
+div.maplibregl-map,
+div.maplibregl-map .maplibregl-ctrl-attrib,
+div.maplibregl-map .maplibregl-ctrl-attrib * {
+  font-family: var(--font-sans), sans-serif;
+}
 /* A saved place's pop-up is dressed like its pin: rounder, with a softer shadow. */
 .maplibregl-map .place-popup .maplibregl-popup-content {
   border-radius: 1.25rem;

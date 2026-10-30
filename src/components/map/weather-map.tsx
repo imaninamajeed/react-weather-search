@@ -46,9 +46,9 @@ type Theme = keyof typeof STYLES;
 const PLACE_POPUP_OFFSET = 10;
 
 /** How far a selected place is zoomed to: close enough that the pin gives way to its area. */
-const SELECT_ZOOM = 10;
+const SELECT_ZOOM = 11;
 /** From this zoom in, pins give way to the area around each place. */
-const AREA_ZOOM = 9;
+const AREA_ZOOM = 10;
 const AREA_RADIUS_KM = 6;
 const FRAME_INTERVAL_MS = 700;
 const LOAD_TIMEOUT_MS = 15_000;
@@ -102,6 +102,18 @@ function areaRing(longitude: number, latitude: number, steps = 72): number[][] {
   });
 }
 
+/** The place whose area is under a screen point, if the map is close enough to show areas. */
+function areaAt(
+  map: MapLibreMap,
+  point: { x: number; y: number },
+  places: MapPlace[],
+): MapPlace | undefined {
+  if (map.getZoom() < AREA_ZOOM || !map.getLayer(`${AREAS_ID}-fill`)) return undefined;
+  const key = map.queryRenderedFeatures([point.x, point.y], { layers: [`${AREAS_ID}-fill`] })[0]
+    ?.properties?.key;
+  return places.find((place) => place.key === key);
+}
+
 /** Adds the areas as a soft fill and a dashed outline that only appear from AREA_ZOOM in. */
 function addAreas(map: MapLibreMap, places: MapPlace[]) {
   if (map.getSource(AREAS_ID)) return;
@@ -111,7 +123,7 @@ function addAreas(map: MapLibreMap, places: MapPlace[]) {
       type: "FeatureCollection",
       features: places.map((place) => ({
         type: "Feature",
-        properties: { home: place.isHome },
+        properties: { home: place.isHome, key: place.key },
         geometry: { type: "Polygon", coordinates: [areaRing(place.longitude, place.latitude)] },
       })),
     },
@@ -184,14 +196,14 @@ function iconElement(paths: string, size = "size-3.5"): SVGSVGElement {
  * (a house on the brand colour for home, a pin on grey for the rest) and the name, ending in a tip.
  * The marker is anchored at the tip, so it marks the exact spot. It carries no temperature: the
  * weather is in the pop-up, which shows while the pointer or keyboard is on the pin. A plain click
- * selects the pin (the map zooms in and the pop-up stays, with a link to its forecast) rather than
+ * zooms in on the pin (the pop-up stays only while the pointer is on it, or for a tap) rather than
  * leaving the page; a modified click still opens
  * the forecast in a new tab, as for any link. The selected pin is marked with `data-selected`.
  * Built with the DOM API, never user-provided markup.
  */
 interface PinHandlers {
-  /** A click: zoom in and keep the pop-up. */
-  select: (place: MapPlace) => void;
+  /** A click: zoom in. `keep` is for a finger or pen, which cannot hover: the pop-up then stays open. */
+  select: (place: MapPlace, keep: boolean) => void;
   /** The pointer or keyboard reached the pin: show its pop-up for as long as it stays. */
   preview: (place: MapPlace) => void;
   /** It left. */
@@ -234,12 +246,16 @@ function markerElement(place: MapPlace, handlers: PinHandlers): HTMLAnchorElemen
     event.stopPropagation(); // don't also open the "weather here" popup
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
     event.preventDefault();
-    handlers.select(place);
+    const touch = (event as PointerEvent).pointerType;
+    handlers.select(place, touch === "touch" || touch === "pen");
   });
-  link.addEventListener("mouseenter", () => handlers.preview(place));
-  link.addEventListener("mouseleave", handlers.leave);
-  link.addEventListener("focus", () => handlers.preview(place));
-  link.addEventListener("blur", handlers.leave);
+  // Home is the place you already know, so pointing at its pin shows nothing; a click still zooms in.
+  if (!home) {
+    link.addEventListener("mouseenter", () => handlers.preview(place));
+    link.addEventListener("mouseleave", handlers.leave);
+    link.addEventListener("focus", () => handlers.preview(place));
+    link.addEventListener("blur", handlers.leave);
+  }
   return link;
 }
 
@@ -454,7 +470,8 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
     const markers: Marker[] = [];
     const open = (href: string) => router.push(href);
 
-    // A pin's pop-up shows while the pointer or focus is on the pin (or the pop-up); a click pins it.
+    // A pin's pop-up shows only while the pointer or focus is on the pin (or the pop-up). A tap keeps it,
+    // since a finger cannot hover.
     let pinned = false;
     let shownKey: string | null = null;
     let hoverTimer: ReturnType<typeof setTimeout> | undefined;
@@ -465,6 +482,8 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
       if (pinned) return;
       leaveTimer = setTimeout(() => popup?.remove(), 220);
     };
+    // The pointer is on one of the map's own buttons (zoom, center, credits): no pop-up for those.
+    let overControls = false;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") popup?.remove();
     };
@@ -587,7 +606,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
         current.once("load", () => clearTimeout(loadTimer));
 
         const preview = (place: MapPlace) => {
-          if (pinned) return;
+          if (pinned || overControls) return;
           cancelLeave();
           clearTimeout(hoverTimer);
           if (shownKey === place.key) return;
@@ -597,7 +616,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
             markSelected(place.key);
           }, 120);
         };
-        const select = (place: MapPlace) => {
+        const select = (place: MapPlace, keep: boolean) => {
           clearTimeout(hoverTimer);
           cancelLeave();
           // Zoom in on it (never out), then show its pop-up.
@@ -609,7 +628,8 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
           showPopup(maplibre, current, { lng: place.longitude, lat: place.latitude }, place);
           // After the pop-up opens, because opening it closed the last one, which clears the mark.
           markSelected(place.key);
-          pinned = true;
+          // A mouse or keyboard has hover and focus, so the pop-up goes when they do; only a finger stays.
+          pinned = keep;
         };
         for (const place of places) {
           markers.push(
@@ -675,7 +695,40 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
           "top-right",
         );
 
-        current.on("click", (event) => showPopup(maplibre, current, event.lngLat.wrap()));
+        // Reaching for a button closes a pin's pop-up at once (unless a tap is holding it) and keeps
+        // it from opening until the pointer is back on the map.
+        const controls = current.getContainer().querySelector(".maplibregl-control-container");
+        controls?.addEventListener("mouseover", (event) => {
+          if (!(event.target as Element).closest(".maplibregl-ctrl")) return;
+          overControls = true;
+          clearTimeout(hoverTimer);
+          cancelLeave();
+          if (!pinned) popup?.remove();
+        });
+        controls?.addEventListener("mouseout", (event) => {
+          if ((event.target as Element).closest(".maplibregl-ctrl")) overControls = false;
+        });
+
+        // Close in, the pop-up follows the pointer into and out of a place's circle, as it does the pin.
+        current.on("mousemove", (event) => {
+          const place = areaAt(current, event.point, places);
+          current.getCanvas().style.cursor = place ? "pointer" : "";
+          if (place) preview(place);
+          else if (current.getZoom() >= AREA_ZOOM) leave();
+        });
+        current.on("mouseout", () => {
+          if (current.getZoom() >= AREA_ZOOM) leave();
+        });
+        current.on("click", (event) => {
+          // A tap inside a circle is a tap on the place (a finger cannot hover); elsewhere, the spot.
+          const place = areaAt(current, event.point, places);
+          if (!place) return showPopup(maplibre, current, event.lngLat.wrap());
+          const touch = (event.originalEvent as PointerEvent).pointerType;
+          clearTimeout(hoverTimer);
+          showPopup(maplibre, current, { lng: place.longitude, lat: place.latitude }, place);
+          markSelected(place.key);
+          pinned = touch === "touch" || touch === "pen";
+        });
       } catch {
         // No WebGL, or the library failed to load.
         if (!disposed) setFailed(true);

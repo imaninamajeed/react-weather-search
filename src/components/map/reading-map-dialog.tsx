@@ -74,12 +74,6 @@ export function ReadingMapDialog({ className }: { className?: string }) {
           >
             {text.rain}
           </LegendRow>
-          <LegendRow
-            term={text.timelineTerm}
-            icon={<Play className="size-6 p-1 text-(--brand-teal-text)" />}
-          >
-            {text.timeline}
-          </LegendRow>
           <LegendRow term={text.homeTerm} icon={<Pill home>Subang Jaya</Pill>}>
             {text.home}
           </LegendRow>
@@ -91,6 +85,12 @@ export function ReadingMapDialog({ className }: { className?: string }) {
             icon={<CircleDashed className="size-6 p-1 text-(--brand-magenta)" />}
           >
             {text.area}
+          </LegendRow>
+          <LegendRow
+            term={text.timelineTerm}
+            icon={<Play className="size-6 p-1 text-(--brand-teal-text)" />}
+          >
+            {text.timeline}
           </LegendRow>
           <LegendRow
             term={text.centerTerm}
