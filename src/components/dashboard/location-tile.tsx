@@ -74,7 +74,8 @@ export async function LocationTile({
             {place.name}
           </Link>
         </h3>
-        <p className="truncate text-sm text-muted-foreground dark:text-white/80">
+        {/* min-h keeps the line when a place has no region or country, so the tiles stay aligned. */}
+        <p className="min-h-5 truncate text-sm text-muted-foreground dark:text-white/80">
           {formatPlaceSubtitle(place)}
         </p>
 

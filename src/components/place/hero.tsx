@@ -124,7 +124,7 @@ export async function PlaceHero({
           <div>
             <p
               className={cn(
-                "text-7xl leading-none font-medium tracking-tight md:text-9xl",
+                "font-heading text-7xl leading-none font-medium tracking-tight md:text-9xl",
                 fit && "fit:text-6xl",
               )}
             >

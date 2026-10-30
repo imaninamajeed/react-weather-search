@@ -11,9 +11,8 @@ import type { Forecast, Units } from "@/lib/weather/types";
 import { MEASURABLE_MM } from "./week-strip";
 
 /**
- * The seven days as a list in a saved tile: the rows share the square's height up to 2rem each, the
- * height they have at four across, so the wider three-across tiles get the same rows rather than
- * stretched ones. Each row reads left to right as the day, the
+ * The seven days as a list that fills a saved tile: the rows share the square's height, so a bigger
+ * tile gets roomier rows rather than empty space. Each row reads left to right as the day, the
  * conditions icon, the low, a bar placing the day's range on the week's own scale (so the bars compare
  * days), the high, and the chance of rain, which darkens when rain is likely. The conditions in words,
  * the amount of rain and the top wind have no room here and are for assistive tech.
@@ -53,7 +52,7 @@ export async function WeekDetails({
             key={day.date}
             aria-current={isToday ? "date" : undefined}
             className={cn(
-              "flex max-h-8 min-h-5 flex-1 items-center gap-1.5 px-1.5 text-xs @min-[18rem]:min-h-8 @min-[18rem]:gap-2 @min-[18rem]:text-sm",
+              "flex min-h-5 flex-1 items-center gap-1.5 px-1.5 text-xs @min-[18rem]:min-h-8 @min-[18rem]:gap-2 @min-[18rem]:text-sm",
               isToday && "rounded-xl bg-muted/60",
             )}
           >

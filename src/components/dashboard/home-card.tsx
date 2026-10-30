@@ -68,7 +68,7 @@ export async function HomeCard({
               {place.name}
             </Link>
           </h3>
-          <p className="mt-2 text-muted-foreground">{formatPlaceSubtitle(place)}</p>
+          <p className="mt-2 min-h-6 text-muted-foreground">{formatPlaceSubtitle(place)}</p>
           {forecast ? (
             <p className="mt-4 max-w-prose text-balance">
               {summarizeToday(forecast, units, locale)}
@@ -135,7 +135,14 @@ export async function HomeCard({
             {
               Icon: IconTemperature,
               label: t.dashboard.stats.feelsLike,
-              value: formatTemperature(current.apparentTemperature, units),
+              value: (
+                <>
+                  {Math.round(convertTemperature(current.apparentTemperature, units))}
+                  <span className="align-top text-sm font-normal text-(--brand-teal-text)">
+                    {units === "metric" ? "°C" : "°F"}
+                  </span>
+                </>
+              ),
             },
             {
               Icon: IconWind,

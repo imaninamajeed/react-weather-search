@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import { getI18n } from "@/lib/i18n/server";
 import { getPreferences } from "@/lib/preferences";
 import { homePlace } from "@/lib/preferences-core";
@@ -10,7 +9,7 @@ import { HomeCard } from "./home-card";
 import { PlacesTabs } from "./places-tabs";
 import { SavedGrid } from "./saved-grid";
 import { SavedLayoutMenu } from "./saved-layout-menu";
-import { SavedTile, TILE_SHAPE } from "./saved-tile";
+import { SavedTile } from "./saved-tile";
 
 /**
  * The locations you follow, as two tabs in the Alerts page's calm layout: Home, a hero card for the one
@@ -62,10 +61,7 @@ export async function PlacesView() {
                 node: (
                   <Suspense
                     fallback={
-                      <Skeleton
-                        aria-hidden="true"
-                        className={cn("w-full rounded-4xl", TILE_SHAPE)}
-                      />
+                      <Skeleton aria-hidden="true" className="aspect-square w-full rounded-4xl" />
                     }
                   >
                     <SavedTile

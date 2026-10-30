@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-export const COLUMN_OPTIONS = [3, 4, 5] as const;
+export const COLUMN_OPTIONS = [4, 5] as const;
 export type Columns = (typeof COLUMN_OPTIONS)[number];
 
 /** Four across is the default: roomy enough to read at a glance, and a full set fits on one screen. */

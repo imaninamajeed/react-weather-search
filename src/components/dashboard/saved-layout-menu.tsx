@@ -13,7 +13,7 @@ import { useMessages } from "@/lib/i18n/client";
 import { COLUMN_OPTIONS, useSavedColumns, type Columns } from "./saved-columns";
 
 /**
- * How many saved-location tiles go across (3×3, 4×4 or 5×5), as a menu beside the Add button. It
+ * How many saved-location tiles go across (4×4 or 5×5), as a menu beside the Add button. It
  * only matters from `lg` up, where the tiles are in a grid that wide; below that it is hidden.
  */
 export function SavedLayoutMenu() {
