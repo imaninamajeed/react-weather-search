@@ -28,8 +28,10 @@ const dot = (
 );
 
 /**
- * One title and one line of facts: how serious, who says so, and when. Severity is carried by icon +
- * word + colour, never colour alone, in the same tinted treatment as the dashboard's alerts banner.
+ * One title and one line of facts: how serious, who says so, and when. A flat row, split from its
+ * neighbours by the list's hairlines, so it sits cleanly inside whatever card holds it. Severity is carried by icon +
+ * word + colour, never colour alone, and the colour stays on the icon so a long list is not a wall of
+ * red and amber.
  * Official warnings are visibly distinct from our own forecast signals (the source in the facts line,
  * and a full notice to open) so nobody mistakes one for the other.
  */
@@ -41,14 +43,7 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
   const SourceIcon = official ? ShieldCheck : ChartLine;
 
   return (
-    <li
-      className={cn(
-        "flex gap-3.5 rounded-3xl p-4 ring-1 sm:p-5",
-        isWarning
-          ? "bg-warning/10 shadow-[0_0_40px_-18px_var(--warning)] ring-warning/40"
-          : "bg-advisory/15 ring-advisory/50",
-      )}
-    >
+    <li className="flex gap-4 py-5">
       <span
         aria-hidden="true"
         className={cn(
@@ -60,7 +55,7 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
       </span>
 
       <div className="min-w-0 flex-1">
-        <p className="font-heading text-xl leading-tight font-medium">{description.title}</p>
+        <p className="font-heading text-lg leading-tight font-medium">{description.title}</p>
 
         <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
           <span className="font-heading text-[0.6875rem] font-semibold tracking-[0.08em] text-foreground uppercase">
@@ -100,7 +95,7 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
                 className="size-4 transition-transform group-open:rotate-180"
               />
             </summary>
-            <div className="mt-3 space-y-2 rounded-2xl bg-background/60 p-3.5 dark:bg-background/30">
+            <div className="mt-3 space-y-2 rounded-2xl bg-muted/60 p-3.5">
               {alert.summary && <p className="font-medium">{alert.summary}</p>}
               <p className="whitespace-pre-line text-muted-foreground">{alert.text}</p>
               {alert.instruction && <p className="whitespace-pre-line">{alert.instruction}</p>}

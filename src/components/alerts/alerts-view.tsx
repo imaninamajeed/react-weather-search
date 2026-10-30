@@ -9,16 +9,15 @@ import {
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { AlertList } from "@/components/alerts/alert-list";
-import { HazardBadge } from "@/components/alerts/hazard-badge";
 import { loadAlerts } from "@/components/alerts/load-alerts";
 import { SourceNote } from "@/components/alerts/source-note";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatPlaceSubtitle } from "@/lib/format";
 import { placeHref, type Place } from "@/lib/places";
 import type { Units } from "@/lib/weather/types";
+import { AlertsFilter } from "./alerts-filter";
 import { AlertsSummary } from "./alerts-summary";
 
 /** Staggers a section's arrival, as on the dashboard; position only, and not at all with reduced motion. */
@@ -86,30 +85,25 @@ export async function AlertsView({
           advisories={totalAll - warnings}
           affected={entries.filter((entry) => entry.alerts.length > 0).length}
           places={places.length}
-          byPlace={entries.map(({ place, alerts }) => {
-            const shown = officialOnly ? official(alerts) : alerts;
-            const shownWarnings = shown.filter((a) => a.severity === "warning").length;
-            return {
-              key: place.key,
-              name: place.name,
-              warnings: shownWarnings,
-              advisories: shown.length - shownWarnings,
-            };
-          })}
-          totalAll={totalAll}
-          totalOfficial={totalOfficial}
-          officialOnly={officialOnly}
         />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_21rem] xl:items-start">
         <div className="flex min-w-0 flex-col gap-8">
+          <div className="rise" style={rise(1)}>
+            <AlertsFilter
+              totalAll={totalAll}
+              totalOfficial={totalOfficial}
+              officialOnly={officialOnly}
+            />
+          </div>
+
           {groups.length === 0
             ? // With no alerts at all the summary already says "All clear"; only a filter needs a word here.
               officialOnly && (
                 <div
                   className="rise flex flex-wrap items-center gap-x-3 gap-y-2 rounded-3xl border border-border px-4 py-3"
-                  style={rise(1)}
+                  style={rise(2)}
                 >
                   <span
                     aria-hidden="true"
@@ -138,32 +132,38 @@ export async function AlertsView({
                   key={place.key}
                   aria-labelledby={`alerts-${place.key}`}
                   className="rise"
-                  style={rise(index + 1)}
+                  style={rise(index + 2)}
                 >
-                  <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 px-1">
-                    <h2
-                      id={`alerts-${place.key}`}
-                      className="font-heading text-2xl leading-tight sm:text-3xl"
-                    >
-                      <Link
-                        href={placeHref(place)}
-                        className="underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:decoration-(--brand-teal-text)"
+                  <Card>
+                    <CardHeader className="gap-1">
+                      <CardTitle
+                        id={`alerts-${place.key}`}
+                        role="heading"
+                        aria-level={2}
+                        className="text-2xl leading-tight"
                       >
-                        {place.name}
-                      </Link>
-                    </h2>
-                    {place.key === homeKey && (
-                      <Badge variant="secondary">
-                        <House aria-hidden="true" />
-                        Home
-                      </Badge>
-                    )}
-                    <p className="text-sm text-muted-foreground">{formatPlaceSubtitle(place)}</p>
-                    <div className="ml-auto">
-                      <HazardBadge alerts={alerts} />
-                    </div>
-                  </div>
-                  <AlertList alerts={alerts} units={units} now={now} limit={10} />
+                        <Link
+                          href={placeHref(place)}
+                          className="underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:decoration-(--brand-teal-text)"
+                        >
+                          {place.name}
+                        </Link>
+                      </CardTitle>
+                      <CardDescription className="flex items-center gap-1.5">
+                        {place.key === homeKey && <House aria-hidden="true" className="size-3.5" />}
+                        {[
+                          place.key === homeKey && "Home",
+                          formatPlaceSubtitle(place),
+                          `${alerts.length} ${alerts.length === 1 ? "alert" : "alerts"}`,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <AlertList alerts={alerts} units={units} now={now} limit={10} />
+                    </CardContent>
+                  </Card>
                 </section>
               ))}
         </div>
@@ -171,7 +171,7 @@ export async function AlertsView({
         <aside
           aria-label="About These Alerts"
           className="rise xl:sticky xl:top-4"
-          style={rise(groups.length + 1)}
+          style={rise(groups.length + 2)}
         >
           <Card size="sm" className="bg-transparent shadow-none ring-border">
             <CardHeader>

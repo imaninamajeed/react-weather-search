@@ -20,13 +20,13 @@ export function AlertList({ alerts, units, now, limit = 4 }: AlertListProps) {
 
   return (
     <>
-      <ul className="space-y-3">
+      <ul className="divide-y divide-border *:first:pt-0 *:last:pb-0">
         {shown.map((alert) => (
           <AlertItem key={alert.id} alert={alert} units={units} now={now} />
         ))}
       </ul>
       {rest.length > 0 && (
-        <details className="group mt-3">
+        <details className="group mt-4 border-t border-border pt-4">
           <Button asChild variant="outline" size="sm">
             <summary>
               Show {rest.length} more {rest.length === 1 ? "alert" : "alerts"}
@@ -36,7 +36,7 @@ export function AlertList({ alerts, units, now, limit = 4 }: AlertListProps) {
               />
             </summary>
           </Button>
-          <ul className="mt-3 space-y-3">
+          <ul className="mt-2 divide-y divide-border *:last:pb-0">
             {rest.map((alert) => (
               <AlertItem key={alert.id} alert={alert} units={units} now={now} />
             ))}
