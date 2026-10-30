@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { WeatherAlert } from "@/lib/alerts/types";
 import type { Units } from "@/lib/weather/types";
 import { AlertItem } from "./alert-item";
@@ -24,10 +26,16 @@ export function AlertList({ alerts, units, now, limit = 4 }: AlertListProps) {
         ))}
       </ul>
       {rest.length > 0 && (
-        <details className="mt-3">
-          <summary className="cursor-pointer text-sm font-medium select-none">
-            Show {rest.length} more {rest.length === 1 ? "alert" : "alerts"}
-          </summary>
+        <details className="group mt-3">
+          <Button asChild variant="outline" size="sm">
+            <summary>
+              Show {rest.length} more {rest.length === 1 ? "alert" : "alerts"}
+              <ChevronDown
+                aria-hidden="true"
+                className="transition-transform group-open:rotate-180"
+              />
+            </summary>
+          </Button>
           <ul className="mt-3 space-y-3">
             {rest.map((alert) => (
               <AlertItem key={alert.id} alert={alert} units={units} now={now} />
