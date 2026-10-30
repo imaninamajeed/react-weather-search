@@ -18,7 +18,7 @@ const SUMMARY_LIMIT = 2;
 
 /**
  * The dashboard's Alerts, sized to what there is to say, and the same height either way so the page does
- * not jump when they arrive. With none it is a calm single line. With some it is a banner tinted by the
+ * not jump when they arrive. With none it is a calm single line with no link, as there is nothing to go and read. With some it is a banner tinted by the
  * most serious one: how many of each kind, the two most important as chips (each a link to its place,
  * serious ones first) and a "+N more", and the way to the rest. It has a close button that remembers
  * what you have seen (see lib/alerts/dismissed). What was checked, and anything that
@@ -91,10 +91,7 @@ export async function AlertsOverview({
           <span className="font-medium">All clear.</span>{" "}
           <span className="text-muted-foreground">No active alerts across {placesLabel}.</span>
         </p>
-        <div className="ml-auto flex items-center gap-1">
-          {info}
-          {allAlerts}
-        </div>
+        {info && <div className="ml-auto flex items-center gap-1">{info}</div>}
       </section>
     );
   }
