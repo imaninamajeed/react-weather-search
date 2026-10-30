@@ -118,14 +118,18 @@ test.describe("dashboard versus places", () => {
     await expect(page.locator("article:visible h3")).toHaveText(["Subang Jaya"]);
     await expect(page.locator("article:visible").first().getByRole("listitem")).toHaveCount(7);
 
-    // The other saved locations are square tiles; a click opens their seven days, not the place.
+    // The other saved locations are square tiles; pointing at one shows its seven days, in place.
     await page.getByRole("tab", { name: /Saved Locations/ }).click();
     await expect(page.getByRole("button", { name: "Actions for Tokyo" })).toBeVisible();
-    await page.getByRole("button", { name: "7-day details for Tokyo" }).click();
+    const tile = page.getByRole("group", { name: "Tokyo" });
+    await expect(tile).toBeHidden();
+    await page.getByRole("button", { name: "7-day details for Tokyo" }).hover();
     await expect(page).toHaveURL(/\/places$/);
-    const dialog = page.getByRole("dialog", { name: "Tokyo" });
-    await expect(dialog.getByRole("listitem")).toHaveCount(7);
-    await expect(dialog.getByRole("link", { name: "Full Forecast" })).toBeVisible();
+    await expect(tile.getByRole("listitem")).toHaveCount(7);
+    // The name leads to the full forecast; a roomier tile also has a button for it.
+    await expect(tile.getByRole("link", { name: "Tokyo" })).toHaveAttribute("href", /tokyo/);
+    await page.mouse.move(0, 0);
+    await expect(tile).toBeHidden();
   });
 
   test("the old manage link redirects to the places page", async ({ page }) => {

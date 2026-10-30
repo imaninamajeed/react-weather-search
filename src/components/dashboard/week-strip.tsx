@@ -37,7 +37,7 @@ export async function WeekStrip({
   const weekSpan = Math.max(...days.map((day) => day.temperatureMax)) - weekLow || 1;
 
   return (
-    <ul className="grid min-w-0 auto-cols-[4.5rem] grid-flow-col divide-x divide-border overflow-x-auto max-lg:pb-1 lg:auto-cols-auto lg:grid-flow-row lg:grid-cols-7 lg:overflow-visible dark:divide-white/10">
+    <ul className="grid min-w-0 grid-cols-7 divide-x divide-border dark:divide-white/10">
       {days.map((day) => {
         const weather = describeWeather(day.weatherCode, true, locale);
         const severity = severityOnDay(alerts, day.date, today);
@@ -53,7 +53,7 @@ export async function WeekStrip({
           <li
             key={day.date}
             aria-current={isToday ? "date" : undefined}
-            className={cn("relative px-2 py-1 text-center", isToday && "bg-foreground/5")}
+            className={cn("relative px-0.5 py-1 text-center sm:px-2", isToday && "bg-foreground/5")}
           >
             <span className="sr-only">
               {text.day(
@@ -77,13 +77,13 @@ export async function WeekStrip({
                 {isToday ? t.common.today : formatWeekday(day.date, "short", locale)}
               </p>
               <WeatherIcon name={weather.icon} className="mx-auto mt-2 size-5" />
-              <p className="mt-2 text-base font-medium">
+              <p className="mt-2 text-sm font-medium sm:text-base">
                 {formatTemperature(day.temperatureMax, units)}
               </p>
               <p className="text-sm text-muted-foreground">
                 {formatTemperature(day.temperatureMin, units)}
               </p>
-              <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-muted">
+              <div className="mx-auto mt-2 h-1 w-full max-w-10 rounded-full bg-muted">
                 <div
                   className="h-full rounded-full bg-(--brand-teal-text)/70"
                   style={{

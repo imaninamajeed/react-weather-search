@@ -78,47 +78,49 @@ export async function HomeCard({
               {t.common.unavailable(place.name)}. {t.common.providerDidntRespond}
             </p>
           )}
-          <Button asChild size="lg" className="mt-5">
+        </div>
+
+        <div className="flex flex-col items-end gap-6 justify-self-end">
+          {current && today && weather && (
+            <div className="flex items-center gap-4 sm:gap-6">
+              <span
+                aria-hidden="true"
+                className="grid size-24 shrink-0 place-items-center rounded-full bg-(--brand-teal-text)/10 sm:size-32"
+              >
+                <WeatherIcon
+                  name={weather.icon}
+                  className="size-12 text-(--brand-teal-text) sm:size-16"
+                />
+              </span>
+              <div>
+                <p className="font-heading text-7xl leading-none font-medium tracking-tight sm:text-8xl">
+                  <span className="sr-only">
+                    {units === "metric"
+                      ? t.common.degreesCelsius(degrees!)
+                      : t.common.degreesFahrenheit(degrees!)}
+                  </span>
+                  <span aria-hidden="true">
+                    {degrees}
+                    <span className="align-top text-2xl font-normal text-(--brand-teal-text) sm:text-4xl">
+                      {units === "metric" ? "°C" : "°F"}
+                    </span>
+                  </span>
+                </p>
+                <p className="mt-2 text-lg">{weather.label}</p>
+                <p className="tnum text-sm text-muted-foreground">
+                  {t.common.high} {formatTemperature(today.temperatureMax, units)} · {t.common.low}{" "}
+                  {formatTemperature(today.temperatureMin, units)}
+                </p>
+              </div>
+            </div>
+          )}
+          <Button asChild size="lg">
             <Link href={href}>
               {t.dashboard.hero.fullForecast}
               <ArrowRight aria-hidden="true" />
             </Link>
           </Button>
         </div>
-
-        {current && today && weather && (
-          <div className="flex items-center gap-4 sm:gap-6">
-            <span
-              aria-hidden="true"
-              className="grid size-24 shrink-0 place-items-center rounded-full bg-(--brand-teal-text)/10 sm:size-32"
-            >
-              <WeatherIcon
-                name={weather.icon}
-                className="size-12 text-(--brand-teal-text) sm:size-16"
-              />
-            </span>
-            <div>
-              <p className="font-heading text-7xl leading-none font-medium tracking-tight sm:text-8xl">
-                <span className="sr-only">
-                  {units === "metric"
-                    ? t.common.degreesCelsius(degrees!)
-                    : t.common.degreesFahrenheit(degrees!)}
-                </span>
-                <span aria-hidden="true">
-                  {degrees}
-                  <span className="align-top text-2xl font-normal text-(--brand-teal-text) sm:text-4xl">
-                    {units === "metric" ? "°C" : "°F"}
-                  </span>
-                </span>
-              </p>
-              <p className="mt-2 text-lg">{weather.label}</p>
-              <p className="tnum text-sm text-muted-foreground">
-                {t.common.high} {formatTemperature(today.temperatureMax, units)} · {t.common.low}{" "}
-                {formatTemperature(today.temperatureMin, units)}
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
       {forecast && (

@@ -3,22 +3,26 @@ import Link from "next/link";
 import { HazardBadge } from "@/components/alerts/hazard-badge";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { Button } from "@/components/ui/button";
-import { formatPlaceSubtitle, formatWeekdayClock } from "@/lib/format";
+import { formatPlaceSubtitle } from "@/lib/format";
 import { getI18n } from "@/lib/i18n/server";
 import { placeHref, type Place } from "@/lib/places";
 import { formatTemperature } from "@/lib/units";
+import { cn } from "@/lib/utils";
 import { describeWeather } from "@/lib/weather/codes";
 import type { Units } from "@/lib/weather/types";
 import { loadPlace } from "./load-place";
 import { DragGrip, RowMenu } from "./place-row-controls";
-import { TileDialog } from "./tile-dialog";
+import { TileFlip } from "./tile-flip";
 import { WeekDetails } from "./week-details";
 
+/** Square, but taller at three across (set on the grid), where the wider tile has height to spare. */
+export const TILE_SHAPE = "aspect-square lg:group-data-[columns=3]/saved:aspect-[4/5]";
+
 /**
- * One saved location as a square: its name, what it is doing now, and nothing else. A click opens
- * its seven days in a dialog (with a link on to the full forecast) rather than leaving the page, so
- * a grid of them can be scanned and opened one after another. The menu sits over the tile's corner,
- * outside the button; a finger or pen drags by the grip, a mouse by the tile.
+ * One saved location as a square: its name, what it is doing now, and nothing else. Pointing at it
+ * fades in its seven days over the same square (with a link on to the full forecast; a tap does it
+ * on touch), so a grid of them can be scanned by moving across it. The menu sits over the tile's
+ * corner, outside the button; a finger or pen drags by the grip, a mouse by the tile.
  */
 export async function SavedTile({
   place,
@@ -36,13 +40,13 @@ export async function SavedTile({
   const weather = current && describeWeather(current.weatherCode, current.isDay, locale);
 
   return (
-    <div className="group/row relative aspect-square">
-      <TileDialog
+    <div className={cn("group/row relative", TILE_SHAPE)}>
+      <TileFlip
         label={t.dashboard.week.details(place.name)}
         title={place.name}
-        description={
-          current ? `${subtitle} · ${formatWeekdayClock(current.time, locale)}` : subtitle
-        }
+        href={placeHref(place)}
+        draggable={!(manage.isFirst && manage.isLast)}
+        caption={t.dashboard.week.outlook}
         face={
           <>
             <div className="min-w-0 pr-9">
@@ -73,18 +77,6 @@ export async function SavedTile({
             )}
           </>
         }
-        now={
-          current && today && weather ? (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <WeatherIcon name={weather.icon} className="size-6" />
-              <p className="text-4xl leading-none font-medium tracking-tight">
-                {formatTemperature(current.temperature, units)}
-              </p>
-              <p className="text-sm">{weather.label}</p>
-              <HazardBadge alerts={alerts} />
-            </div>
-          ) : null
-        }
         details={
           forecast ? (
             <WeekDetails forecast={forecast} alerts={alerts} units={units} />
@@ -95,7 +87,7 @@ export async function SavedTile({
           )
         }
         footer={
-          <Button asChild>
+          <Button asChild variant="ghost" size="sm" className="ml-auto flex w-fit">
             <Link href={placeHref(place)}>
               {t.dashboard.hero.fullForecast}
               <ArrowRight aria-hidden="true" />
