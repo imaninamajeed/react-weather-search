@@ -8,14 +8,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 /**
  * The one header, at every size: the sidebar toggle, where you are (the @crumbs slot knows the route
- * and the place, and its place crumb switches place), and search. On a phone the toggle opens the
- * sidebar as a drawer, the brand appears (the sidebar's is out of sight) and the breadcrumb wraps to a
- * row of its own.
+ * and the place, and its place crumb switches place), and search. On a phone there is no sidebar (the
+ * tab bar navigates), so the toggle is gone, the brand appears and the breadcrumb wraps to a row of
+ * its own.
  */
 export function AppHeader({ crumbs }: { crumbs: ReactNode }) {
   return (
     <header className="sticky top-0 z-20 flex flex-wrap items-center gap-x-2 border-b border-border bg-background/85 px-4 py-2 backdrop-blur">
-      <SidebarTrigger className="-ml-1 shrink-0" />
+      <SidebarTrigger className="-ml-1 hidden shrink-0 md:inline-flex" />
       <Separator orientation="vertical" className="mx-1 hidden h-4 md:block" />
       <Link
         href="/dashboard"

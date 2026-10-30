@@ -1,3 +1,4 @@
+import { ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface AlertsSummaryProps {
@@ -6,6 +7,10 @@ interface AlertsSummaryProps {
   /** Places that have at least one alert, out of `places`. */
   affected: number;
   places: number;
+  /** Places whose alerts couldn't be loaded, so an empty page is not read as "all clear". */
+  failed: number;
+  /** A feed was down or a place failed: what is shown may be missing something. */
+  incomplete: boolean;
 }
 
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
@@ -16,26 +21,45 @@ const plural = (count: number, one: string, many: string) => `${count} ${count =
  * card surface and nothing else (no art, no tint), so severity shows only as an icon and a word on
  * each alert, and a page full of warnings is not also a page full of red.
  */
-export function AlertsSummary({ warnings, advisories, affected, places }: AlertsSummaryProps) {
-  const clear = warnings + advisories === 0;
+export function AlertsSummary({
+  warnings,
+  advisories,
+  affected,
+  places,
+  failed,
+  incomplete,
+}: AlertsSummaryProps) {
+  const none = warnings + advisories === 0;
+  const unchecked = none && failed >= places;
+  const clear = none && !incomplete;
 
-  const headline = clear
-    ? "All clear"
-    : [
-        warnings > 0 && plural(warnings, "warning", "warnings"),
-        advisories > 0 && plural(advisories, "advisory", "advisories"),
-      ]
-        .filter(Boolean)
-        .join(" and ");
+  const headline = unchecked
+    ? "Couldn't check alerts"
+    : clear
+      ? "All clear"
+      : none
+        ? "No alerts found"
+        : [
+            warnings > 0 && plural(warnings, "warning", "warnings"),
+            advisories > 0 && plural(advisories, "advisory", "advisories"),
+          ]
+            .filter(Boolean)
+            .join(" and ");
   const placesLabel = places === 1 ? "your place" : `your ${places} places`;
-  const lead = clear
-    ? `No active alerts across ${placesLabel}.`
-    : `${affected === places ? "Across all of" : `In ${affected} of`} ${placesLabel}.`;
+  const lead = unchecked
+    ? "Alerts are unavailable right now. Try again in a moment."
+    : clear
+      ? `No active alerts across ${placesLabel}. Enjoy the day.`
+      : none
+        ? "Nothing active in what we could reach, but some checks didn't finish. Details are below."
+        : `${affected === places ? "Across all of" : `In ${affected} of`} ${placesLabel}.`;
 
   return (
     <section
       aria-labelledby="alerts-summary-title"
-      className="grid gap-6 rounded-4xl bg-card p-6 text-card-foreground shadow-md ring-1 ring-foreground/5 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12 dark:ring-foreground/10 fit:py-6"
+      className="grid gap-6 rounded-4xl bg-card p-6 text-card-foreground shadow-md ring-1 ring-foreground/5 sm:p-8 lg:items-center lg:gap-12 dark:ring-foreground/10 fit:py-6",
+        none ? "lg:grid-cols-[1fr_auto]" : "lg:grid-cols-[1fr_auto]",
+      )}
     >
       <div className="min-w-0">
         <p className="label-caps">Alerts</p>

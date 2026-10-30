@@ -28,14 +28,11 @@ async function AlertsContent({ searchParams }: Pick<PageProps<"/alerts">, "searc
 function AlertsSkeleton() {
   return (
     <div aria-hidden="true" className="flex flex-col gap-4">
-      <Skeleton className="h-64 w-full rounded-4xl lg:h-52" />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="space-y-3">
-          <Skeleton className="h-9 w-56 rounded-full" />
-          <Skeleton className="h-40 w-full rounded-3xl" />
-          <Skeleton className="h-40 w-full rounded-3xl" />
-        </div>
-        <Skeleton className="hidden h-80 rounded-4xl xl:block" />
+      <Skeleton className="h-44 w-full rounded-4xl" />
+      <Skeleton className="mt-4 h-9 w-72 rounded-full" />
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,28rem),1fr))] gap-4">
+        <Skeleton className="h-64 rounded-4xl" />
+        <Skeleton className="h-64 rounded-4xl" />
       </div>
     </div>
   );

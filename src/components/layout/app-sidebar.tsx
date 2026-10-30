@@ -20,7 +20,7 @@ const linkClass =
   "underline decoration-sidebar-border underline-offset-4 hover:text-sidebar-foreground";
 
 /**
- * The app's navigation from md up (and, on a phone, the drawer behind the menu button): where you
+ * The app's navigation from md up (a phone has the bottom tab bar instead): where you
  * can go, who you are following and what it is doing. It collapses to an icon rail (⌘B, the header's toggle or the rail's edge) and stays put while the page
  * beside it changes, so every other page can spend its whole width on weather.
  */
