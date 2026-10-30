@@ -8,7 +8,6 @@
 
 @theme inline {
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --font-heading: var(--font-heading);
 
   --color-background: var(--background);
@@ -205,9 +204,9 @@
   .tnum {
     font-variant-numeric: tabular-nums lining-nums;
   }
-  /* Small uppercase mono label used for data captions. */
+  /* Small uppercase label used for data captions. */
   .label-caps {
-    @apply font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase;
+    @apply font-heading text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase;
   }
 }
 

@@ -108,7 +108,7 @@ export function DayChart({ hours, units }: { hours: HourlyPoint[]; units: Units 
                       />
                       {config[name as keyof typeof config].label}
                     </span>
-                    <span className="font-mono font-medium tabular-nums">
+                    <span className="font-heading font-medium tabular-nums">
                       {value}
                       {name === "probability" ? "%" : unit}
                     </span>

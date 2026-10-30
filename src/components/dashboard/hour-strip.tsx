@@ -53,7 +53,7 @@ export function HourStrip({
           >
             <span
               className={cn(
-                "font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase",
+                "font-heading text-[0.6875rem] font-medium tracking-[0.08em] uppercase",
                 "text-muted-foreground",
                 glass && "dark:text-white/80",
               )}

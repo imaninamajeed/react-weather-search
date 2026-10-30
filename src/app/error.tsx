@@ -25,7 +25,7 @@ export default function Error({
       <p className="max-w-prose text-muted-foreground">
         Our weather provider didn&apos;t respond in time. This is usually temporary.
         {error.digest && (
-          <span className="mt-2 block font-mono text-xs">Reference: {error.digest}</span>
+          <span className="mt-2 block font-heading text-xs">Reference: {error.digest}</span>
         )}
       </p>
       <Button onClick={() => retry()}>Try again</Button>

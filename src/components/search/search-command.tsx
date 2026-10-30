@@ -177,7 +177,7 @@ export function SearchCommand() {
       >
         <IconSearch aria-hidden="true" className="size-4" />
         <span className="hidden flex-1 text-left font-normal sm:inline">Search places</span>
-        <kbd className="hidden rounded border border-border px-1.5 font-mono text-[0.6875rem] sm:inline">
+        <kbd className="hidden rounded border border-border px-1.5 font-heading text-[0.6875rem] sm:inline">
           /
         </kbd>
       </Button>

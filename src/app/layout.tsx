@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Outfit, Oxanium } from "next/font/google";
+import { Outfit, Oxanium } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { OfflineBanner } from "@/components/pwa/offline-banner";
@@ -11,14 +11,9 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-// Body and heading faces come from the shadcn preset; the mono face is for data labels.
+// The app uses exactly two faces, both from the shadcn preset: Outfit for text, Oxanium for headings and data labels.
 const oxaniumHeading = Oxanium({ subsets: ["latin"], variable: "--font-heading" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
-
-const mono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   applicationName: "Isobar",
@@ -44,14 +39,7 @@ export default function RootLayout({ children, crumbs }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        "h-full",
-        "antialiased",
-        "font-sans",
-        outfit.variable,
-        oxaniumHeading.variable,
-        mono.variable,
-      )}
+      className={cn("h-full", "antialiased", "font-sans", outfit.variable, oxaniumHeading.variable)}
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider

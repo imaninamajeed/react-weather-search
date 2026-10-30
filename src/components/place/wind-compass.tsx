@@ -66,7 +66,7 @@ export function WindCompass({
             y={point.y}
             textAnchor="middle"
             dominantBaseline="central"
-            className="fill-muted-foreground font-mono text-[9px]"
+            className="fill-muted-foreground font-heading text-[9px]"
           >
             {point.label}
           </text>

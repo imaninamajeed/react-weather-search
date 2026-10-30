@@ -30,7 +30,7 @@ interface PlaceHeroProps {
 }
 
 const caption =
-  "font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase dark:text-white/75";
+  "font-heading text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase dark:text-white/75";
 
 /**
  * The opening panel of the dashboard and of a place's forecast: the place lit by the app mark's

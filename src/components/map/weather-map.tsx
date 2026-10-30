@@ -125,7 +125,7 @@ function popupContent(
     root.append(el);
   };
   add(
-    "font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted-foreground",
+    "font-heading text-[0.6875rem] uppercase tracking-[0.08em] text-muted-foreground",
     coordinateLabel(latitude, longitude),
   );
   add("text-3xl font-semibold leading-none", formatTemperature(data.temperature, units));

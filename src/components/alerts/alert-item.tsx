@@ -5,7 +5,7 @@ import type { WeatherAlert } from "@/lib/alerts/types";
 import type { Units } from "@/lib/weather/types";
 import { cn } from "@/lib/utils";
 
-const captionClass = "font-mono text-[0.6875rem] tracking-[0.08em] uppercase";
+const captionClass = "font-heading text-[0.6875rem] tracking-[0.08em] uppercase";
 
 interface AlertItemProps {
   alert: WeatherAlert;
