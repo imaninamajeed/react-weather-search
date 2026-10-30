@@ -1,6 +1,15 @@
 "use client";
 
-import { CircleHelp, CloudRain, MousePointerClick, Play, ZoomIn } from "lucide-react";
+import {
+  CircleDashed,
+  CircleHelp,
+  Crosshair,
+  House,
+  MapPin,
+  MousePointerClick,
+  Play,
+  ZoomIn,
+} from "lucide-react";
 import { LegendRow } from "@/components/shared/legend-row";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,15 +23,24 @@ import {
 import { useMessages } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
-/** A marker pill as the map draws it, small enough to sit beside a legend entry. */
+/** A pin as the map draws it, small enough to sit beside a legend entry. */
 function Pill({ children, home }: { children: string; home?: boolean }) {
+  const Icon = home ? House : MapPin;
   return (
     <span
       className={cn(
-        "flex items-center rounded-full border bg-card px-2 py-0.5 text-[0.6875rem] font-semibold text-card-foreground shadow-sm",
-        home ? "border-primary ring-2 ring-primary/30" : "border-border",
+        "flex items-center gap-1 rounded-full border bg-card py-0.5 pr-2 pl-0.5 font-heading text-[0.6875rem] font-medium text-card-foreground shadow-sm",
+        home ? "border-primary" : "border-border",
       )}
     >
+      <span
+        className={cn(
+          "grid size-4 place-items-center rounded-full",
+          home ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+        )}
+      >
+        <Icon className="size-2.5" />
+      </span>
       {children}
     </span>
   );
@@ -62,11 +80,23 @@ export function ReadingMapDialog({ className }: { className?: string }) {
           >
             {text.timeline}
           </LegendRow>
-          <LegendRow term={text.homeTerm} icon={<Pill home>24°</Pill>}>
+          <LegendRow term={text.homeTerm} icon={<Pill home>Subang Jaya</Pill>}>
             {text.home}
           </LegendRow>
-          <LegendRow term={text.savedTerm} icon={<Pill>26°</Pill>}>
+          <LegendRow term={text.savedTerm} icon={<Pill>Tokyo</Pill>}>
             {text.saved}
+          </LegendRow>
+          <LegendRow
+            term={text.areaTerm}
+            icon={<CircleDashed className="size-6 p-1 text-(--brand-magenta)" />}
+          >
+            {text.area}
+          </LegendRow>
+          <LegendRow
+            term={text.centerTerm}
+            icon={<Crosshair className="size-6 p-1 text-muted-foreground" />}
+          >
+            {text.center}
           </LegendRow>
           <LegendRow
             term={text.clickTerm}

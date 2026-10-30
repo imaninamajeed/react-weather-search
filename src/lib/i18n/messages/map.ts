@@ -6,6 +6,7 @@ export const map = defineMessages(
     label: "Live Radar",
     lead: "Rain radar for the last two hours, with the locations you follow. Click anywhere for the weather at that spot.",
     backToPlace: (name: string) => `${name} forecast`,
+    center: "Center the Map",
     banner: {
       title: "Last 2 Hours",
       locations: "Locations",
@@ -19,13 +20,18 @@ export const map = defineMessages(
       timeline:
         "Play steps through the last two hours, oldest first. Drag the slider to stop on one moment; the caption says how long before the latest frame it is.",
       homeTerm: "Home",
-      home: "Your home location, outlined, with its temperature now.",
+      home: "Your home location, marked with a house. Point at it for its weather; click to zoom in and keep the pop-up open.",
       savedTerm: "Saved Locations",
       saved:
-        "The other locations you follow, with their temperature now. Click one to open its forecast.",
+        "The other locations you follow, marked with a pin. Point at one for the weather now and a link to its forecast; click to zoom in and keep the pop-up open.",
+      centerTerm: "Center Button",
+      center:
+        "Under the zoom buttons: returns the map to your locations, or to the place you opened it from, and closes any pop-up.",
       clickTerm: "Anywhere Else",
       click:
         "Click any spot for the weather there: the temperature, what it feels like, wind and the chance of rain.",
+      areaTerm: "Zoomed In on a Place",
+      area: "Close in, a place's pin gives way to a dashed ring about 6 km around it. It is a guide to the surroundings, not the city limit.",
       zoomTerm: "Zoomed In Close",
       zoom: "The radar looks blocky up close because it is scaled up from coarser data. It shows where rain is, not exactly which street.",
     },
@@ -64,6 +70,7 @@ export const map = defineMessages(
     label: "Radar Langsung",
     lead: "Radar hujan untuk dua jam lalu, bersama lokasi yang anda ikuti. Klik di mana-mana untuk melihat cuaca di tempat itu.",
     backToPlace: (name) => `Ramalan ${name}`,
+    center: "Pusatkan Peta",
     banner: {
       title: "2 Jam Lepas",
       locations: "Lokasi",
@@ -77,13 +84,18 @@ export const map = defineMessages(
       timeline:
         "Main bergerak melalui dua jam lalu, bermula yang terlama. Seret peluncur untuk berhenti pada satu detik; kapsyen memberitahu berapa lama sebelum bingkai terkini.",
       homeTerm: "Rumah",
-      home: "Lokasi rumah anda, bergaris, dengan suhunya sekarang.",
+      home: "Lokasi rumah anda, bertanda rumah. Halakan penuding untuk cuacanya; klik untuk zum masuk dan kekalkan tetingkap timbul.",
       savedTerm: "Lokasi Tersimpan",
       saved:
-        "Lokasi lain yang anda ikuti, dengan suhunya sekarang. Klik satu untuk membuka ramalannya.",
+        "Lokasi lain yang anda ikuti, bertanda pin. Halakan penuding pada satu untuk cuaca sekarang dan pautan ke ramalannya; klik untuk zum masuk dan kekalkan tetingkap timbul.",
+      centerTerm: "Butang Pusat",
+      center:
+        "Di bawah butang zum: mengembalikan peta kepada lokasi anda, atau tempat yang anda buka daripadanya, dan menutup tetingkap timbul.",
       clickTerm: "Tempat Lain",
       click:
         "Klik mana-mana tempat untuk melihat cuaca di situ: suhu, rasa suhu, angin dan kemungkinan hujan.",
+      areaTerm: "Zum ke Satu Tempat",
+      area: "Dari dekat, pin sesuatu tempat digantikan dengan cincin putus-putus kira-kira 6 km di sekelilingnya. Ia panduan kawasan sekitar, bukan sempadan bandar.",
       zoomTerm: "Zum Dekat",
       zoom: "Radar kelihatan berpetak dari dekat kerana dibesarkan daripada data yang lebih kasar. Ia menunjukkan di mana hujan, bukan jalan yang tepat.",
     },

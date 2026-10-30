@@ -5,12 +5,10 @@ import { ReadingMapDialog } from "@/components/map/reading-map-dialog";
 import { WeatherMap, type MapPlace } from "@/components/map/weather-map";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/lib/i18n/text";
-import { getForecast } from "@/lib/open-meteo/forecast";
 import { getRadarFrames } from "@/lib/radar";
 import { getPreferences } from "@/lib/preferences";
 import { homePlace } from "@/lib/preferences-core";
 import { lookupPlace } from "@/lib/resolve-place";
-import { formatTemperature } from "@/lib/units";
 
 export const metadata: Metadata = {
   title: "Map",
@@ -28,30 +26,19 @@ async function MapContent({ searchParams }: Pick<PageProps<"/map">, "searchParam
     (place, index, all) => all.findIndex((other) => other.key === place.key) === index,
   );
 
-  // Temperatures for the markers and the radar load in parallel; neither can break the map.
-  const [forecasts, radar] = await Promise.all([
-    Promise.allSettled(places.map((place) => getForecast(place.latitude, place.longitude))),
-    getRadarFrames().catch((error: unknown) => {
-      console.error("radar unavailable", error);
-      return null;
-    }),
-  ]);
-
-  const markers: MapPlace[] = places.flatMap((place, index) => {
-    const forecast = forecasts[index];
-    return forecast.status === "fulfilled"
-      ? [
-          {
-            key: place.key,
-            name: place.name,
-            latitude: place.latitude,
-            longitude: place.longitude,
-            temperature: formatTemperature(forecast.value.current.temperature, preferences.units),
-            isHome: place.key === home.key,
-          },
-        ]
-      : [];
+  // The radar is the only thing that can fail here, and it cannot break the map.
+  const radar = await getRadarFrames().catch((error: unknown) => {
+    console.error("radar unavailable", error);
+    return null;
   });
+
+  const markers: MapPlace[] = places.map((place) => ({
+    key: place.key,
+    name: place.name,
+    latitude: place.latitude,
+    longitude: place.longitude,
+    isHome: place.key === home.key,
+  }));
 
   return (
     <WeatherMap

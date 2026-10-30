@@ -281,6 +281,12 @@ body:has([data-wide]) {
 .maplibregl-map .maplibregl-popup-anchor-right .maplibregl-popup-tip {
   border-left-color: var(--popover);
 }
+/* A saved place's pop-up is dressed like its pin: rounder, with a softer shadow. */
+.maplibregl-map .place-popup .maplibregl-popup-content {
+  border-radius: 1.25rem;
+  padding: 0.75rem 0.875rem;
+  box-shadow: 0 12px 32px oklch(0 0 0 / 22%);
+}
 .maplibregl-map .maplibregl-popup-close-button {
   color: var(--muted-foreground);
 }
