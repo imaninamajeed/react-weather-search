@@ -39,7 +39,7 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
           {isWarning ? "Warning" : "Advisory"}
         </span>
         <span className={cn(captionClass, "text-muted-foreground")}>
-          · {official ? `Official · ${alert.issuer}` : "Forecast signal"}
+          · {official ? `Official · ${alert.issuer}` : "Forecast Signal"}
         </span>
         {place && (
           <Link
@@ -57,7 +57,7 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
 
       {alert.source !== "forecast" && (
         <details className="mt-3 text-sm">
-          <summary className="cursor-pointer font-medium select-none">Full notice</summary>
+          <summary className="cursor-pointer font-medium select-none">Full Notice</summary>
           {alert.summary && <p className="mt-2 font-medium">{alert.summary}</p>}
           <p className="mt-2 whitespace-pre-line text-muted-foreground">{alert.text}</p>
           {alert.instruction && <p className="mt-2 whitespace-pre-line">{alert.instruction}</p>}

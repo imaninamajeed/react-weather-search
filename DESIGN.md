@@ -51,6 +51,17 @@ destructive | link` and `default | xs | sm | lg | icon | icon-xs | icon-sm | ico
    around whole pages. Providers (`TooltipProvider`, `SidebarProvider`, `Toaster`) are already in
    `layout.tsx`; don't add them again.
 
+## Copy
+
+**Labels are Title Case; sentences are not.** Headings, section and card titles, buttons, links, tabs,
+menu and palette items, badges, chart and table headings, tile labels, and the short values the UI shows
+(weather conditions, UV and air-quality levels, alert titles) are Title Case: "Manage and Compare",
+"Add a Place", "Next 7 Days", "Light Drizzle". Short words stay lowercase unless they open or close the
+label: a, an, the, and, or, but, for, of, to, in, on, at, by, as, vs, with, from. Descriptions,
+paragraphs, status text ("The sun has set"), toasts, placeholders and anything that reads inside a
+sentence ("Checked: Forecast signals, MET Malaysia.") stay in sentence case. Accessible names follow
+the visible label, so an icon button's `aria-label` is Title Case too.
+
 ## Tokens
 
 Colour, radius and font come from CSS variables in `globals.css`, exposed to Tailwind through

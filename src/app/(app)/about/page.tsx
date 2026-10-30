@@ -14,7 +14,7 @@ import { NORMALS_PERIOD } from "@/lib/weather/climate";
 import { CONFIDENCE_THRESHOLDS as C } from "@/lib/weather/confidence";
 
 export const metadata: Metadata = {
-  title: "Data and methods",
+  title: "Data and Methods",
   description:
     "Where Isobar's numbers come from, how alerts and forecast confidence are worked out, and what it can't tell you.",
 };
@@ -42,19 +42,19 @@ const HAZARD_ROWS: Array<[hazard: string, advisory: string, warning: string, bas
     "Hourly, next 72 hours",
   ],
   [
-    "Intense rain",
+    "Intense Rain",
     `≥ ${T.rainRate.advisory} mm/h`,
     `≥ ${T.rainRate.warning} mm/h`,
     "Hourly, next 72 hours",
   ],
   [
-    "Heavy rain",
+    "Heavy Rain",
     `≥ ${T.rainTotal.advisory} mm in a day`,
     `≥ ${T.rainTotal.warning} mm in a day`,
     "Daily, next 7 days",
   ],
   [
-    "Strong gusts",
+    "Strong Gusts",
     `≥ ${T.gusts.advisory} km/h`,
     `≥ ${T.gusts.warning} km/h`,
     "Hourly, next 72 hours",
@@ -67,22 +67,22 @@ const HAZARD_ROWS: Array<[hazard: string, advisory: string, warning: string, bas
   ],
   ["Frost", `Lows ≤ ${T.frost.advisory} °C`, `Lows ≤ ${T.frost.warning} °C`, "Daily, next 7 days"],
   [
-    "Heavy snow",
+    "Heavy Snow",
     `≥ ${T.snow.advisory} cm in a day`,
     `≥ ${T.snow.warning} cm in a day`,
     "Daily, next 7 days",
   ],
-  ["Air quality", `US AQI ≥ ${T.aqi.advisory}`, `US AQI ≥ ${T.aqi.warning}`, "Current reading"],
+  ["Air Quality", `US AQI ≥ ${T.aqi.advisory}`, `US AQI ≥ ${T.aqi.warning}`, "Current reading"],
 ];
 
 /** The page's sections, for the contents list beside them on large screens. */
 const SECTIONS = [
-  ["sources", "Data sources"],
-  ["alerts", "How alerts work"],
-  ["confidence", "How forecast confidence works"],
-  ["climate", "How climate history works"],
+  ["sources", "Data Sources"],
+  ["alerts", "How Alerts Work"],
+  ["confidence", "How Forecast Confidence Works"],
+  ["climate", "How Climate History Works"],
   ["privacy", "Privacy"],
-  ["limits", "What it can't tell you"],
+  ["limits", "What It Can't Tell You"],
   ["credits", "Credits"],
 ] as const;
 
@@ -95,13 +95,13 @@ export default function AboutPage() {
       <div className="flex flex-col gap-10 fit:gap-3">
         <PageHeader
           label="About"
-          title="Data and methods"
+          title="Data and Methods"
           lead="Where the numbers come from, how alerts and forecast confidence are worked out, and what this app can't tell you."
         />
 
         <div className="contents fit:grid fit:grid-cols-12 fit:gap-3">
           <nav
-            aria-label="On this page"
+            aria-label="On This Page"
             className="hidden self-start rounded-4xl bg-card p-4 shadow-md ring-1 ring-foreground/5 fit:col-span-3 fit:block"
           >
             <ul className="space-y-1 text-sm">
@@ -115,12 +115,12 @@ export default function AboutPage() {
             </ul>
           </nav>
           <div className="contents fit:col-span-9 fit:block fit:space-y-10 fit:scroll-smooth fit:rounded-4xl fit:bg-card fit:p-6 fit:shadow-md fit:ring-1 fit:ring-foreground/5 fit:*:first:border-0 fit:*:first:pt-0">
-            <Section id="sources" title="Data sources">
-              <Table aria-label="Data sources">
+            <Section id="sources" title="Data Sources">
+              <Table aria-label="Data Sources">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Source</TableHead>
-                    <TableHead>Used for</TableHead>
+                    <TableHead>Used For</TableHead>
                     <TableHead>Terms</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -180,7 +180,7 @@ export default function AboutPage() {
               </Table>
             </Section>
 
-            <Section id="alerts" title="How alerts work">
+            <Section id="alerts" title="How Alerts Work">
               <div className="max-w-prose space-y-3 text-muted-foreground">
                 <p>
                   Alerts come in two kinds, and the app always says which one you&apos;re looking
@@ -199,13 +199,13 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <Table aria-label="Forecast signal thresholds" className="mt-6">
+              <Table aria-label="Forecast Signal Thresholds" className="mt-6">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Hazard</TableHead>
-                    <TableHead>Advisory when</TableHead>
-                    <TableHead>Warning when</TableHead>
-                    <TableHead>Looks at</TableHead>
+                    <TableHead>Advisory When</TableHead>
+                    <TableHead>Warning When</TableHead>
+                    <TableHead>Looks At</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -229,7 +229,7 @@ export default function AboutPage() {
               </p>
             </Section>
 
-            <Section id="confidence" title="How forecast confidence works">
+            <Section id="confidence" title="How Forecast Confidence Works">
               <div className="max-w-prose space-y-3 text-muted-foreground">
                 <p>
                   Three independent weather models (ECMWF, GFS and ICON) each forecast the same
@@ -248,7 +248,7 @@ export default function AboutPage() {
               </div>
             </Section>
 
-            <Section id="climate" title="How climate history works">
+            <Section id="climate" title="How Climate History Works">
               <div className="max-w-prose space-y-3 text-muted-foreground">
                 <p>
                   The climate page compares the last twelve months with what is normal for that
@@ -287,7 +287,7 @@ export default function AboutPage() {
               </ul>
             </Section>
 
-            <Section id="limits" title="What it can't tell you">
+            <Section id="limits" title="What It Can't Tell You">
               <ul className="max-w-prose list-disc space-y-2 pl-5 text-muted-foreground">
                 <li>
                   Forecast signals are heuristics, not warnings. For anything safety-critical, rely

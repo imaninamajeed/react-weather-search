@@ -11,8 +11,8 @@ export default function OfflinePage() {
   return (
     <StateScreen
       icon={IconWifiOff}
-      label="No connection"
-      title="You're offline"
+      label="No Connection"
+      title="You're Offline"
       actions={
         <Button asChild>
           <Link href="/dashboard">Back to Your Dashboard</Link>

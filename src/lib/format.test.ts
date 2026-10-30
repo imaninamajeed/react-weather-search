@@ -39,7 +39,7 @@ describe("format", () => {
     expect(
       formatPlaceSubtitle({ name: "Subang Jaya", region: "Selangor", country: "Malaysia" }),
     ).toBe("Selangor, Malaysia");
-    expect(formatPlaceSubtitle({ name: "Pin", region: "Dropped pin" })).toBe("Dropped pin");
+    expect(formatPlaceSubtitle({ name: "Pin", region: "Dropped Pin" })).toBe("Dropped Pin");
   });
 });
 

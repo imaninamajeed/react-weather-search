@@ -10,10 +10,10 @@ test.describe("alerts", () => {
 
     await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
     await expect(alerts.getByText(/Official · MET Malaysia/)).toBeVisible();
-    await expect(alerts.getByText("Forecast signal").first()).toBeVisible();
+    await expect(alerts.getByText("Forecast Signal").first()).toBeVisible();
     await expect(alerts.getByText("Checked: Forecast signals, MET Malaysia.")).toBeVisible();
 
-    await alerts.getByText("Full notice").click();
+    await alerts.getByText("Full Notice").click();
     await expect(alerts.getByText(/expected over the states of Selangor/)).toBeVisible();
   });
 
@@ -69,8 +69,8 @@ test.describe("alerts", () => {
     await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
     // Three shown, the fourth is behind the header's button, and the official warning is first.
     await expect(alerts.getByText("Showing 3 of 4")).toBeVisible();
-    // (Matching the badge exactly: the "Checked: Forecast signals…" note also contains the words.)
-    await expect(alerts.getByText("Forecast Signal", { exact: true })).toHaveCount(2);
+    // The compact row shows three alerts as pills, each a link to its place.
+    await expect(alerts.getByRole("listitem")).toHaveCount(3);
 
     await alerts.getByRole("link", { name: "All Alerts" }).click();
     await expect(page).toHaveURL(/\/alerts$/);
@@ -114,11 +114,11 @@ test.describe("outlook", () => {
   test("the forecast page teases three days and links to the full outlook", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
     const teaser = page.getByRole("region", { name: "Next 3 days" });
-    const tabs = page.getByRole("navigation", { name: "Place sections" });
+    const tabs = page.getByRole("navigation", { name: "Place Sections" });
     await expect(teaser.getByRole("listitem")).toHaveCount(3);
     await expect(page.getByRole("heading", { name: "14-day outlook" })).toHaveCount(0);
 
-    await teaser.getByRole("link", { name: /14-day outlook and confidence/ }).click();
+    await teaser.getByRole("link", { name: /14-Day Outlook and Confidence/ }).click();
     await expect(page).toHaveURL(/\/place\/8504423-subang-jaya\/outlook$/);
     await expect(tabs.getByRole("link", { name: "Outlook" })).toHaveAttribute(
       "aria-current",
@@ -136,20 +136,20 @@ test.describe("outlook", () => {
     const section = page.getByRole("region", { name: "Forecast confidence" });
     await expect(section.getByText(/GFS expects .* of rain/)).toBeVisible();
     await section.getByRole("radio", { name: "Rainfall" }).click();
-    await section.getByText("View as table").click();
+    await section.getByText("View as Table").click();
     await expect(section.getByRole("row")).toHaveCount(8); // header + 7 days
   });
 
   test("moves between a place's three views", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
-    const tabs = page.getByRole("navigation", { name: "Place sections" });
+    const tabs = page.getByRole("navigation", { name: "Place Sections" });
     await expect(tabs.getByRole("link", { name: "Forecast" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     await tabs.getByRole("link", { name: "Outlook" }).click();
     await expect(page).toHaveURL(/\/outlook$/);
-    await expect(page.getByText("Plan ahead")).toBeVisible();
+    await expect(page.getByText("Plan Ahead")).toBeVisible();
     // Let the new view finish loading before moving on; navigating mid-stream is what made this flaky.
     await page.waitForLoadState("networkidle");
     await tabs.getByRole("link", { name: "Climate" }).click();
@@ -170,7 +170,7 @@ test("the 48-hour chart switches metric and has a table twin", async ({ page }) 
     await section.getByRole("radio", { name: metric }).click();
     await expect(section.getByRole("radio", { name: metric })).toBeChecked();
   }
-  await section.getByText("View as table").click();
+  await section.getByText("View as Table").click();
   await expect(section.getByRole("table").getByRole("row")).toHaveCount(49);
 });
 
@@ -182,14 +182,14 @@ test("climate history compares the year with normals", async ({ page }) => {
   await expect(glance.getByText("Warmest day")).toBeVisible();
   await expect(page.getByRole("region", { name: "Daily highs" })).toBeVisible();
 
-  await page.getByText("Monthly rainfall as a table").click();
+  await page.getByText("Monthly Rainfall as a Table").click();
   await expect(
     page.getByRole("table", { name: "Monthly rainfall against normal" }).getByRole("row"),
   ).toHaveCount(13);
 
   // Navigation between a place's views.
   await page
-    .getByRole("navigation", { name: "Place sections" })
+    .getByRole("navigation", { name: "Place Sections" })
     .getByRole("link", { name: "Forecast" })
     .click();
   await expect(page).toHaveURL(/\/place\/8504423-subang-jaya$/);

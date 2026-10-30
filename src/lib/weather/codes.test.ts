@@ -3,7 +3,7 @@ import { describeWeather, isPrecipitation, isThunderstorm } from "./codes";
 
 describe("weather codes", () => {
   it("picks day or night icons", () => {
-    expect(describeWeather(0, true)).toEqual({ label: "Clear sky", icon: "clear-day" });
+    expect(describeWeather(0, true)).toEqual({ label: "Clear Sky", icon: "clear-day" });
     expect(describeWeather(0, false).icon).toBe("clear-night");
     expect(describeWeather(2, false).icon).toBe("partly-cloudy-night");
   });

@@ -33,7 +33,7 @@ export default function GlobalError({
         }}
       >
         <main style={{ maxWidth: "32rem" }}>
-          <h1 style={{ fontSize: "2rem", margin: "0 0 0.5rem" }}>Something went wrong</h1>
+          <h1 style={{ fontSize: "2rem", margin: "0 0 0.5rem" }}>Something Went Wrong</h1>
           <p style={{ margin: "0 0 1.5rem", lineHeight: 1.5 }}>
             Isobar hit an unexpected error. Trying again usually fixes it.
             {error.digest ? ` (Reference: ${error.digest})` : ""}
@@ -50,7 +50,7 @@ export default function GlobalError({
               cursor: "pointer",
             }}
           >
-            Try again
+            Try Again
           </button>
         </main>
       </body>

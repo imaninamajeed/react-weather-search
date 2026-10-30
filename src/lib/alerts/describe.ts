@@ -41,13 +41,13 @@ export interface AlertDescription {
 }
 
 const TITLES: Record<ForecastHazard["kind"], { advisory: string; warning: string }> = {
-  thunderstorm: { advisory: "Thunderstorms", warning: "Severe thunderstorms with hail" },
-  rain: { advisory: "Heavy rain", warning: "Very heavy rain" },
-  wind: { advisory: "Strong gusts", warning: "Damaging gusts" },
-  heat: { advisory: "Hot spell", warning: "Heat wave" },
-  frost: { advisory: "Frost", warning: "Hard freeze" },
-  snow: { advisory: "Heavy snow", warning: "Very heavy snow" },
-  "air-quality": { advisory: "Unhealthy air", warning: "Very unhealthy air" },
+  thunderstorm: { advisory: "Thunderstorms", warning: "Severe Thunderstorms with Hail" },
+  rain: { advisory: "Heavy Rain", warning: "Very Heavy Rain" },
+  wind: { advisory: "Strong Gusts", warning: "Damaging Gusts" },
+  heat: { advisory: "Hot Spell", warning: "Heat Wave" },
+  frost: { advisory: "Frost", warning: "Hard Freeze" },
+  snow: { advisory: "Heavy Snow", warning: "Very Heavy Snow" },
+  "air-quality": { advisory: "Unhealthy Air", warning: "Very Unhealthy Air" },
 };
 
 function hazardDetail(hazard: ForecastHazard, units: Units): string {

@@ -16,7 +16,7 @@ export function SourceNote({ sources }: { sources: SourceStatus[] }) {
         href="/about#alerts"
         className="underline decoration-border underline-offset-4 hover:text-foreground"
       >
-        How alerts work
+        How Alerts Work
       </Link>
       {down.length > 0 && (
         <span className="ml-1 font-medium text-foreground">

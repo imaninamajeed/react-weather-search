@@ -26,7 +26,7 @@ export function EllipsisMenu({ items }: { items: MenuLink[] }) {
     // assistive tech while open, which is what a modal Radix menu does.
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
-        aria-label="Show earlier levels"
+        aria-label="Show Earlier Levels"
         className="flex size-7 items-center justify-center rounded-full hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden"
       >
         <BreadcrumbEllipsis />

@@ -70,7 +70,7 @@ describe("describeHazard", () => {
       severity: "warning",
     });
     expect(describeHazard(heat, "metric", TODAY)).toEqual({
-      title: "Heat wave",
+      title: "Heat Wave",
       detail: "Highs up to 36° for 3 days.",
       when: "Tomorrow – Fri Oct 30",
     });

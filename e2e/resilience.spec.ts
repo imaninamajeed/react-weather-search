@@ -4,7 +4,7 @@ test("unknown places show a helpful not-found page", async ({ page }) => {
   for (const key of ["nope", "999999999-nowhere", "91,10"]) {
     await page.goto(`/place/${key}`);
     await expect(
-      page.getByRole("heading", { level: 1, name: "We couldn't find that place" }),
+      page.getByRole("heading", { level: 1, name: "We Couldn't Find That Place" }),
     ).toBeVisible();
     // Next.js emits the tag in both <head> and the streamed body.
     await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
@@ -24,7 +24,7 @@ test("one failing upstream degrades a single card, not the page", async ({ page 
   await expect(page.getByText("Air quality is unavailable")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Next 48 hours" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Next 3 days" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Try Again" })).toBeVisible();
   await expect(page.getByText("Humidity", { exact: true })).toBeVisible();
 
   // The two-week outlook is its own page and survives too.

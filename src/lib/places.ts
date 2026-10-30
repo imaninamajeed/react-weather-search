@@ -105,7 +105,7 @@ export function placeFromCoordinates(
   return {
     key: coordinateKey(lat, lon),
     name: extra.name ?? coordinateLabel(lat, lon),
-    region: extra.name ? coordinateLabel(lat, lon) : "Dropped pin",
+    region: extra.name ? coordinateLabel(lat, lon) : "Dropped Pin",
     latitude: lat,
     longitude: lon,
     timezone: extra.timezone,

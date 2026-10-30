@@ -140,13 +140,13 @@ export function PlaceHero({
 
       {fit && (
         <dl className="hidden grid-cols-2 gap-x-4 gap-y-2 border-t border-border px-6 py-4 dark:border-white/10 fit:grid">
-          <Stat label="Feels like" value={formatTemperature(current.apparentTemperature, units)} />
+          <Stat label="Feels Like" value={formatTemperature(current.apparentTemperature, units)} />
           <Stat
             label="High / Low"
             value={`${formatTemperature(today.temperatureMax, units)} / ${formatTemperature(today.temperatureMin, units)}`}
           />
           <Stat
-            label="Rain today"
+            label="Rain Today"
             value={`${today.precipitationProbabilityMax}%`}
             detail={formatPrecipitation(today.precipitationSum, units)}
           />

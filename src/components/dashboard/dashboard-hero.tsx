@@ -1,4 +1,4 @@
-import { ArrowRight, House, Radar } from "lucide-react";
+import { ArrowRight, CalendarDays, House, Radar } from "lucide-react";
 import Link from "next/link";
 import { IsobarMark } from "@/components/shared/isobar-mark";
 import { WeatherIcon } from "@/components/shared/weather-icon";
@@ -12,8 +12,12 @@ import { summarizeToday } from "@/lib/weather/summary";
 import type { Forecast, Units } from "@/lib/weather/types";
 import { HourStrip } from "./hour-strip";
 
-const caption =
-  "font-heading text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase dark:text-white/75";
+// The glows and isobars are bright, so every line of info text carries a soft halo in the panel's own
+// colour (--halo: white by day, black by night). It keeps the text readable wherever it
+// crosses the art, without a visible box.
+const halo = "[text-shadow:0_0_14px_var(--halo),0_0_5px_var(--halo)]";
+
+const caption = `font-heading text-[0.6875rem] font-medium tracking-[0.08em] text-foreground/75 uppercase dark:text-white/90 ${halo}`;
 
 /**
  * The dashboard's one focus: home, now. The place and what it is doing sit on the left, the
@@ -39,7 +43,7 @@ export function DashboardHero({
   const href = placeHref(place);
 
   return (
-    <header className="relative isolate overflow-hidden rounded-4xl bg-card text-card-foreground shadow-md ring-1 ring-foreground/5 [--glow-magenta:10%] [--glow-teal:10%] dark:bg-(--brand-ink) dark:text-white dark:ring-white/10 dark:[--glow-magenta:26%] dark:[--glow-teal:16%]">
+    <header className="relative isolate overflow-hidden rounded-4xl bg-card text-card-foreground shadow-md ring-1 ring-foreground/5 [--glow-magenta:12%] [--glow-teal:7%] [--halo:oklch(1_0_0/0.95)] dark:bg-black dark:text-white dark:shadow-none dark:ring-0 dark:[--glow-magenta:30%] dark:[--glow-teal:10%] dark:[--halo:#000]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
@@ -53,10 +57,10 @@ export function DashboardHero({
       <IsobarMark
         bare
         detail="full"
-        className="pointer-events-none absolute -top-28 -right-24 -z-10 size-[30rem] mask-[radial-gradient(closest-side,black_35%,transparent)] opacity-50 motion-safe:animate-[spin_240s_linear_infinite] lg:-top-36 lg:-right-16 lg:size-[38rem]"
+        className="pointer-events-none absolute -top-28 -right-24 -z-10 size-[30rem] mask-[radial-gradient(closest-side,black_35%,transparent)] opacity-40 motion-safe:animate-[spin_240s_linear_infinite] lg:-top-48 lg:-right-24 lg:size-[38rem] dark:opacity-55"
       />
 
-      <div className="grid gap-8 p-6 md:p-10 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div className="grid gap-8 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <Badge variant="secondary" className="dark:bg-white/10 dark:text-white">
@@ -77,16 +81,29 @@ export function DashboardHero({
               {place.name}
             </Link>
           </h2>
-          <p className="mt-2 text-muted-foreground dark:text-white/80">
+          <p className={`mt-2 text-foreground/80 dark:text-white/90 ${halo}`}>
             {formatPlaceSubtitle(place)}
           </p>
-          <p className="mt-5 max-w-prose text-lg text-balance">{summarizeToday(forecast, units)}</p>
+          <p className={`mt-5 max-w-prose text-lg text-balance ${halo}`}>
+            {summarizeToday(forecast, units)}
+          </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <Button asChild size="lg">
               <Link href={href}>
                 Full Forecast
                 <ArrowRight aria-hidden="true" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15 dark:hover:text-white"
+            >
+              <Link href={`${href}/outlook`}>
+                <CalendarDays aria-hidden="true" />
+                14-Day Outlook
               </Link>
             </Button>
             <Button
@@ -109,10 +126,10 @@ export function DashboardHero({
         <div className="flex items-center gap-4 sm:gap-6">
           <WeatherIcon
             name={weather.icon}
-            className="size-14 shrink-0 text-(--brand-teal-text) motion-safe:animate-[float_7s_ease-in-out_infinite] sm:size-20 lg:size-24"
+            className="size-14 shrink-0 text-(--brand-teal-text) drop-shadow-[0_0_16px_color-mix(in_oklch,var(--brand-teal)_55%,transparent)] motion-safe:animate-[float_7s_ease-in-out_infinite] sm:size-20 lg:size-24"
           />
           <div>
-            <p className="font-heading text-8xl leading-none font-medium tracking-tight sm:text-9xl">
+            <p className="font-heading text-8xl leading-none font-medium tracking-tight sm:text-9xl dark:[text-shadow:0_0_36px_color-mix(in_oklch,var(--brand-magenta)_60%,transparent)]">
               <span className="sr-only">
                 {temperature} degrees {units === "metric" ? "Celsius" : "Fahrenheit"}
               </span>
@@ -123,8 +140,8 @@ export function DashboardHero({
                 </span>
               </span>
             </p>
-            <p className="mt-2 text-lg">{weather.label}</p>
-            <p className="text-sm text-muted-foreground tabular-nums dark:text-white/75">
+            <p className={`mt-2 text-lg ${halo}`}>{weather.label}</p>
+            <p className={`text-sm text-foreground/80 tabular-nums dark:text-white/90 ${halo}`}>
               H {formatTemperature(today.temperatureMax, units)} · L{" "}
               {formatTemperature(today.temperatureMin, units)}
             </p>
@@ -132,7 +149,7 @@ export function DashboardHero({
         </div>
       </div>
 
-      <div className="border-t border-border px-6 pt-4 pb-5 md:px-10 dark:border-white/10">
+      <div className="border-t border-border px-6 pt-4 pb-5 dark:border-white/10">
         <HourStrip forecast={forecast} units={units} tone="glass" adaptive />
       </div>
     </header>

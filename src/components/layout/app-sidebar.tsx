@@ -31,7 +31,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg" tooltip="Isobar">
-              <Link href="/dashboard" aria-label="Isobar home">
+              <Link href="/dashboard" aria-label="Isobar Home">
                 <IsobarMark detail="compact" animated className="size-8!" />
                 <span className="font-heading text-2xl leading-none">Isobar</span>
               </Link>

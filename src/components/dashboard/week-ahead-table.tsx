@@ -28,7 +28,7 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
         className="relative -mx-4 overflow-x-auto px-4"
         tabIndex={0}
         role="region"
-        aria-label="Week ahead table"
+        aria-label="Week Ahead Table"
       >
         <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-left fit:min-w-0">
           <caption className="sr-only">
@@ -65,7 +65,7 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
                       return (
                         <td key={date} className="p-1 text-center text-muted-foreground">
                           <span aria-hidden="true">—</span>
-                          <span className="sr-only">No data</span>
+                          <span className="sr-only">No Data</span>
                         </td>
                       );
                     }

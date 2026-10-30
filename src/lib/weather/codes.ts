@@ -22,39 +22,39 @@ type Entry = { label: string; day: WeatherIconName; night?: WeatherIconName };
 
 // WMO weather interpretation codes as used by Open-Meteo.
 const CODES: Record<number, Entry> = {
-  0: { label: "Clear sky", day: "clear-day", night: "clear-night" },
-  1: { label: "Mainly clear", day: "clear-day", night: "clear-night" },
-  2: { label: "Partly cloudy", day: "partly-cloudy-day", night: "partly-cloudy-night" },
+  0: { label: "Clear Sky", day: "clear-day", night: "clear-night" },
+  1: { label: "Mainly Clear", day: "clear-day", night: "clear-night" },
+  2: { label: "Partly Cloudy", day: "partly-cloudy-day", night: "partly-cloudy-night" },
   3: { label: "Overcast", day: "cloudy" },
   45: { label: "Fog", day: "fog" },
-  48: { label: "Freezing fog", day: "fog" },
-  51: { label: "Light drizzle", day: "drizzle" },
+  48: { label: "Freezing Fog", day: "fog" },
+  51: { label: "Light Drizzle", day: "drizzle" },
   53: { label: "Drizzle", day: "drizzle" },
-  55: { label: "Heavy drizzle", day: "drizzle" },
-  56: { label: "Light freezing drizzle", day: "freezing-rain" },
-  57: { label: "Freezing drizzle", day: "freezing-rain" },
-  61: { label: "Light rain", day: "rain" },
+  55: { label: "Heavy Drizzle", day: "drizzle" },
+  56: { label: "Light Freezing Drizzle", day: "freezing-rain" },
+  57: { label: "Freezing Drizzle", day: "freezing-rain" },
+  61: { label: "Light Rain", day: "rain" },
   63: { label: "Rain", day: "rain" },
-  65: { label: "Heavy rain", day: "rain" },
-  66: { label: "Light freezing rain", day: "freezing-rain" },
-  67: { label: "Freezing rain", day: "freezing-rain" },
-  71: { label: "Light snow", day: "snow" },
+  65: { label: "Heavy Rain", day: "rain" },
+  66: { label: "Light Freezing Rain", day: "freezing-rain" },
+  67: { label: "Freezing Rain", day: "freezing-rain" },
+  71: { label: "Light Snow", day: "snow" },
   73: { label: "Snow", day: "snow" },
-  75: { label: "Heavy snow", day: "snow" },
-  77: { label: "Snow grains", day: "snow" },
-  80: { label: "Light showers", day: "rain" },
+  75: { label: "Heavy Snow", day: "snow" },
+  77: { label: "Snow Grains", day: "snow" },
+  80: { label: "Light Showers", day: "rain" },
   81: { label: "Showers", day: "rain" },
-  82: { label: "Violent showers", day: "rain" },
-  85: { label: "Light snow showers", day: "snow" },
-  86: { label: "Heavy snow showers", day: "snow" },
+  82: { label: "Violent Showers", day: "rain" },
+  85: { label: "Light Snow Showers", day: "snow" },
+  86: { label: "Heavy Snow Showers", day: "snow" },
   95: { label: "Thunderstorm", day: "thunderstorm" },
-  96: { label: "Thunderstorm with hail", day: "hail" },
-  99: { label: "Severe thunderstorm with hail", day: "hail" },
+  96: { label: "Thunderstorm with Hail", day: "hail" },
+  99: { label: "Severe Thunderstorm with Hail", day: "hail" },
 };
 
 export function describeWeather(code: number, isDay = true): WeatherDescription {
   const entry = CODES[code];
-  if (!entry) return { label: "Unknown conditions", icon: "cloudy" };
+  if (!entry) return { label: "Unknown Conditions", icon: "cloudy" };
   return { label: entry.label, icon: isDay ? entry.day : (entry.night ?? entry.day) };
 }
 

@@ -21,15 +21,15 @@ const UV_TONES: MeterTone[] = ["good", "good", "advisory", "warning", "warning"]
 
 function describeVisibility(metres: number) {
   if (metres >= 10_000) return "Clear";
-  if (metres >= 4_000) return "Slightly hazy";
+  if (metres >= 4_000) return "Slightly Hazy";
   if (metres >= 1_000) return "Hazy";
   return "Poor";
 }
 
 function describeCloudCover(percent: number) {
-  if (percent < 20) return "Clear skies";
-  if (percent < 50) return "Mostly clear";
-  if (percent < 80) return "Mostly cloudy";
+  if (percent < 20) return "Clear Skies";
+  if (percent < 50) return "Mostly Clear";
+  if (percent < 80) return "Mostly Cloudy";
   return "Overcast";
 }
 
@@ -87,7 +87,7 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
           : Math.round(current.pressure)
       }
       unit={labels.pressure}
-      caption="At sea level"
+      caption="At Sea Level"
     />,
     <Tile
       key="visibility"

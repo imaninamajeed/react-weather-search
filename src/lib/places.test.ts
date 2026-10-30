@@ -83,7 +83,7 @@ describe("place keys", () => {
     expect(placeFromCoordinates(3.04384, 101.58062)).toMatchObject({
       key: "3.04,101.58",
       name: "3.04°N, 101.58°E",
-      region: "Dropped pin",
+      region: "Dropped Pin",
     });
     expect(placeHref({ key: "3.04,101.58" })).toBe("/place/3.04%2C101.58");
   });

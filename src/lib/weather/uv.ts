@@ -12,7 +12,7 @@ export function uvCategory(uv: number): UvCategory {
   if (uv < 3) return { label: "Low", level: 0 };
   if (uv < 6) return { label: "Moderate", level: 1 };
   if (uv < 8) return { label: "High", level: 2 };
-  if (uv < 11) return { label: "Very high", level: 3 };
+  if (uv < 11) return { label: "Very High", level: 3 };
   return { label: "Extreme", level: 4 };
 }
 

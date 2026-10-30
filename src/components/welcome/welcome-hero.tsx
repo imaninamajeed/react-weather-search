@@ -110,10 +110,10 @@ export function WelcomeHero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <OpenSearchButton label="Find your city" />
+            <OpenSearchButton label="Find Your City" />
             <Button asChild variant="outline">
               <Link href="/dashboard">
-                Open the dashboard
+                Open the Dashboard
                 <IconArrowRight aria-hidden="true" />
               </Link>
             </Button>

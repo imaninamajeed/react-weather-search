@@ -139,7 +139,7 @@ function popupContent(
   const link = document.createElement("a");
   link.href = href;
   link.className = "mt-2 inline-block text-sm font-medium underline underline-offset-4";
-  link.textContent = "Open forecast →";
+  link.textContent = "Open Forecast →";
   link.addEventListener("click", (event) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
     event.preventDefault();
@@ -349,7 +349,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
             <Button
               variant="outline"
               size="icon"
-              aria-label={playing ? "Pause radar animation" : "Play radar animation"}
+              aria-label={playing ? "Pause Radar Animation" : "Play Radar Animation"}
               aria-pressed={playing}
               onClick={() => {
                 setPreload(true);
@@ -373,7 +373,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
                   setPlaying(false);
                   setIndex(value);
                 }}
-                thumbLabel="Radar time"
+                thumbLabel="Radar Time"
                 valueText={(value) => {
                   const m = minutesBeforeLatest(frames, value);
                   return m === 0 ? "Latest frame" : `${m} minutes before the latest frame`;
@@ -391,10 +391,10 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
               step={5}
               value={[opacity]}
               onValueChange={([value]) => setOpacity(value)}
-              thumbLabel="Radar opacity"
+              thumbLabel="Radar Opacity"
               valueText={(value) => `${value} percent`}
             />
-            <p className="label-caps mt-2">Radar opacity · {opacity}%</p>
+            <p className="label-caps mt-2">Radar Opacity · {opacity}%</p>
           </div>
         </div>
       ) : (

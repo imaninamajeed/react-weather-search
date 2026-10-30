@@ -53,7 +53,7 @@ afterEach(() => vi.unstubAllGlobals());
 async function openDialog() {
   const user = userEvent.setup();
   render(<SearchCommand />);
-  await user.click(screen.getByRole("button", { name: "Search places" }));
+  await user.click(screen.getByRole("button", { name: "Search Places" }));
   return { user, input: await screen.findByPlaceholderText("Search a city…") };
 }
 
@@ -105,7 +105,7 @@ describe("SearchCommand", () => {
 
   it("offers the theme command in the palette, with its D hint, and closes after using it", async () => {
     const { user } = await openDialog();
-    const item = screen.getByRole("option", { name: /Switch to dark theme/ });
+    const item = screen.getByRole("option", { name: /Switch to Dark Theme/ });
     expect(item).toHaveTextContent("D");
 
     await user.click(item);
@@ -118,13 +118,13 @@ describe("SearchCommand", () => {
     const { user, input } = await openDialog();
 
     await user.type(input, "dark");
-    expect(await screen.findByRole("option", { name: /Switch to dark theme/ })).toBeVisible();
+    expect(await screen.findByRole("option", { name: /Switch to Dark Theme/ })).toBeVisible();
 
     await user.clear(input);
     await user.type(input, "tokyo");
     await waitFor(() =>
       expect(
-        screen.queryByRole("option", { name: /Switch to dark theme/ }),
+        screen.queryByRole("option", { name: /Switch to Dark Theme/ }),
       ).not.toBeInTheDocument(),
     );
   });

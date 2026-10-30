@@ -34,7 +34,7 @@ export async function AlertsView({
 
   return (
     <div className="space-y-6 fit:flex fit:flex-col fit:gap-3 fit:space-y-0">
-      <nav aria-label="Filter alerts" className="flex flex-wrap gap-2">
+      <nav aria-label="Filter Alerts" className="flex flex-wrap gap-2">
         <Link
           href="/alerts"
           aria-current={officialOnly ? undefined : "page"}

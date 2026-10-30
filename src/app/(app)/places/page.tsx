@@ -17,7 +17,7 @@ export default function PlacesPage() {
     >
       <div className="space-y-10 fit:flex fit:flex-col fit:gap-3 fit:space-y-0">
         <PageHeader
-          label="Manage and compare"
+          label="Manage and Compare"
           title="Places"
           lead="Reorder, choose your home place, and see the week ahead for everywhere you follow."
         />

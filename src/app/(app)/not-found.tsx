@@ -9,10 +9,10 @@ export default function NotFound() {
     <StateScreen
       icon={IconMapPinOff}
       label="404"
-      title="We couldn't find that place"
+      title="We Couldn't Find That Place"
       actions={
         <>
-          <OpenSearchButton label="Search for a place" />
+          <OpenSearchButton label="Search for a Place" />
           <Button asChild variant="outline">
             <Link href="/dashboard">Back to Dashboard</Link>
           </Button>

@@ -102,7 +102,7 @@ export async function PlaceView({
             aside={
               <Button asChild variant="outline" size="sm">
                 <Link href={`${placeHref(resolved)}/outlook`}>
-                  <span className="fit:sr-only">14-day outlook and confidence</span>
+                  <span className="fit:sr-only">14-Day Outlook and Confidence</span>
                   <span aria-hidden="true" className="hidden fit:inline">
                     Outlook
                   </span>

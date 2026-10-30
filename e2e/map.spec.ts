@@ -16,21 +16,21 @@ test("the map shows the home place and radar controls", async ({ page }) => {
   // The default home place is a focusable link on the map.
   await expect(page.locator(".maplibregl-marker").getByText("Subang Jaya")).toBeVisible();
 
-  const scrubber = page.getByRole("slider", { name: "Radar time" });
+  const scrubber = page.getByRole("slider", { name: "Radar Time" });
   await expect(scrubber).toHaveAttribute("aria-valuetext", "Latest frame");
   await scrubber.focus();
   await page.keyboard.press("Home");
   await expect(scrubber).toHaveAttribute("aria-valuetext", "120 minutes before the latest frame");
 
-  const play = page.getByRole("button", { name: "Play radar animation" });
+  const play = page.getByRole("button", { name: "Play Radar Animation" });
   await play.click();
-  await expect(page.getByRole("button", { name: "Pause radar animation" })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: "Pause Radar Animation" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
-  await page.getByRole("button", { name: "Pause radar animation" }).click();
+  await page.getByRole("button", { name: "Pause Radar Animation" }).click();
 
-  await expect(page.getByRole("slider", { name: "Radar opacity" })).toBeVisible();
+  await expect(page.getByRole("slider", { name: "Radar Opacity" })).toBeVisible();
 });
 
 test("clicking the map shows the weather at that spot", async ({ page }) => {
@@ -42,7 +42,7 @@ test("clicking the map shows the weather at that spot", async ({ page }) => {
   await page.mouse.click(box.x + box.width * 0.2, box.y + box.height * 0.2);
 
   const popup = page.locator(".maplibregl-popup");
-  await expect(popup.getByText("Open forecast →")).toBeVisible();
+  await expect(popup.getByText("Open Forecast →")).toBeVisible();
   await expect(popup.getByText(/Rain \d+%/)).toBeVisible();
 });
 

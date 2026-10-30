@@ -41,13 +41,13 @@ export async function ConfidencePanel({
 
       <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
-          View as table
+          View as Table
         </summary>
         <div
           className="relative overflow-x-auto border-t border-border"
           tabIndex={0}
           role="region"
-          aria-label="Model comparison table"
+          aria-label="Model Comparison Table"
         >
           <table className="w-full min-w-[34rem] text-sm">
             <caption className="sr-only">Daily high and rainfall by model</caption>
@@ -103,7 +103,7 @@ export async function ConfidencePanel({
 
       <details className="text-sm text-muted-foreground">
         <summary className="cursor-pointer font-medium text-foreground select-none">
-          How is this calculated?
+          How Is This Calculated?
         </summary>
         <p className="mt-2 max-w-prose">
           Each day compares the high temperature predicted by ECMWF, GFS and ICON. If they are
@@ -115,7 +115,7 @@ export async function ConfidencePanel({
             href="/about#confidence"
             className="underline decoration-border underline-offset-4 hover:decoration-foreground"
           >
-            More on our methods
+            More on Our Methods
           </Link>
           .
         </p>

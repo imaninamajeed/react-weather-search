@@ -41,15 +41,15 @@ test("visited pages work offline, unvisited ones fall back, and actions are disa
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole("heading", { level: 1, name: "Tokyo" })).toBeVisible();
-  await expect(page.getByRole("status").filter({ hasText: "You're offline" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "You're Offline" })).toBeVisible();
   const save = page.getByRole("button", { name: "Save", exact: true });
   await expect(save).toBeDisabled();
   await expect(save).toHaveAttribute("title", "Needs a connection");
 
   await page.goto("/place/2643743-london").catch(() => undefined);
-  await expect(page.getByRole("heading", { level: 1, name: "You're offline" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "You're Offline" })).toBeVisible();
 
   await context.setOffline(false);
   await page.goto("/place/1850147-tokyo");
-  await expect(page.getByRole("status").filter({ hasText: "You're offline" })).toHaveCount(0);
+  await expect(page.getByRole("status").filter({ hasText: "You're Offline" })).toHaveCount(0);
 });

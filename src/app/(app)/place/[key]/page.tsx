@@ -11,9 +11,9 @@ import { lookupPlace, resolvePlace } from "@/lib/resolve-place";
 export async function generateMetadata({ params }: PageProps<"/place/[key]">): Promise<Metadata> {
   const { key } = await params;
   const place = await lookupPlace(key);
-  if (!place) return { title: "Place not found" };
+  if (!place) return { title: "Place Not Found" };
   return {
-    title: `${place.name} weather`,
+    title: `${place.name} Weather`,
     description: `Forecast, alerts and conditions for ${place.name}${place.country ? `, ${place.country}` : ""}.`,
   };
 }

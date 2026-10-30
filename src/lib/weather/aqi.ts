@@ -18,7 +18,7 @@ export function aqiCategory(aqi: number): AqiCategory {
   }
   if (aqi <= 150) {
     return {
-      label: "Unhealthy for sensitive groups",
+      label: "Unhealthy for Sensitive Groups",
       advice: "Sensitive groups should limit time outdoors.",
       level: 2,
     };
@@ -29,6 +29,6 @@ export function aqiCategory(aqi: number): AqiCategory {
       advice: "Everyone should reduce prolonged exertion outdoors.",
       level: 3,
     };
-  if (aqi <= 300) return { label: "Very unhealthy", advice: "Avoid outdoor exertion.", level: 4 };
+  if (aqi <= 300) return { label: "Very Unhealthy", advice: "Avoid outdoor exertion.", level: 4 };
   return { label: "Hazardous", advice: "Stay indoors with clean air if possible.", level: 5 };
 }

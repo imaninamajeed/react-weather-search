@@ -10,7 +10,7 @@ describe("uv", () => {
     [2.9, "Low"],
     [3, "Moderate"],
     [6, "High"],
-    [8, "Very high"],
+    [8, "Very High"],
     [11, "Extreme"],
   ])("UV %s is %s", (uv, label) => {
     expect(uvCategory(uv).label).toBe(label);

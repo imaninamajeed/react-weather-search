@@ -65,9 +65,9 @@ export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units:
           onValueChange={(value) => value && setMetric(value as Metric)}
           variant="outline"
           size="sm"
-          aria-label="Chart metric"
+          aria-label="Chart Metric"
         >
-          <ToggleGroupItem value="temperature">High temperature</ToggleGroupItem>
+          <ToggleGroupItem value="temperature">High Temperature</ToggleGroupItem>
           <ToggleGroupItem value="rain">Rainfall</ToggleGroupItem>
         </ToggleGroup>
 

@@ -48,7 +48,7 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
   );
   // One tick per month, at its first day.
   const ticks = rows.filter((row) => row.date.endsWith("-01")).map((row) => row.date);
-  const config = { actual: { label: "Daily high", color: "var(--chart-1)" } } satisfies ChartConfig;
+  const config = { actual: { label: "Daily High", color: "var(--chart-1)" } } satisfies ChartConfig;
 
   return (
     <div className="fit:flex fit:flex-col">
@@ -64,7 +64,7 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
             />
           }
         >
-          Daily high
+          Daily High
         </LegendItem>
         <LegendItem
           swatch={
@@ -74,12 +74,12 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
             />
           }
         >
-          Normal (median)
+          Normal (Median)
         </LegendItem>
         <LegendItem
           swatch={<span className="inline-block h-2.5 w-5 rounded-sm bg-foreground/10" />}
         >
-          Normal range (middle 80%)
+          Normal Range (Middle 80%)
         </LegendItem>
       </ul>
 
@@ -248,7 +248,7 @@ export function MonthlyRainChart({ months, units }: { months: MonthComparison[];
         <LegendItem
           swatch={<span className="inline-block h-2.5 w-5 rounded-sm bg-foreground/25" />}
         >
-          Normal for the period
+          Normal for the Period
         </LegendItem>
       </ul>
 

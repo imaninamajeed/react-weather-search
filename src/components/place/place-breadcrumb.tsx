@@ -29,13 +29,13 @@ export function PlaceBreadcrumb({
           label: place.name,
           href: placeHref(place),
           switcher: {
-            label: "Switch place",
+            label: "Switch Place",
             items: options.map((option) => ({
               label: option.name,
               href: `${placeHref(option)}${suffix}`,
               current: option.key === place.key,
             })),
-            footer: { label: "All places", href: "/places" },
+            footer: { label: "All Places", href: "/places" },
           },
         },
         { label: view },

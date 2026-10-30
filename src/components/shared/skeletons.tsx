@@ -31,7 +31,7 @@ export function TileSkeleton() {
 
 export function PlaceSkeleton() {
   return (
-    <div role="status" aria-label="Loading forecast" className="space-y-4">
+    <div role="status" aria-label="Loading Forecast" className="space-y-4">
       <HeroSkeleton />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }, (_, i) => (

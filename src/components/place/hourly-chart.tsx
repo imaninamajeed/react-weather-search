@@ -44,9 +44,9 @@ interface SeriesDef {
 const SERIES: Record<Metric, SeriesDef[]> = {
   temperature: [
     { key: "temperature", label: "Temperature", color: "var(--chart-1)" },
-    { key: "feelsLike", label: "Feels like", color: "var(--chart-2)", dashed: true },
+    { key: "feelsLike", label: "Feels Like", color: "var(--chart-2)", dashed: true },
   ],
-  rain: [{ key: "probability", label: "Chance of rain", color: "var(--chart-3)" }],
+  rain: [{ key: "probability", label: "Chance of Rain", color: "var(--chart-3)" }],
   wind: [
     { key: "wind", label: "Wind", color: "var(--chart-4)" },
     { key: "gusts", label: "Gusts", color: "var(--chart-5)", dashed: true },
@@ -184,7 +184,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
           onValueChange={(value) => value && setMetric(value as Metric)}
           variant="outline"
           size="sm"
-          aria-label="Chart metric"
+          aria-label="Chart Metric"
         >
           {(Object.keys(METRIC_LABELS) as Metric[]).map((key) => (
             <ToggleGroupItem key={key} value={key}>

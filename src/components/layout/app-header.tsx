@@ -19,7 +19,7 @@ export function AppHeader({ crumbs }: { crumbs: ReactNode }) {
       <Separator orientation="vertical" className="mx-1 hidden h-4 md:block" />
       <Link
         href="/dashboard"
-        aria-label="Isobar home"
+        aria-label="Isobar Home"
         className="flex shrink-0 items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden md:hidden"
       >
         <IsobarMark detail="compact" animated className="size-8" />

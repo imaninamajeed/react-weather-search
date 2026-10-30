@@ -116,7 +116,7 @@ export function StatCards({ forecast, units }: { forecast: Forecast; units: Unit
         badge={
           <Badge variant="outline">{formatPrecipitation(today.precipitationSum, units)}</Badge>
         }
-        headline="Chance of rain"
+        headline="Chance of Rain"
         detail={`Cloud cover ${Math.round(current.cloudCover)}% right now`}
       />
       <StatCard

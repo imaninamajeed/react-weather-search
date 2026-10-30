@@ -17,7 +17,7 @@ export async function generateMetadata({
 }: PageProps<"/place/[key]/outlook">): Promise<Metadata> {
   const { key } = await params;
   const place = await lookupPlace(key);
-  return { title: place ? `${place.name} 14-day outlook` : "Place not found" };
+  return { title: place ? `${place.name} 14-Day Outlook` : "Place Not Found" };
 }
 
 async function OutlookRoute({ params }: Pick<PageProps<"/place/[key]/outlook">, "params">) {
@@ -29,7 +29,7 @@ async function OutlookRoute({ params }: Pick<PageProps<"/place/[key]/outlook">, 
   return (
     <div className="flex flex-col gap-6 fit:gap-3">
       <SubpageHeader
-        label="Plan ahead"
+        label="Plan Ahead"
         place={place}
         lead="Two weeks of daily forecasts, and how far each day can be trusted."
       />
@@ -83,7 +83,7 @@ export default function OutlookPage(props: PageProps<"/place/[key]/outlook">) {
         </Suspense>
         <Suspense
           fallback={
-            <div role="status" aria-label="Loading outlook" className="space-y-10">
+            <div role="status" aria-label="Loading Outlook" className="space-y-10">
               <HeroSkeleton />
               <RowsSkeleton />
             </div>

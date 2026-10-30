@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { OPEN_SEARCH_EVENT } from "@/components/search/search-command";
 
 export function OpenSearchButton({
-  label = "Search for a place",
+  label = "Search for a Place",
   variant = "default",
   size = "default",
 }: {

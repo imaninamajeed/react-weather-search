@@ -57,13 +57,9 @@ export async function PlacesGrid({ places, units }: { places: Place[]; units: Un
             <LocationTile place={place} units={units} forecast={forecast} alerts={alerts} />
           </li>
         ))}
-        {/* Room left over: following another place is right here. */}
-        {places.length < MAX_TILES && (
-          <li>
-            <AddPlaceTile />
-          </li>
-        )}
       </ul>
+      {/* Room left over: following another place is right here, as a slim row. */}
+      {places.length < MAX_TILES && <AddPlaceTile className="mt-3" />}
       {places.length > shown.length && (
         <ShownCount
           className="mt-3"

@@ -41,7 +41,7 @@ export function Sparkline({
       <path
         d={`${line} L${width} ${height} L0 ${height} Z`}
         fill="var(--chart-1)"
-        fillOpacity={0.12}
+        fillOpacity={0.2}
       />
       <path
         d={line}

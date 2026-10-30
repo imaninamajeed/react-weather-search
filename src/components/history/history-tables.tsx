@@ -37,9 +37,9 @@ export function HistoryTables({
     <div className="space-y-3 fit:grid fit:grid-cols-2 fit:items-start fit:gap-2 fit:space-y-0">
       <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
-          Monthly rainfall as a table
+          Monthly Rainfall as a Table
         </summary>
-        <div className={wrapper} tabIndex={0} role="region" aria-label="Monthly rainfall table">
+        <div className={wrapper} tabIndex={0} role="region" aria-label="Monthly Rainfall Table">
           <table className="w-full text-sm">
             <caption className="sr-only">Monthly rainfall against normal</caption>
             <thead className="sticky top-0 bg-card">
@@ -54,7 +54,7 @@ export function HistoryTables({
                   Normal ({labels.precipitation})
                 </th>
                 <th scope="col" className="px-4 py-2 text-right font-medium">
-                  Of normal
+                  Of Normal
                 </th>
               </tr>
             </thead>
@@ -83,9 +83,9 @@ export function HistoryTables({
 
       <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
-          Daily highs as a table
+          Daily Highs as a Table
         </summary>
-        <div className={wrapper} tabIndex={0} role="region" aria-label="Daily highs table">
+        <div className={wrapper} tabIndex={0} role="region" aria-label="Daily Highs Table">
           <table className="w-full text-sm">
             <caption className="sr-only">Daily high temperature against the normal range</caption>
             <thead className="sticky top-0 bg-card">
@@ -97,13 +97,13 @@ export function HistoryTables({
                   High ({labels.temperature})
                 </th>
                 <th scope="col" className={th}>
-                  Normal low ({labels.temperature})
+                  Normal Low ({labels.temperature})
                 </th>
                 <th scope="col" className={th}>
-                  Normal median ({labels.temperature})
+                  Normal Median ({labels.temperature})
                 </th>
                 <th scope="col" className="px-4 py-2 text-right font-medium">
-                  Normal high ({labels.temperature})
+                  Normal High ({labels.temperature})
                 </th>
               </tr>
             </thead>

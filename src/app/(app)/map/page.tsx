@@ -95,7 +95,7 @@ export default function MapPage(props: PageProps<"/map">) {
     >
       <div className="mb-6 space-y-6 fit:mb-3 fit:space-y-0">
         <PageHeader
-          label="Live radar"
+          label="Live Radar"
           title="Map"
           lead="Rain radar for the last two hours, with the places you follow. Click anywhere for the weather at that spot."
           aside={
@@ -105,14 +105,7 @@ export default function MapPage(props: PageProps<"/map">) {
           }
         />
       </div>
-      <Suspense
-        fallback={
-          <Skeleton
-            aria-hidden="true"
-            className="h-[60svh] w-full rounded-xl"
-          />
-        }
-      >
+      <Suspense fallback={<Skeleton aria-hidden="true" className="h-[60svh] w-full rounded-xl" />}>
         <MapContent searchParams={props.searchParams} />
       </Suspense>
     </main>

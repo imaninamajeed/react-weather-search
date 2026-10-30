@@ -14,7 +14,7 @@ export function HistoryStats({ summary, units }: { summary: HistorySummary; unit
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 fit:grid-cols-6">
       <Tile
         label="Daily Highs vs Normal"
-        value={inLine ? "On par" : formatTemperatureDelta(anomaly, units)}
+        value={inLine ? "On Par" : formatTemperatureDelta(anomaly, units)}
         unit={inLine ? undefined : anomaly > 0 ? "warmer" : "cooler"}
         caption={`Average over ${summary.days} days against 1991–2020.`}
       />

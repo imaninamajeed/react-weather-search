@@ -4,7 +4,7 @@ import { seedPlaces } from "./helpers";
 test("the dashboard opens on the default city with an onboarding prompt", async ({ page }) => {
   await page.goto("/dashboard");
   await expect(page.getByRole("heading", { level: 2, name: "Subang Jaya" })).toBeVisible();
-  await expect(page.getByText("Nothing saved yet")).toBeVisible();
+  await expect(page.getByText("Nothing Saved Yet")).toBeVisible();
   await expect(page.getByText("Warm and humid.")).toBeVisible();
 });
 
@@ -54,7 +54,7 @@ test("saving, setting home, reordering and removing with undo", async ({ page })
   await expect(cards).toHaveText(["Subang Jaya", "Tokyo"]);
 
   // Make Tokyo the home place: it leads the dashboard, and is no longer repeated as a card there.
-  await page.getByRole("button", { name: "Set as home" }).first().click();
+  await page.getByRole("button", { name: "Set as Home" }).first().click();
   // Let the action finish before navigating away, or it is cancelled mid-flight.
   await expect(page.getByText("Tokyo is now your home")).toBeVisible();
   await page.goto("/dashboard");
@@ -76,7 +76,7 @@ test("saving, setting home, reordering and removing with undo", async ({ page })
 
 test("undoing the removal of the home place restores its home status", async ({ page }) => {
   await page.goto("/place/1850147-tokyo");
-  await page.getByRole("button", { name: "Set as home" }).click();
+  await page.getByRole("button", { name: "Set as Home" }).click();
   await expect(page.getByText("Tokyo is now your home")).toBeVisible();
 
   await page.goto("/places");

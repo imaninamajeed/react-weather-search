@@ -71,7 +71,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
           onClick={() => run(() => setHome(placeKey), `${placeName} is now your home`)}
         >
           <IconHome aria-hidden="true" />
-          Set as home
+          Set as Home
         </Button>
       )}
       <Button

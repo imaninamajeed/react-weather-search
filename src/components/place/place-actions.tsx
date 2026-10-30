@@ -92,7 +92,7 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
           onClick={makeHome}
         >
           <IconHome aria-hidden="true" />
-          Set as home
+          Set as Home
         </Button>
       )}
     </div>

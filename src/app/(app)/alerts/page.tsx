@@ -33,7 +33,7 @@ export default function AlertsPage(props: PageProps<"/alerts">) {
     >
       <div className="space-y-6 fit:flex fit:flex-col fit:gap-3 fit:space-y-0">
         <PageHeader
-          label="Stay safe"
+          label="Stay Safe"
           title="Alerts"
           lead="Official warnings first, then signals from the forecast, for every place you follow."
         />

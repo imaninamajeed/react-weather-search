@@ -43,7 +43,7 @@ const DESTINATIONS = [
   { href: "/dashboard", label: "Dashboard", icon: IconLayoutDashboard },
   { href: "/alerts", label: "Alerts", icon: IconAlertTriangle },
   { href: "/places", label: "Places", icon: IconListDetails },
-  { href: "/map", label: "Radar map", icon: IconMap },
+  { href: "/map", label: "Radar Map", icon: IconMap },
 ];
 
 /**
@@ -56,11 +56,11 @@ export function SearchTrigger() {
       variant="outline"
       className="size-9 justify-center gap-0 px-0 text-muted-foreground sm:w-full sm:justify-start sm:gap-2 sm:px-2.5"
       onClick={() => window.dispatchEvent(new Event(OPEN_SEARCH_EVENT))}
-      aria-label="Search places"
+      aria-label="Search Places"
       aria-keyshortcuts="Control+K Meta+K /"
     >
       <IconSearch aria-hidden="true" className="size-4" />
-      <span className="hidden flex-1 text-left font-normal sm:inline">Search places</span>
+      <span className="hidden flex-1 text-left font-normal sm:inline">Search Places</span>
       <kbd className="hidden rounded border border-border px-1.5 font-heading text-[0.6875rem] sm:inline">
         /
       </kbd>
@@ -239,7 +239,7 @@ export function SearchCommand({
       <CommandDialog
         open={open}
         onOpenChange={handleOpenChange}
-        title="Search places"
+        title="Search Places"
         description="Search for a city, then press Enter to open its forecast."
       >
         {/* Results come from the server, so cmdk's own filtering is turned off. */}
@@ -262,7 +262,7 @@ export function SearchCommand({
             )}
 
             {!searchable && followed.length > 0 && (
-              <CommandGroup heading="Your places">
+              <CommandGroup heading="Your Places">
                 {followed.map((place) => (
                   <PlaceItem
                     key={place.key}
@@ -292,7 +292,7 @@ export function SearchCommand({
             )}
 
             {destinations.length > 0 && (
-              <CommandGroup heading="Go to">
+              <CommandGroup heading="Go To">
                 {destinations.map(({ href, label, icon: Icon }) => (
                   <CommandItem key={href} value={`go-${href}`} onSelect={() => visit(href)}>
                     <Icon aria-hidden="true" />
@@ -316,7 +316,7 @@ export function SearchCommand({
                   ) : (
                     <IconMoon aria-hidden="true" />
                   )}
-                  Switch to {resolvedTheme === "dark" ? "light" : "dark"} theme
+                  Switch to {resolvedTheme === "dark" ? "Light" : "Dark"} Theme
                   <CommandShortcut aria-hidden="true">D</CommandShortcut>
                 </CommandItem>
               </CommandGroup>

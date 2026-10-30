@@ -12,6 +12,10 @@ interface SectionCardProps {
   className?: string;
   /** Keep the title for assistive tech only where space is short (the content explains itself). */
   quietTitleAtFit?: boolean;
+  /** Keep the card's full padding on one-screen layouts, to line up with a neighbour that keeps its own. */
+  keepPadding?: boolean;
+  /** Classes for the card itself, e.g. a different surface. */
+  cardClassName?: string;
   /** Classes for the card body, e.g. to let a chart fill it. */
   bodyClassName?: string;
   children: ReactNode;
@@ -26,11 +30,15 @@ export function SectionCard({
   className,
   bodyClassName,
   quietTitleAtFit,
+  keepPadding,
+  cardClassName,
   children,
 }: SectionCardProps) {
   return (
     <section aria-labelledby={`${id}-title`} className={cn("", className)}>
-      <Card className="h-full fit:[--card-spacing:--spacing(4)]">
+      <Card
+        className={cn("h-full", !keepPadding && "fit:[--card-spacing:--spacing(4)]", cardClassName)}
+      >
         <CardHeader className={cn("max-sm:grid-cols-1!", quietTitleAtFit && "fit:sr-only")}>
           <CardTitle id={`${id}-title`} role="heading" aria-level={2} className="text-xl">
             {title}

@@ -21,11 +21,11 @@ export default function Error({
   return (
     <StateScreen
       icon={IconCloudOff}
-      label="Something went wrong"
-      title="The forecast didn't load"
+      label="Something Went Wrong"
+      title="The Forecast Didn't Load"
       actions={
         <>
-          <Button onClick={() => retry()}>Try again</Button>
+          <Button onClick={() => retry()}>Try Again</Button>
           <Button asChild variant="outline">
             <Link href="/dashboard">Back to Dashboard</Link>
           </Button>

@@ -14,7 +14,7 @@ test.describe("desktop", () => {
       page.getByRole("banner").getByRole("navigation", { name: "breadcrumb" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("navigation", { name: "Your places" }).getByRole("link", {
+      page.getByRole("navigation", { name: "Your Places" }).getByRole("link", {
         name: /Subang Jaya/,
       }),
     ).toHaveAttribute("aria-current", "page");
@@ -47,11 +47,11 @@ test.describe("large phone", () => {
 
   test("the dropdown switches place and keeps the view you are on", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya/outlook");
-    await page.getByRole("button", { name: "Switch place" }).click();
+    await page.getByRole("button", { name: "Switch Place" }).click();
 
     const menu = page.getByRole("menu");
     await expect(menu.getByRole("menuitem", { name: /Subang Jaya/ })).toContainText("Current");
-    await expect(menu.getByRole("menuitem", { name: "All places" })).toBeVisible();
+    await expect(menu.getByRole("menuitem", { name: "All Places" })).toBeVisible();
 
     await menu.getByRole("menuitem", { name: "Tokyo" }).click();
     await expect(page).toHaveURL(/\/place\/1850147-tokyo\/outlook$/);
@@ -64,7 +64,7 @@ test.describe("large phone", () => {
   test("includes the place you are viewing even when it isn't saved", async ({ page }) => {
     // A dropped pin: not saved, but still listed as where you are.
     await page.goto("/place/51.51,-0.13");
-    await page.getByRole("button", { name: "Switch place" }).click();
+    await page.getByRole("button", { name: "Switch Place" }).click();
     await expect(page.getByRole("menuitem", { name: /51\.51/ })).toContainText("Current");
     await expect(page.getByRole("menuitem", { name: "Tokyo" })).toBeVisible();
   });
@@ -78,7 +78,7 @@ test.describe("large phone", () => {
     await mockMapNetwork(page);
     await page.goto("/map");
     await expect(
-      page.getByRole("navigation", { name: "breadcrumb" }).getByText("Radar map"),
+      page.getByRole("navigation", { name: "breadcrumb" }).getByText("Radar Map"),
     ).toHaveAttribute("aria-current", "page");
   });
 
@@ -107,7 +107,7 @@ test.describe("large phone", () => {
 
   test("the open dropdown is accessible", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
-    await page.getByRole("button", { name: "Switch place" }).click();
+    await page.getByRole("button", { name: "Switch Place" }).click();
     await expect(page.getByRole("menu")).toBeVisible();
     await expectNoSeriousViolations(page);
   });
@@ -118,8 +118,8 @@ test.describe("mobile", () => {
 
   test("the header fits a phone: icon-only search, no horizontal scroll", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya/outlook");
-    await expect(page.getByRole("button", { name: "Search places" })).toBeVisible();
-    await expect(page.getByRole("banner").getByText("Search places", { exact: true })).toBeHidden(); // the label, not the button name
+    await expect(page.getByRole("button", { name: "Search Places" })).toBeVisible();
+    await expect(page.getByRole("banner").getByText("Search Places", { exact: true })).toBeHidden(); // the label, not the button name
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
@@ -134,7 +134,7 @@ test.describe("mobile", () => {
     await expect(trail.getByRole("link", { name: "Places" })).toBeHidden();
     await expect(trail.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
 
-    await trail.getByRole("button", { name: "Show earlier levels" }).click();
+    await trail.getByRole("button", { name: "Show Earlier Levels" }).click();
     await page.getByRole("menuitem", { name: "Places" }).click();
     await expect(page).toHaveURL(/\/places$/);
   });

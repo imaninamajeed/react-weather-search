@@ -27,7 +27,7 @@ export default function manifest(): MetadataRoute.Manifest {
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
       {
-        name: "Radar map",
+        name: "Radar Map",
         short_name: "Map",
         url: "/map",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],

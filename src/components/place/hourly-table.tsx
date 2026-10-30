@@ -8,13 +8,13 @@ export function HourlyTable({ hours, units }: { hours: HourlyPoint[]; units: Uni
   return (
     <details className="group mt-4 overflow-hidden rounded-2xl border border-border">
       <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none fit:py-1.5">
-        View as table
+        View as Table
       </summary>
       <div
         className="relative max-h-80 overflow-auto border-t border-border"
         tabIndex={0}
         role="region"
-        aria-label="Hourly forecast table"
+        aria-label="Hourly Forecast Table"
       >
         <table className="w-full text-sm">
           <caption className="sr-only">Hourly forecast for the next {hours.length} hours</caption>

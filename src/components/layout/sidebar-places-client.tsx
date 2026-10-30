@@ -64,10 +64,10 @@ export function SidebarPlacesView({
 
   return (
     <SidebarGroup className="min-h-0 flex-1">
-      <SidebarGroupLabel>Your places</SidebarGroupLabel>
+      <SidebarGroupLabel>Your Places</SidebarGroupLabel>
       <SidebarGroupAction
-        aria-label="Follow another place"
-        title="Follow another place"
+        aria-label="Follow Another Place"
+        title="Follow Another Place"
         onClick={() => {
           setOpenMobile(false);
           window.dispatchEvent(new Event(OPEN_SEARCH_EVENT));
@@ -76,7 +76,7 @@ export function SidebarPlacesView({
         <IconPlus aria-hidden="true" />
       </SidebarGroupAction>
       <SidebarGroupContent className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
-        <nav aria-label="Your places">
+        <nav aria-label="Your Places">
           <SidebarMenu>
             {places.map((place) => {
               const current =

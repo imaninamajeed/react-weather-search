@@ -2,39 +2,41 @@
 
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { PANEL } from "@/components/place/tile";
 import { OPEN_SEARCH_EVENT } from "@/components/search/search-command";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /**
- * How to follow another place, from where you compare them. One primary action (search, which is the
- * same palette as the header and the sidebar's "+", so there is a single way in) and a quiet link to
- * the map for people who would rather find a place by where it is. It closes the grid when there is
- * room, and stands alone when home is the only place followed.
+ * How to follow another place, as a slim row under the places rather than a tile among them: it has
+ * nothing to compare, so it should not take a tile's height. One primary action (search, the same
+ * palette as the header and the sidebar's "+", so there is a single way in) and a quiet link to the
+ * map for people who would rather find a place by where it is. It stands alone when home is the only
+ * place followed.
  */
 export function AddPlaceTile({
-  description = "Search any city, or find it on the map. It joins this dashboard and your sidebar.",
+  description = "Search any city and it joins this dashboard and your sidebar.",
+  className,
 }: {
   description?: string;
+  className?: string;
 }) {
   return (
     <div
       className={cn(
-        PANEL,
-        "flex h-full flex-col justify-between gap-4 border border-dashed bg-transparent dark:bg-transparent",
+        "flex flex-wrap items-center gap-x-4 gap-y-2 rounded-3xl border border-dashed border-border px-4 py-3",
+        className,
       )}
     >
-      <div>
-        <span
-          aria-hidden="true"
-          className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground"
-        >
-          <Plus className="size-4" />
-        </span>
-        <h3 className="mt-3 font-heading text-xl">Follow Another Place</h3>
-        <p className="mt-1 max-w-prose text-sm text-muted-foreground">{description}</p>
-      </div>
+      <span
+        aria-hidden="true"
+        className="grid size-8 shrink-0 place-items-center rounded-full border border-border text-muted-foreground"
+      >
+        <Plus className="size-4" />
+      </span>
+      <p className="min-w-0 flex-1 text-sm">
+        <span className="font-medium">Follow another place.</span>{" "}
+        <span className="text-muted-foreground">{description}</span>
+      </p>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <Button
           type="button"

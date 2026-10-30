@@ -18,7 +18,7 @@ function Fallback({ title }: { title: string }, { retry }: ErrorInfo) {
         The data provider didn&apos;t respond. The rest of the page is unaffected.
       </p>
       <Button variant="outline" size="sm" onClick={() => retry()}>
-        Try again
+        Try Again
       </Button>
     </div>
   );
