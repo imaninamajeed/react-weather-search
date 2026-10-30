@@ -108,26 +108,37 @@ export function SidebarPlacesView({
                         {place.home && <span className="sr-only">Home: </span>}
                         {place.name}
                       </span>
-                      {place.home && (
-                        <IconHome aria-hidden="true" className="text-muted-foreground" />
-                      )}
-                      {place.severity && (
-                        <>
-                          <SeverityIcon
-                            aria-hidden="true"
-                            className={cn(
-                              place.severity === "warning" ? "text-warning" : "text-advisory",
-                            )}
-                          />
-                          <span className="sr-only">{place.severity}</span>
-                        </>
-                      )}
-                      {place.temperature && (
-                        <span className="tabular-nums">
-                          <span className="sr-only">{place.condition}, </span>
-                          {place.temperature}
+                      {/* Fixed columns on every row (home, alert, temperature), so each kind of marker
+                          lines up down the list whether or not a given place has it. */}
+                      <span className="flex shrink-0 items-center gap-1">
+                        <span
+                          aria-hidden="true"
+                          className="grid size-4 shrink-0 place-items-center"
+                        >
+                          {place.home && <IconHome className="text-muted-foreground" />}
                         </span>
-                      )}
+                        <span className="grid size-4 shrink-0 place-items-center">
+                          {place.severity && (
+                            <>
+                              <SeverityIcon
+                                aria-hidden="true"
+                                className={cn(
+                                  place.severity === "warning" ? "text-warning" : "text-advisory",
+                                )}
+                              />
+                              <span className="sr-only">{place.severity}</span>
+                            </>
+                          )}
+                        </span>
+                        <span className="w-9 shrink-0 text-right tabular-nums">
+                          {place.temperature && (
+                            <>
+                              <span className="sr-only">{place.condition}, </span>
+                              {place.temperature}
+                            </>
+                          )}
+                        </span>
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
