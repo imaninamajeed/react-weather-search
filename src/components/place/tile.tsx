@@ -1,6 +1,8 @@
-import type { Icon } from "@tabler/icons-react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ComponentType, CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+
+/** Any icon component that takes a class (Tabler or Lucide). */
+type Icon = ComponentType<{ className?: string }>;
 
 /** The surface every reading sits on: inset in its card, with the card's own hairline ring. */
 export const PANEL =

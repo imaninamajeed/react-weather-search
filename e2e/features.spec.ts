@@ -23,7 +23,7 @@ test.describe("alerts", () => {
     baseURL,
   }) => {
     await seedPlaces(context, baseURL!);
-    await page.goto("/");
+    await page.goto("/dashboard");
     const alerts = page.getByRole("region", { name: "Alerts" });
 
     // Two places, three alerts in all (one official warning and two forecast signals): all fit.
@@ -33,7 +33,7 @@ test.describe("alerts", () => {
     await expect(alerts.getByRole("link", { name: "Tokyo" }).first()).toBeVisible();
     await expect(alerts.getByRole("link", { name: /View all/ })).toHaveCount(0);
 
-    await alerts.getByRole("link", { name: /All alerts/ }).click();
+    await alerts.getByRole("link", { name: /All Alerts/ }).click();
     await expect(page).toHaveURL(/\/alerts$/);
   });
 
@@ -64,17 +64,17 @@ test.describe("alerts", () => {
         url: baseURL!,
       },
     ]);
-    await page.goto("/");
+    await page.goto("/dashboard");
     const alerts = page.getByRole("region", { name: "Alerts" });
     await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
-    // Three shown, the fourth is behind the link, and the official warning is first.
-    await expect(alerts.getByRole("link", { name: "View all 4 alerts" })).toBeVisible();
-    // (Matching the card caption exactly: the "Checked: Forecast signals…" note also contains the words.)
-    await expect(alerts.getByText(/^· Forecast signal$/)).toHaveCount(2);
+    // Three shown, the fourth is behind the header's button, and the official warning is first.
+    await expect(alerts.getByText("Showing 3 of 4")).toBeVisible();
+    // (Matching the badge exactly: the "Checked: Forecast signals…" note also contains the words.)
+    await expect(alerts.getByText("Forecast Signal", { exact: true })).toHaveCount(2);
 
-    await alerts.getByRole("link", { name: "View all 4 alerts" }).click();
+    await alerts.getByRole("link", { name: "All Alerts" }).click();
     await expect(page).toHaveURL(/\/alerts$/);
-    await expect(page.getByRole("link", { name: "All alerts (4)" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "All Alerts (4)" })).toBeVisible();
   });
 
   test("the alerts page lists everything by place and can show official warnings only", async ({
@@ -87,12 +87,12 @@ test.describe("alerts", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Alerts" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Subang Jaya" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Tokyo" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "All alerts (3)" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "All Alerts (3)" })).toHaveAttribute(
       "aria-current",
       "page",
     );
 
-    await page.getByRole("link", { name: "Official warnings (1)" }).click();
+    await page.getByRole("link", { name: "Official Warnings (1)" }).click();
     await expect(page).toHaveURL(/\?show=official$/);
     // Tokyo has only a forecast signal, so it drops out; Subang Jaya keeps its official warning.
     await expect(page.getByRole("heading", { level: 2, name: "Subang Jaya" })).toBeVisible();

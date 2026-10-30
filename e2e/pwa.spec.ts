@@ -5,7 +5,7 @@ test("the manifest is valid and its assets exist", async ({ request }) => {
   expect(manifest).toMatchObject({
     short_name: "Isobar",
     display: "standalone",
-    start_url: "/",
+    start_url: "/dashboard",
     scope: "/",
   });
   expect(manifest.icons.some((icon: { purpose: string }) => icon.purpose === "maskable")).toBe(

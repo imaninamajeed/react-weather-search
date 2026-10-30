@@ -18,7 +18,7 @@ export async function AirQualityTile({
   if (!airQuality) {
     return (
       <Tile
-        label="Air quality"
+        label="Air Quality"
         icon={IconLeaf}
         accent="var(--brand-teal-text)"
         value="—"
@@ -32,7 +32,7 @@ export async function AirQualityTile({
 
   return (
     <Tile
-      label="Air quality"
+      label="Air Quality"
       icon={IconLeaf}
       accent="var(--brand-teal-text)"
       value={Math.round(airQuality.usAqi)}
@@ -47,7 +47,7 @@ export async function AirQualityTile({
         value={airQuality.usAqi}
         max={300}
         tone={AQI_TONES[category.level]}
-        label={`Air quality ${category.label}`}
+        label={`Air Quality ${category.label}`}
       />
     </Tile>
   );

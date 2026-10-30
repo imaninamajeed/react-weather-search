@@ -30,6 +30,19 @@ export async function mockMapNetwork(page: Page) {
 
 /** Fails on any serious or critical WCAG A/AA violation, printing what and where. */
 export async function expectNoSeriousViolations(page: Page) {
+  // A card that scrolls inside a one-screen page becomes keyboard-reachable once the page has
+  // hydrated and measured it. The network can be idle before that (a busy runner hydrates late), so
+  // wait for every overflowing card to be reachable. If one never is, scan anyway and let axe say so.
+  await page
+    .waitForFunction(() =>
+      [...document.querySelectorAll('[data-slot="card-content"]')].every(
+        (card) =>
+          card.scrollHeight <= card.clientHeight + 1 ||
+          card.hasAttribute("tabindex") ||
+          card.querySelector("a[href], button, summary, input, select, textarea, [tabindex]"),
+      ),
+    )
+    .catch(() => undefined);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
     .analyze();

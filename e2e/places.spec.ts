@@ -2,14 +2,14 @@ import { expect, test } from "@playwright/test";
 import { seedPlaces } from "./helpers";
 
 test("the dashboard opens on the default city with an onboarding prompt", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
   await expect(page.getByRole("heading", { level: 2, name: "Subang Jaya" })).toBeVisible();
   await expect(page.getByText("Nothing saved yet")).toBeVisible();
   await expect(page.getByText("Warm and humid.")).toBeVisible();
 });
 
 test("search finds a city from the keyboard and shows its own local time", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
   await page.keyboard.press("/");
   await page.getByPlaceholder("Search a city…").fill("tok");
   await expect(page.getByRole("option", { name: /Tokyo/ }).first()).toBeVisible();
@@ -22,7 +22,7 @@ test("search finds a city from the keyboard and shows its own local time", async
 });
 
 test("search explains an empty result and an upstream failure", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
   await page.keyboard.press("/");
   const input = page.getByPlaceholder("Search a city…");
 
@@ -57,7 +57,7 @@ test("saving, setting home, reordering and removing with undo", async ({ page })
   await page.getByRole("button", { name: "Set as home" }).first().click();
   // Let the action finish before navigating away, or it is cancelled mid-flight.
   await expect(page.getByText("Tokyo is now your home")).toBeVisible();
-  await page.goto("/");
+  await page.goto("/dashboard");
   await expect(page.getByRole("heading", { level: 2, name: "Tokyo" }).first()).toBeVisible();
   await expect(page.locator("article:visible h3")).toHaveText(["Subang Jaya"]);
 
@@ -87,7 +87,7 @@ test("undoing the removal of the home place restores its home status", async ({ 
     .getByRole("button", { name: "Undo" })
     .click();
   await expect(page.locator("article:visible h3")).toHaveText(["Tokyo"]);
-  await page.goto("/");
+  await page.goto("/dashboard");
   await expect(page.getByRole("heading", { level: 2, name: "Tokyo" }).first()).toBeVisible();
 });
 
@@ -99,13 +99,13 @@ test.describe("dashboard versus places", () => {
   test("the dashboard is a glance: no home repeat, no management, no comparison table", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     // Subang Jaya is home (the hero), so only Tokyo is a status card.
     await expect(page.locator("article:visible h3")).toHaveText(["Tokyo"]);
     await expect(page.getByRole("button", { name: /^Move / })).toHaveCount(0);
-    await expect(page.getByRole("region", { name: "Week ahead", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("region", { name: "Week Ahead", exact: true })).toHaveCount(0);
 
-    await page.getByRole("link", { name: /Manage and compare/ }).click();
+    await page.getByRole("link", { name: /Manage and Compare/ }).click();
     await expect(page).toHaveURL(/\/places$/);
   });
 
@@ -115,12 +115,12 @@ test.describe("dashboard versus places", () => {
     await expect(page.locator("article:visible h3")).toHaveText(["Subang Jaya", "Tokyo"]);
     await expect(page.getByRole("button", { name: "Move Tokyo up" })).toBeVisible();
 
-    const week = page.getByRole("region", { name: "Week ahead", exact: true });
+    const week = page.getByRole("region", { name: "Week Ahead", exact: true });
     await expect(week.getByRole("row")).toHaveCount(3); // header + 2 places
   });
 
   test("the old manage link redirects to the places page", async ({ page }) => {
-    await page.goto("/?manage=1");
+    await page.goto("/dashboard?manage=1");
     await expect(page).toHaveURL(/\/places$/);
   });
 });
@@ -132,9 +132,9 @@ test("the dashboard says how to add a second place when only home is followed", 
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByText("Saved Subang Jaya")).toBeVisible();
 
-  await page.goto("/");
+  await page.goto("/dashboard");
   await expect(page.getByText(/only one you follow so far/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "Add a place" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add a Place" })).toBeVisible();
 });
 
 test("units switch between metric and imperial and persist", async ({ page }) => {

@@ -124,12 +124,13 @@ Only Chromium is covered by the automated tests; Firefox and Safari have not bee
 - [`docs/AUDIT.md`](docs/AUDIT.md): what was wrong with the original app and how each issue was resolved.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): how it's built and why.
 - [`docs/INFORMATION_ARCHITECTURE.md`](docs/INFORMATION_ARCHITECTURE.md): the site map and why each module is (or isn't) its own page.
+- [`DESIGN.md`](DESIGN.md): how to build UI with the shadcn components and theme tokens.
 
 ## Project layout
 
 ```
 src/
-  app/            routes: / (dashboard), /places, /alerts, /place/[key] (+ /outlook, /history), /map, /about, /offline, API routes
+  app/            routes: / (welcome), /dashboard, /places, /alerts, /place/[key] (+ /outlook, /history), /map, /about, /offline, API routes
                   · @crumbs/ is the parallel slot that renders each page's breadcrumb in the header
   components/     ui (shadcn, re-themed) · place · dashboard · alerts · history · map · search · layout · pwa
   lib/            open-meteo (server-only fetchers) · alerts · weather (pure domain logic) · map · units, format, places, preferences

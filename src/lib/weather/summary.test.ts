@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import fixture from "@/test/fixtures/forecast-subang-jaya.json";
 import { forecastResponseSchema, normalizeForecast } from "@/lib/open-meteo/forecast";
-import { describeFeel, summarizeToday } from "./summary";
+import { describeFeel, describeRainOutlook, summarizeToday } from "./summary";
 import type { Forecast, HourlyPoint } from "./types";
 
 const base = () => normalizeForecast(forecastResponseSchema.parse(structuredClone(fixture)));
@@ -113,5 +113,38 @@ describe("summarizeToday", () => {
 
   it("summarizes the real Subang Jaya fixture", () => {
     expect(summarizeToday(base(), "metric")).toBe("Warm and humid. Rain now, easing around 10 AM.");
+  });
+});
+
+describe("describeRainOutlook", () => {
+  const wet = { precipitationProbability: 80 };
+  const outlook = (overrides: Record<number, Partial<HourlyPoint>>) =>
+    describeRainOutlook(withHours(overrides).hourly);
+
+  it("says so when the next 24 hours are dry", () => {
+    expect(outlook({})).toBe("Dry for the next 24 h");
+  });
+
+  it("names the hour rain starts", () => {
+    // Offset 7 from 08:00 is 3 PM.
+    expect(outlook({ 7: wet, 8: wet })).toBe("Rain from 3 PM");
+  });
+
+  it("says when rain that is falling now stops", () => {
+    expect(outlook({ 0: wet, 1: wet, 2: wet })).toBe("Rain until 11 AM");
+  });
+
+  it("says when it rains all day", () => {
+    const allWet = Object.fromEntries(Array.from({ length: 24 }, (_, i) => [i, wet]));
+    expect(outlook(allWet)).toBe("Rain for the next 24 h");
+  });
+
+  it("names the kind of weather, as the hero does", () => {
+    expect(outlook({ 7: { ...wet, weatherCode: 95 } })).toBe("Thunderstorms from 3 PM");
+  });
+
+  it("adds tomorrow when the rain is not until the next day", () => {
+    // Offset 20 from 08:00 is 4 AM the next day.
+    expect(outlook({ 20: wet })).toBe("Rain from 4 AM tomorrow");
   });
 });

@@ -51,7 +51,7 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
     />,
     <Tile
       key="uv"
-      label="UV index"
+      label="UV Index"
       icon={IconSun}
       accent="var(--brand-violet)"
       value={Math.round(current.uvIndex)}
@@ -66,7 +66,7 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
         value={current.uvIndex}
         max={11}
         tone={UV_TONES[uv.level]}
-        label={`UV index ${uv.label}`}
+        label={`UV Index ${uv.label}`}
       />
     </Tile>,
     <div key="air-quality" className="contents">
@@ -100,7 +100,7 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
     />,
     <Tile
       key="cloud"
-      label="Cloud cover"
+      label="Cloud Cover"
       icon={IconCloud}
       accent="var(--brand-indigo)"
       value={Math.round(current.cloudCover)}

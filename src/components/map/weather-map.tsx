@@ -323,9 +323,9 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
     : "";
 
   return (
-    <div className="space-y-4 fit:flex fit:min-h-0 fit:flex-1 fit:flex-col fit:gap-3 fit:space-y-0">
+    <div className="space-y-4 fit:flex fit:flex-col fit:gap-3 fit:space-y-0">
       <div
-        className="relative h-[calc(100svh-23.5rem)] min-h-96 overflow-hidden rounded-xl border border-border bg-muted lg:h-[calc(100svh-19.5rem)] fit:h-auto fit:min-h-0 fit:flex-1"
+        className="relative h-[calc(100svh-23.5rem)] min-h-96 overflow-hidden rounded-xl border border-border bg-muted lg:h-[calc(100svh-19.5rem)]"
         role="region"
         aria-label="Weather map. Saved places are links; click anywhere else for the weather at that spot."
       >

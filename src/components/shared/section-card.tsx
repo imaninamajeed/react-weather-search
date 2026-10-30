@@ -29,7 +29,7 @@ export function SectionCard({
   children,
 }: SectionCardProps) {
   return (
-    <section aria-labelledby={`${id}-title`} className={cn("fit:min-h-0", className)}>
+    <section aria-labelledby={`${id}-title`} className={cn("", className)}>
       <Card className="h-full fit:[--card-spacing:--spacing(4)]">
         <CardHeader className={cn("max-sm:grid-cols-1!", quietTitleAtFit && "fit:sr-only")}>
           <CardTitle id={`${id}-title`} role="heading" aria-level={2} className="text-xl">
@@ -42,11 +42,7 @@ export function SectionCard({
             </CardAction>
           )}
         </CardHeader>
-        <ScrollBody
-          className={cn("space-y-4 fit:min-h-0 fit:flex-1 fit:overflow-y-auto", bodyClassName)}
-        >
-          {children}
-        </ScrollBody>
+        <ScrollBody className={cn("space-y-4", bodyClassName)}>{children}</ScrollBody>
       </Card>
     </section>
   );

@@ -8,7 +8,7 @@ test.use({
 });
 
 const PAGES = [
-  ["dashboard", "/"],
+  ["dashboard", "/dashboard"],
   ["place", "/place/8504423-subang-jaya"],
   ["outlook", "/place/8504423-subang-jaya/outlook"],
   ["history", "/place/8504423-subang-jaya/history"],
@@ -16,6 +16,7 @@ const PAGES = [
   ["places", "/places"],
   ["map", "/map"],
   ["about", "/about"],
+  ["welcome", "/"],
   ["offline", "/offline"],
   ["not found", "/place/nope"],
 ] as const;
@@ -33,7 +34,7 @@ for (const scheme of ["light", "dark"] as const) {
 }
 
 test("the search dialog is accessible", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
   await page.keyboard.press("/");
   await page.getByPlaceholder("Search a city…").fill("tok");
   await page.getByRole("option").first().waitFor();
@@ -49,7 +50,7 @@ for (const scheme of ["light", "dark"] as const) {
     await seedPlaces(context, baseURL!);
     await page.emulateMedia({ colorScheme: scheme });
     await page.goto("/places");
-    await page.getByRole("region", { name: "Week ahead", exact: true }).waitFor();
+    await page.getByRole("region", { name: "Week Ahead", exact: true }).waitFor();
     await page.waitForLoadState("networkidle");
     await expectNoSeriousViolations(page);
   });

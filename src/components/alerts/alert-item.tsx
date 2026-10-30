@@ -1,4 +1,4 @@
-import { IconAlertOctagon, IconAlertTriangle } from "@tabler/icons-react";
+import { OctagonAlert, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { describeAlert } from "@/lib/alerts/describe";
 import type { WeatherAlert } from "@/lib/alerts/types";
@@ -23,7 +23,7 @@ interface AlertItemProps {
 export function AlertItem({ alert, units, now, place }: AlertItemProps) {
   const description = describeAlert(alert, units, now);
   const isWarning = alert.severity === "warning";
-  const Icon = isWarning ? IconAlertOctagon : IconAlertTriangle;
+  const Icon = isWarning ? OctagonAlert : TriangleAlert;
   const official = alert.source !== "forecast";
 
   return (

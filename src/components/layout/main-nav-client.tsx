@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-interface Destination {
+export interface Destination {
   href: string;
   label: string;
   icon: ReactNode;
@@ -19,9 +19,9 @@ interface Destination {
   exact?: boolean;
 }
 
-const DESTINATIONS: Destination[] = [
+export const DESTINATIONS: Destination[] = [
   {
-    href: "/",
+    href: "/dashboard",
     label: "Dashboard",
     icon: <IconLayoutDashboard aria-hidden="true" />,
     exact: true,
@@ -31,51 +31,37 @@ const DESTINATIONS: Destination[] = [
   { href: "/map", label: "Map", icon: <IconMap aria-hidden="true" /> },
 ];
 
-export type NavVariant = "top" | "tabs";
-
-function isActive(destination: Destination, pathname: string | null) {
+export function isActive(destination: Destination, pathname: string | null) {
   if (pathname === null) return false;
   return destination.exact
     ? pathname === destination.href
     : pathname === destination.href || pathname.startsWith(`${destination.href}/`);
 }
 
-/** The destinations as a top-bar link row (desktop) or a bottom tab bar (phones and tablets). */
+/** The destinations as a bottom tab bar, for phones; from md up the sidebar lists them instead. */
 export function MainNavView({
-  variant,
   pathname,
 }: {
-  variant: NavVariant;
   /** Null renders no highlight, for the prerendered shell. */
   pathname: string | null;
 }) {
-  const tabs = variant === "tabs";
   return (
     <nav
       aria-label="Main"
-      className={cn(
-        tabs
-          ? "fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur lg:hidden"
-          : "hidden lg:block",
-      )}
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur md:hidden"
     >
-      <ul
-        className={cn(tabs ? "mx-auto grid h-16 max-w-xl grid-cols-4" : "flex items-center gap-1")}
-      >
+      <ul className="mx-auto grid h-16 max-w-xl grid-cols-4">
         {DESTINATIONS.map((destination) => {
           const active = isActive(destination, pathname);
           return (
-            <li key={destination.href} className={cn(tabs && "flex")}>
+            <li key={destination.href} className="flex">
               <Link
                 href={destination.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden [&_svg]:shrink-0",
-                  tabs
-                    ? "flex flex-1 flex-col items-center justify-center gap-1 text-xs [&_svg]:size-5"
-                    : "flex items-center gap-2 rounded-md px-3 py-1.5 hover:bg-accent [&_svg]:size-4",
+                  "flex flex-1 flex-col items-center justify-center gap-1 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden [&_svg]:size-5 [&_svg]:shrink-0",
                   active
-                    ? cn("font-medium text-foreground", !tabs && "bg-accent")
+                    ? "font-medium text-foreground"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -91,6 +77,6 @@ export function MainNavView({
 }
 
 /** Reads the URL, which is request-time data, so it must render inside <Suspense> (see MainNav). */
-export function ActiveMainNav({ variant }: { variant: NavVariant }) {
-  return <MainNavView variant={variant} pathname={usePathname()} />;
+export function ActiveMainNav() {
+  return <MainNavView pathname={usePathname()} />;
 }

@@ -51,7 +51,7 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
   const config = { actual: { label: "Daily high", color: "var(--chart-1)" } } satisfies ChartConfig;
 
   return (
-    <div className="fit:flex fit:h-full fit:min-h-0 fit:flex-col">
+    <div className="fit:flex fit:flex-col">
       <ul
         className="mb-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground fit:mb-2"
         aria-label="Legend"
@@ -85,10 +85,10 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
 
       <div
         role="group"
-        className="fit:min-h-36 fit:flex-1"
+        className=""
         aria-label={`Daily high temperature for the last ${rows.length} days compared with the normal range. A table with every value follows the charts.`}
       >
-        <ChartContainer config={config} className="aspect-auto h-72 w-full fit:h-full fit:min-h-0">
+        <ChartContainer config={config} className="aspect-auto h-72 w-full">
           <ComposedChart
             data={rows}
             margin={{ top: 12, right: 12, bottom: 0, left: 0 }}
@@ -230,7 +230,7 @@ export function MonthlyRainChart({ months, units }: { months: MonthComparison[];
   } satisfies ChartConfig;
 
   return (
-    <div className="fit:flex fit:h-full fit:min-h-0 fit:flex-col">
+    <div className="fit:flex fit:flex-col">
       <ul
         className="mb-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground fit:mb-2"
         aria-label="Legend"
@@ -254,10 +254,10 @@ export function MonthlyRainChart({ months, units }: { months: MonthComparison[];
 
       <div
         role="group"
-        className="fit:min-h-36 fit:flex-1"
+        className=""
         aria-label="Monthly rainfall for the last twelve months compared with normal. A table with every value follows."
       >
-        <ChartContainer config={config} className="aspect-auto h-64 w-full fit:h-full fit:min-h-0">
+        <ChartContainer config={config} className="aspect-auto h-64 w-full">
           <BarChart
             data={rows}
             margin={{ top: 12, right: 12, bottom: 0, left: 0 }}

@@ -48,9 +48,22 @@ test("methods are one click from where they matter", async ({ page }) => {
   await expect(page).toHaveURL(/\/about#alerts$/);
 });
 
-test("the footer links to the about page, with breadcrumbs", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("contentinfo").getByRole("link", { name: "About this data" }).click();
+test("the sidebar links to the about page", async ({ page }) => {
+  await page.goto("/dashboard");
+  await page.getByRole("link", { name: "About", exact: true }).click();
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(page.getByRole("link", { name: "About", exact: true })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+});
+
+test("on a phone, About is in the drawer, and the page has breadcrumbs", async ({ page }) => {
+  // Breadcrumbs belong to the phone layout; from md up the sidebar replaces them.
+  await page.setViewportSize({ width: 700, height: 900 });
+  await page.goto("/dashboard");
+  await page.getByRole("button", { name: "Toggle Sidebar" }).click();
+  await page.getByRole("link", { name: "About", exact: true }).click();
   await expect(page).toHaveURL(/\/about$/);
   const crumbs = page.getByRole("navigation", { name: "breadcrumb" });
   await expect(crumbs.getByRole("link", { name: "Dashboard" })).toBeVisible();

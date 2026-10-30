@@ -21,7 +21,7 @@ export async function PlaceCrumbs({
     return (
       <PageBreadcrumb
         trail={[
-          { label: "Dashboard", href: "/" },
+          { label: "Dashboard", href: "/dashboard" },
           { label: "Places", href: "/places" },
         ]}
       />

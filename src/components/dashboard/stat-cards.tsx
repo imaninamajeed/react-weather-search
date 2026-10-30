@@ -86,14 +86,14 @@ export function StatCards({ forecast, units }: { forecast: Forecast; units: Unit
       <StatCard
         icon={IconTemperature}
         accent="var(--brand-magenta)"
-        label="Feels like"
+        label="Feels Like"
         value={formatTemperature(current.apparentTemperature, units)}
         badge={
           <Badge variant="outline">
             {feelsWarmer ? <IconTrendingUp /> : feelsColder ? <IconTrendingDown /> : null}
             {feelsWarmer || feelsColder
-              ? `${formatTemperatureDelta(difference, units)} vs actual`
-              : "Same as actual"}
+              ? `${formatTemperatureDelta(difference, units)} vs Actual`
+              : "Same as Actual"}
           </Badge>
         }
         headline={`Humidity ${Math.round(current.humidity)}%`}
@@ -102,16 +102,16 @@ export function StatCards({ forecast, units }: { forecast: Forecast; units: Unit
       <StatCard
         icon={IconSun}
         accent="var(--brand-violet)"
-        label="Today's range"
+        label="Today's Range"
         value={`${formatTemperature(today.temperatureMax, units)} / ${formatTemperature(today.temperatureMin, units)}`}
-        badge={<Badge variant="outline">{formatDuration(today.daylightSeconds)} daylight</Badge>}
+        badge={<Badge variant="outline">{formatDuration(today.daylightSeconds)} Daylight</Badge>}
         headline={`Sunrise ${formatTime(today.sunrise)}`}
         detail={`Sunset ${formatTime(today.sunset)}`}
       />
       <StatCard
         icon={IconDroplet}
         accent="var(--brand-indigo)"
-        label="Rain today"
+        label="Rain Today"
         value={`${today.precipitationProbabilityMax}%`}
         badge={
           <Badge variant="outline">{formatPrecipitation(today.precipitationSum, units)}</Badge>
@@ -130,7 +130,7 @@ export function StatCards({ forecast, units }: { forecast: Forecast; units: Unit
               aria-hidden="true"
               style={{ rotate: `${Math.round(current.windDirection + 180)}deg` }}
             />
-            from {compassPoint(current.windDirection)}
+            From {compassPoint(current.windDirection)}
           </Badge>
         }
         headline={`Gusts up to ${formatSpeed(current.windGusts, units)}`}

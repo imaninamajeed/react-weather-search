@@ -1,13 +1,16 @@
-import { Suspense } from "react";
-import { Dashboard } from "@/components/dashboard/dashboard";
-import { PlaceSkeleton } from "@/components/shared/skeletons";
+import type { Metadata } from "next";
+import { WelcomeHero } from "@/components/welcome/welcome-hero";
 
-export default function Home(props: PageProps<"/">) {
+export const metadata: Metadata = {
+  description:
+    "What Isobar does: forecasts, severe-weather alerts, forecast confidence, climate history and live radar for the places you follow, with no account.",
+};
+
+/** The landing page at `/`. Outside the `(app)` route group on purpose: no sidebar, header or footer. */
+export default function WelcomePage() {
   return (
-    <main data-fit id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pt-2 pb-8 fit:pb-3">
-      <Suspense fallback={<PlaceSkeleton />}>
-        <Dashboard searchParams={props.searchParams} />
-      </Suspense>
+    <main id="main" className="flex min-h-dvh flex-1 flex-col">
+      <WelcomeHero />
     </main>
   );
 }

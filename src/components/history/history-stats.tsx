@@ -13,7 +13,7 @@ export function HistoryStats({ summary, units }: { summary: HistorySummary; unit
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 fit:grid-cols-6">
       <Tile
-        label="Daily highs vs normal"
+        label="Daily Highs vs Normal"
         value={inLine ? "On par" : formatTemperatureDelta(anomaly, units)}
         unit={inLine ? undefined : anomaly > 0 ? "warmer" : "cooler"}
         caption={`Average over ${summary.days} days against 1991–2020.`}
@@ -25,24 +25,24 @@ export function HistoryStats({ summary, units }: { summary: HistorySummary; unit
         caption={`${formatPrecipitation(summary.rainTotal, units)} fell; about ${formatPrecipitation(summary.rainNormal, units)} is typical for this period.`}
       />
       <Tile
-        label="Unusually hot days"
+        label="Unusually Hot Days"
         value={summary.daysAboveNormalRange}
         unit="days"
         caption={`Hotter than 9 in 10 normal days. About ${summary.expectedOutside} would be expected.`}
       />
       <Tile
-        label="Unusually cool days"
+        label="Unusually Cool Days"
         value={summary.daysBelowNormalRange}
         unit="days"
         caption={`Cooler than 9 in 10 normal days. About ${summary.expectedOutside} would be expected.`}
       />
       <Tile
-        label="Warmest day"
+        label="Warmest Day"
         value={summary.warmest ? formatTemperature(summary.warmest.value, units) : "—"}
         caption={summary.warmest ? formatDayMonth(summary.warmest.date) : undefined}
       />
       <Tile
-        label="Wettest day"
+        label="Wettest Day"
         value={summary.wettest ? formatPrecipitation(summary.wettest.value, units) : "—"}
         caption={summary.wettest ? formatDayMonth(summary.wettest.date) : undefined}
       />

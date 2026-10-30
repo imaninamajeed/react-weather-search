@@ -59,7 +59,7 @@ const METRIC_LABELS: Record<Metric, string> = {
   wind: "Wind",
 };
 
-const HEIGHT = "h-64 w-full aspect-auto fit:h-full fit:min-h-0";
+const HEIGHT = "h-64 w-full aspect-auto";
 
 /** Consecutive night hours as [from, to] pairs, drawn as faint bands behind the series. */
 function nightBands(rows: Row[]) {
@@ -175,7 +175,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
   const summary = `${METRIC_LABELS[metric]} for the next ${rows.length} hours, ${formatWeekday(first.time)} ${formatHour(first.time)} to ${formatWeekday(last.time)} ${formatHour(last.time)}. A table with every value follows the chart.`;
 
   return (
-    <div className="fit:flex fit:min-h-0 fit:flex-1 fit:flex-col">
+    <div className="fit:flex fit:flex-col">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 fit:mb-2">
         <ToggleGroup
           type="single"
@@ -209,7 +209,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
         )}
       </div>
 
-      <div role="group" aria-label={summary} className="fit:min-h-0 fit:flex-1">
+      <div role="group" aria-label={summary} className="">
         {metric === "temperature" && (
           <ChartContainer config={config} className={HEIGHT}>
             <AreaChart {...shared}>

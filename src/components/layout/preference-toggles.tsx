@@ -8,14 +8,16 @@ import { setUnits } from "@/app/actions";
 import { useInstallPrompt } from "@/components/pwa/use-install-prompt";
 import { useOnlineStatus } from "@/components/pwa/use-online-status";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { isUnits } from "@/lib/units";
 import type { Units } from "@/lib/weather/types";
-
-const groupClass = "rounded-3xl border border-input";
-// Joined segments with a filled selection; the px override matches the group's own px-3 selector.
-const itemClass =
-  "group-data-[spacing=0]/toggle-group:px-2 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-primary";
 
 const subscribeNever = () => () => {};
 
@@ -42,26 +44,26 @@ export function UnitsToggle({ units }: { units: Units | null }) {
     <ToggleGroup
       type="single"
       aria-label="Units"
-      size="sm"
+      variant="outline"
       spacing={0}
-      className={groupClass}
       value={shown ?? ""}
       onValueChange={change}
       disabled={units === null || !online || pending}
     >
-      <ToggleGroupItem value="metric" aria-label="Metric (°C, km/h)" className={itemClass}>
+      <ToggleGroupItem value="metric" aria-label="Metric (°C, km/h)">
         °C
       </ToggleGroupItem>
-      <ToggleGroupItem value="imperial" aria-label="Imperial (°F, mph)" className={itemClass}>
+      <ToggleGroupItem value="imperial" aria-label="Imperial (°F, mph)">
         °F
       </ToggleGroupItem>
     </ToggleGroup>
   );
 }
 
-/** System, light or dark. The saved theme is only known in the browser, so nothing is selected until then. */
+/** System, light or dark, as shadcn's mode toggle: one button, a menu of three. */
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  // The saved theme is only known in the browser, so nothing is selected until then.
   const mounted = useSyncExternalStore(
     subscribeNever,
     () => true,
@@ -69,25 +71,35 @@ export function ThemeToggle() {
   );
 
   return (
-    <ToggleGroup
-      type="single"
-      aria-label="Theme"
-      size="sm"
-      spacing={0}
-      className={groupClass}
-      value={mounted ? (theme ?? "system") : ""}
-      onValueChange={(value) => value && setTheme(value)}
-    >
-      <ToggleGroupItem value="system" aria-label="System theme" className={itemClass}>
-        <IconDeviceDesktop aria-hidden="true" />
-      </ToggleGroupItem>
-      <ToggleGroupItem value="light" aria-label="Light theme" className={itemClass}>
-        <IconSun aria-hidden="true" />
-      </ToggleGroupItem>
-      <ToggleGroupItem value="dark" aria-label="Dark theme" className={itemClass}>
-        <IconMoon aria-hidden="true" />
-      </ToggleGroupItem>
-    </ToggleGroup>
+    // Non-modal: a small menu shouldn't hide the rest of the page (and its skip link) from assistive
+    // tech while open, which is what a modal Radix menu does.
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" aria-label="Theme">
+          <IconSun aria-hidden="true" className="dark:hidden" />
+          <IconMoon aria-hidden="true" className="hidden dark:block" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup
+          value={mounted ? (theme ?? "system") : ""}
+          onValueChange={(value) => setTheme(value)}
+        >
+          <DropdownMenuRadioItem value="light">
+            <IconSun aria-hidden="true" />
+            Light
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="dark">
+            <IconMoon aria-hidden="true" />
+            Dark
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="system">
+            <IconDeviceDesktop aria-hidden="true" />
+            System
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -99,10 +111,10 @@ export function InstallButton() {
   const install = useInstallPrompt();
   if (!install) return null;
   return (
-    <Button variant="outline" size="sm" className="shrink-0" onClick={() => void install()}>
+    <Button variant="outline" className="shrink-0 max-sm:hidden" onClick={() => void install()}>
       <IconDownload aria-hidden="true" />
-      <span className="hidden xl:inline">Install app</span>
-      <span className="sr-only xl:hidden">Install app</span>
+      <span className="hidden xl:inline">Install App</span>
+      <span className="sr-only xl:hidden">Install App</span>
     </Button>
   );
 }

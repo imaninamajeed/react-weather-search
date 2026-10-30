@@ -7,7 +7,7 @@ for (const scheme of ["light", "dark"] as const) {
       await seedPlaces(context, baseURL!);
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
-      await page.goto("/");
+      await page.goto("/dashboard");
       await page.waitForLoadState("networkidle");
       const hero = page.locator("header#place-title, header:has(#place-title)").first();
       await hero.scrollIntoViewIfNeeded();

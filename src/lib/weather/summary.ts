@@ -1,4 +1,4 @@
-import { formatHourRange } from "@/lib/format";
+import { formatHour, formatHourRange } from "@/lib/format";
 import { formatSpeed } from "@/lib/units";
 import { isThunderstorm } from "./codes";
 import type { Forecast, HourlyPoint, Units } from "./types";
@@ -81,4 +81,23 @@ export function summarizeToday(forecast: Forecast, units: Units): string {
   if (peakGust >= GUST_NOTICE_KMH) sentences.push(`Gusts up to ${formatSpeed(peakGust, units)}.`);
 
   return sentences.join(" ");
+}
+
+/**
+ * Rain as something to act on, for a place's tile: "Rain from 3 PM", "Rain until 11 AM",
+ * "Thunderstorms from 4 AM tomorrow", or "Dry for the next 24 h". It uses the same notion of a wet hour
+ * (and the same kind of weather) as summarizeToday, so a tile and the hero never disagree.
+ */
+export function describeRainOutlook(hourly: HourlyPoint[]): string {
+  const horizon = hourly.slice(0, HORIZON_HOURS);
+  const run = firstWetRun(horizon);
+  if (!run) return "Dry for the next 24 h";
+
+  const kind = precipitationKind(run.hours);
+  const first = run.hours[0].time;
+  const last = run.hours[run.hours.length - 1].time;
+  if (run.start === 0 && run.end === horizon.length - 1) return `${kind} for the next 24 h`;
+  if (run.start === 0) return `${kind} until ${formatHourRange(first, last).split("–").pop()}`;
+  const tomorrow = first.slice(0, 10) !== horizon[0].time.slice(0, 10);
+  return `${kind} from ${formatHour(first)}${tomorrow ? " tomorrow" : ""}`;
 }

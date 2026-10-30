@@ -20,12 +20,12 @@ export async function PlacesView() {
   const compared = [home, ...places.filter((place) => place.key !== home.key)];
 
   return (
-    <div className="flex flex-col gap-6 fit:grid fit:min-h-0 fit:flex-1 fit:grid-cols-12 fit:gap-3">
+    <div className="flex flex-col gap-6 fit:grid fit:grid-cols-12 fit:gap-3">
       <SectionCard
         id="places"
         title="Following"
         className="fit:col-span-6"
-        aside={<OpenSearchButton label="Add a place" variant="outline" size="sm" />}
+        aside={<OpenSearchButton label="Add a Place" variant="outline" size="sm" />}
       >
         {places.length === 0 ? (
           <Onboarding />
@@ -46,7 +46,7 @@ export async function PlacesView() {
       </SectionCard>
 
       {places.length > 0 && (
-        <SectionCard id="week" title="Week ahead" className="fit:col-span-6">
+        <SectionCard id="week" title="Week Ahead" className="fit:col-span-6">
           <SectionBoundary title="The week-ahead table">
             <Suspense fallback={<RowsSkeleton rows={Math.min(compared.length, 5)} />}>
               <WeekAheadTable places={compared} units={units} />

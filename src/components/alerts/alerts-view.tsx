@@ -33,21 +33,21 @@ export async function AlertsView({
     .filter((entry) => entry.alerts.length > 0);
 
   return (
-    <div className="space-y-6 fit:flex fit:min-h-0 fit:flex-1 fit:flex-col fit:gap-3 fit:space-y-0">
+    <div className="space-y-6 fit:flex fit:flex-col fit:gap-3 fit:space-y-0">
       <nav aria-label="Filter alerts" className="flex flex-wrap gap-2">
         <Link
           href="/alerts"
           aria-current={officialOnly ? undefined : "page"}
           className={cn(chip, !officialOnly && "bg-accent font-medium")}
         >
-          All alerts ({totalAll})
+          All Alerts ({totalAll})
         </Link>
         <Link
           href="/alerts?show=official"
           aria-current={officialOnly ? "page" : undefined}
           className={cn(chip, officialOnly && "bg-accent font-medium")}
         >
-          Official warnings ({totalOfficial})
+          Official Warnings ({totalOfficial})
         </Link>
       </nav>
 
@@ -58,7 +58,7 @@ export async function AlertsView({
             : `No active alerts across your ${places.length === 1 ? "place" : `${places.length} places`}.`}
         </p>
       ) : (
-        <div className="space-y-8 fit:grid fit:min-h-0 fit:flex-1 fit:grid-cols-[repeat(auto-fit,minmax(24rem,1fr))] fit:content-start fit:gap-3 fit:space-y-0 fit:overflow-y-auto">
+        <div className="space-y-8 fit:grid fit:grid-cols-[repeat(auto-fit,minmax(24rem,1fr))] fit:content-start fit:gap-3 fit:space-y-0">
           {groups.map(({ place, alerts, now }) => (
             <section
               key={place.key}

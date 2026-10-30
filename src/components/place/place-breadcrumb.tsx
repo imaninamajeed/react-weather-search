@@ -23,7 +23,7 @@ export function PlaceBreadcrumb({
   return (
     <PageBreadcrumb
       trail={[
-        { label: "Dashboard", href: "/" },
+        { label: "Dashboard", href: "/dashboard" },
         { label: "Places", href: "/places" },
         {
           label: place.name,

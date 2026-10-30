@@ -3,8 +3,11 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
-/* Wide and tall enough for a page marked data-fit to fill the viewport instead of scrolling it. */
-@custom-variant fit (@media (min-width: 1024px) and (min-height: 800px));
+/*
+ * Wide and tall enough for the denser, multi-column page layouts. Pages still scroll as usual. The
+ * sidebar takes 15rem of the width from lg up, so this starts at xl.
+ */
+@custom-variant fit (@media (min-width: 1280px) and (min-height: 740px));
 
 @theme inline {
   --font-sans: var(--font-sans);
@@ -96,6 +99,9 @@
   --warning-foreground: oklch(0.98 0.01 27);
 
   --radius: 0.625rem;
+
+  /* How wide the page chrome and content may grow; data-heavy pages ask for more (see below). */
+  --page-max: 72rem;
 
   /* The app mark's palette (see components/shared/isobar-mark.tsx), for hero art and accents. */
   --brand-ink: #06090c;
@@ -199,6 +205,37 @@
   }
 }
 
+/* A short slide-in on each new page. Position only, so text contrast never changes mid-motion. */
+@keyframes page-enter {
+  from {
+    transform: translateY(0.5rem);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: page-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/* Dashboard sections arrive one after another; position only, so contrast never changes mid-motion. */
+@keyframes rise {
+  from {
+    transform: translateY(0.75rem);
+  }
+}
+/* The weather icon drifts a few pixels, slowly enough to read as air rather than animation. */
+@keyframes float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+}
+
 @layer utilities {
   /* Aligned digits for temperatures, times and table columns. */
   .tnum {
@@ -210,33 +247,9 @@
   }
 }
 
-/*
- * Pages that opt in with data-fit become one screen on large displays: the shell is pinned to the
- * viewport, the footer shrinks to a single line, and the page's own grid divides what is left.
- * Anywhere smaller they scroll as usual. Keep the query in step with the `fit` variant above.
- */
-@media (min-width: 1024px) and (min-height: 800px) {
-  body:has([data-fit]) {
-    height: 100dvh;
-    overflow: hidden;
-  }
-  body:has([data-fit]) > [data-shell] {
-    min-height: 0;
-  }
-  body:has([data-fit]) [data-fit] {
-    display: flex;
-    flex: 1 1 0;
-    flex-direction: column;
-    min-height: 0;
-    /* Whatever a page is showing (even a loading skeleton) stays inside the viewport. */
-    overflow: hidden;
-  }
-  body:has([data-fit]) footer {
-    margin-top: 0;
-  }
-  body:has([data-fit]) footer > div {
-    padding-block: 0.5rem;
-  }
+/* Dashboards, charts and the map use the extra width of large screens; the header follows. */
+body:has([data-wide]) {
+  --page-max: 100rem;
 }
 
 /*
@@ -290,8 +303,8 @@
   color: inherit;
 }
 
-/* Toasts (with their Undo) sit above the bottom tab bar, which is shown below lg. */
-@media (max-width: 1023px) {
+/* Toasts (with their Undo) sit above the bottom tab bar, which is shown below md. */
+@media (max-width: 767px) {
   [data-sonner-toaster] {
     --offset-bottom: 5rem !important;
     --mobile-offset-bottom: 5rem !important;

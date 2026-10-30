@@ -6,6 +6,25 @@ test.beforeEach(async ({ context, baseURL }) => {
 });
 
 test.describe("desktop", () => {
+  test("the header says where you are, and the sidebar marks the current place", async ({
+    page,
+  }) => {
+    await page.goto("/place/8504423-subang-jaya/outlook");
+    await expect(
+      page.getByRole("banner").getByRole("navigation", { name: "breadcrumb" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Your places" }).getByRole("link", {
+        name: /Subang Jaya/,
+      }),
+    ).toHaveAttribute("aria-current", "page");
+  });
+});
+
+// Below md the sidebar is a drawer and the breadcrumb wraps to a row of its own under the header.
+test.describe("large phone", () => {
+  test.use({ viewport: { width: 700, height: 900 } });
+
   test("shows where you are, with links back up", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya/outlook");
     const trail = page.getByRole("navigation", { name: "breadcrumb" });
@@ -66,7 +85,7 @@ test.describe("desktop", () => {
   test("sits in its own row under the top bar, on every page including the dashboard", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     const trail = page.getByRole("navigation", { name: "breadcrumb" });
     await expect(trail.getByText("Dashboard")).toHaveAttribute("aria-current", "page");
 
@@ -78,7 +97,10 @@ test.describe("desktop", () => {
     ).toHaveCount(0);
 
     // Client-side navigation updates it too.
-    await page.getByRole("banner").getByRole("link", { name: "Places" }).click();
+    await page
+      .getByRole("navigation", { name: "Main" })
+      .getByRole("link", { name: "Places" })
+      .click();
     await expect(page).toHaveURL(/\/places$/);
     await expect(trail.getByText("Places")).toHaveAttribute("aria-current", "page");
   });
@@ -97,7 +119,7 @@ test.describe("mobile", () => {
   test("the header fits a phone: icon-only search, no horizontal scroll", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya/outlook");
     await expect(page.getByRole("button", { name: "Search places" })).toBeVisible();
-    await expect(page.getByText("Search places", { exact: true })).toBeHidden(); // the label, not the button name
+    await expect(page.getByRole("banner").getByText("Search places", { exact: true })).toBeHidden(); // the label, not the button name
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );

@@ -81,7 +81,7 @@ export type IsobarMarkDetail = keyof typeof DETAILS;
  * 1014 - depth / (1 + q), with q quadratic in the offset after a tilt and a radius-dependent twist,
  * so a contour solves to a radius per angle in closed form.
  */
-function isobar(size: number, points = 16): [number, number][] {
+export function isobar(size: number, points = 16): [number, number][] {
   const tilt = -0.42;
   return Array.from({ length: points }, (_, i) => {
     const angle = (i / points) * Math.PI * 2;
@@ -96,7 +96,7 @@ function isobar(size: number, points = 16): [number, number][] {
 }
 
 // Closed Catmull-Rom spline through the points, as cubic Beziers.
-function closedPath(pts: [number, number][]) {
+export function closedPath(pts: [number, number][]) {
   const n = pts.length;
   const at = (i: number) => pts[(i + n) % n];
   const r = Math.round;

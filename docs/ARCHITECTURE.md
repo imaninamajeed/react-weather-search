@@ -31,7 +31,8 @@ Each route is a prerendered static shell with `<Suspense>` holes that stream in:
 
 | Route                                                          | Rendering                  | Notes                                                       |
 | -------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------- |
-| `/`                                                            | shell + streamed dashboard | reads the cookie                                            |
+| `/`                                                            | static                     | the welcome page, outside the app shell                     |
+| `/dashboard`                                                   | shell + streamed dashboard | reads the cookie                                            |
 | `/places`, `/alerts`                                           | shell + streamed content   | read the cookie; `/alerts` reads `?show=`                   |
 | `/place/[key]` and its `/outlook`, `/history`                  | shell + streamed content   | `params` awaited inside `<Suspense>`                        |
 | `/map`                                                         | shell + streamed map       | needs the cookie for markers                                |
@@ -193,6 +194,8 @@ kept on top of it. **After re-applying a preset, re-check these:**
 | Dialog title inside `DialogContent` in `CommandDialog`                               | Otherwise a stray heading exists on every page while the dialog is closed.                                                                                                                                                                             | `ui/command.tsx`                     |
 | Lucide for the 12 weather-condition glyphs                                           | Tabler has no partly-cloudy, drizzle or hail icons; substituting would make "partly cloudy" look like "overcast". Every other icon is Tabler.                                                                                                          | `components/shared/weather-icon.tsx` |
 | Semantic `--advisory` / `--warning` tokens and the `.label-caps` / `.tnum` utilities | App-specific; not part of any preset.                                                                                                                                                                                                                  | `globals.css`                        |
+| `data-active` set only while a `SidebarMenuButton` is active                         | The generated file renders `data-active="false"`, and the `data-active:` variant matches on presence, so every item looked active.                                                                                                                     | `ui/sidebar.tsx`                     |
+| `useIsMobile` built on `useSyncExternalStore`                                        | The generated version sets state inside an effect, which the project's React lint rule rejects; this also renders the desktop sidebar on the server.                                                                                                   | `hooks/use-mobile.ts`                |
 
 The end-to-end suite (axe-core in both themes) and the typechecker catch most regressions here: the
 first two rows fail the accessibility checks, and a lost `thumbLabel` fails `tsc`.

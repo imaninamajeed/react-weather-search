@@ -1,6 +1,7 @@
 import { IconArrowRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
+import { HourStrip } from "@/components/dashboard/hour-strip";
 import { PlaceAlerts } from "@/components/alerts/place-alerts";
 import { SectionCard } from "@/components/shared/section-card";
 import { SectionBoundary } from "@/components/shared/section-boundary";
@@ -34,8 +35,8 @@ export async function PlaceView({
   const resolved: Place = { ...place, timezone: place.timezone ?? forecast.timezone };
 
   return (
-    <div className="grid gap-4 fit:min-h-0 fit:flex-1 fit:grid-cols-12 fit:gap-3">
-      <div className="contents fit:col-span-4 fit:flex fit:min-h-0 fit:flex-col fit:gap-3">
+    <div className="grid gap-4 fit:grid-cols-12 fit:gap-3">
+      <div className="contents fit:col-span-4 fit:flex fit:flex-col fit:gap-3">
         <PlaceHero
           place={resolved}
           forecast={forecast}
@@ -53,7 +54,7 @@ export async function PlaceView({
           id="alerts"
           title="Alerts"
           description={`Warnings and signals for ${resolved.name}`}
-          className="fit:min-h-0 fit:flex-1"
+          className=""
         >
           <SectionBoundary title="Alerts">
             <Suspense fallback={<RowsSkeleton rows={1} />}>
@@ -63,20 +64,28 @@ export async function PlaceView({
         </SectionCard>
       </div>
 
-      <div className="contents fit:col-span-8 fit:flex fit:min-h-0 fit:flex-col fit:gap-3">
+      <div className="contents fit:col-span-8 fit:flex fit:flex-col fit:gap-3">
+        <HourStrip
+          forecast={forecast}
+          units={units}
+          hours={10}
+          compact
+          className="mx-0 hidden px-0 md:mx-0 md:px-0 fit:flex fit:shrink-0"
+        />
+
         <SectionCard
           id="conditions"
-          title="Right now"
+          title="Right Now"
           description="The sun, the wind and the air at this moment"
-          bodyClassName="fit:overflow-visible"
+          bodyClassName=""
         >
           <ConditionsGrid forecast={forecast} units={units} />
         </SectionCard>
 
-        <div className="contents fit:grid fit:min-h-0 fit:flex-1 fit:grid-cols-8 fit:gap-3">
+        <div className="contents fit:grid fit:grid-cols-8 fit:gap-3">
           <SectionCard
             id="hourly"
-            title="Next 48 hours"
+            title="Next 48 Hours"
             description="Switch between temperature, rain and wind"
             className="fit:col-span-5"
             bodyClassName="fit:flex fit:flex-col fit:gap-2 fit:space-y-0"
@@ -87,7 +96,7 @@ export async function PlaceView({
 
           <SectionCard
             id="next-days"
-            title="Next 3 days"
+            title="Next 3 Days"
             description="Each bar spans the day's low to high on one shared scale"
             className="fit:col-span-3"
             aside={

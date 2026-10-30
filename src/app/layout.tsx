@@ -2,11 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Outfit, Oxanium } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { OfflineBanner } from "@/components/pwa/offline-banner";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { MainNav } from "@/components/layout/main-nav";
-import { CrumbBar, TopBar } from "@/components/layout/top-bar";
+import { SearchHost } from "@/components/search/search-host";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -34,7 +31,12 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children, crumbs }: LayoutProps<"/">) {
+/**
+ * The document and what every page shares: theme, tooltips, toasts, the search palette and the
+ * service worker. The sidebar, header and footer belong to the `(app)` route group's layout, so a
+ * page outside it (the welcome page) stands alone.
+ */
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
@@ -55,15 +57,8 @@ export default function RootLayout({ children, crumbs }: LayoutProps<"/">) {
             >
               Skip to content
             </a>
-            {/* Room for the bottom tab bar, which only exists below lg. */}
-            <div data-shell className="flex flex-1 flex-col pb-17 lg:pb-0">
-              <OfflineBanner />
-              <TopBar />
-              <CrumbBar crumbs={crumbs} />
-              {children}
-              <SiteFooter />
-            </div>
-            <MainNav variant="tabs" />
+            {children}
+            <SearchHost />
             <Toaster />
             <ServiceWorkerRegister />
           </TooltipProvider>

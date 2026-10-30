@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { expectNoSeriousViolations, mockMapNetwork, seedPlaces } from "./helpers";
 
 // The map needs WebGL, which headless Chromium only has through a software renderer.
@@ -8,7 +8,7 @@ test.use({
   },
 });
 
-// Wide and tall enough for the `fit` variant (see globals.css): every page is one screen, not a scroll.
+// Wide and tall enough for the `fit` variant (see globals.css), where the denser layouts apply.
 const SIZES = [
   { width: 1366, height: 800 },
   { width: 1440, height: 900 },
@@ -16,7 +16,6 @@ const SIZES = [
 ];
 
 const PAGES = [
-  ["dashboard", "/"],
   ["forecast", "/place/8504423-subang-jaya"],
   ["outlook", "/place/8504423-subang-jaya/outlook"],
   ["climate", "/place/8504423-subang-jaya/history"],
@@ -43,24 +42,6 @@ async function open(
 }
 
 for (const scheme of ["light", "dark"] as const) {
-  for (const size of SIZES) {
-    for (const [name, path] of PAGES) {
-      test(`${name} fits ${size.width}×${size.height} without scrolling (${scheme})`, async ({
-        page,
-        context,
-        baseURL,
-      }) => {
-        await page.setViewportSize(size);
-        await open(page, context, baseURL!, path, scheme);
-        const { doc, win } = await page.evaluate(() => ({
-          doc: document.documentElement.scrollHeight,
-          win: window.innerHeight,
-        }));
-        expect(doc).toBeLessThanOrEqual(win);
-      });
-    }
-  }
-
   for (const [name, path] of PAGES) {
     test(`${name} has no serious accessibility violations at 1366×800 (${scheme})`, async ({
       page,
@@ -73,14 +54,3 @@ for (const scheme of ["light", "dark"] as const) {
     });
   }
 }
-
-test("short windows keep the scrolling layout", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto("/place/8504423-subang-jaya");
-  await page.waitForLoadState("networkidle");
-  const { doc, win } = await page.evaluate(() => ({
-    doc: document.documentElement.scrollHeight,
-    win: window.innerHeight,
-  }));
-  expect(doc).toBeGreaterThan(win);
-});

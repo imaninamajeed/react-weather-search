@@ -4,8 +4,13 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import {
+  IconAlertTriangle,
   IconClock,
   IconCurrentLocation,
+  IconHome,
+  IconLayoutDashboard,
+  IconListDetails,
+  IconMap,
   IconMapPin,
   IconMoon,
   IconSearch,
@@ -25,6 +30,7 @@ import { formatPlaceSubtitle } from "@/lib/format";
 import { normalizeQuery, MIN_QUERY_LENGTH } from "@/lib/open-meteo/geocoding-query";
 import { coordinateKey, placeHref, type Place } from "@/lib/places";
 import { useOnlineStatus } from "@/components/pwa/use-online-status";
+import { usePalettePlaces } from "./palette-places";
 import { useRecentSearches } from "./use-recent-searches";
 
 const DEBOUNCE_MS = 250;
@@ -32,6 +38,35 @@ const DEBOUNCE_MS = 250;
 /** Dispatch on `window` to open the dialog from elsewhere (e.g. the dashboard's empty state). */
 export const OPEN_SEARCH_EVENT = "isobar:open-search";
 
+/** The pages the palette can jump to, so ⌘K is a way around the whole app and not only to a city. */
+const DESTINATIONS = [
+  { href: "/dashboard", label: "Dashboard", icon: IconLayoutDashboard },
+  { href: "/alerts", label: "Alerts", icon: IconAlertTriangle },
+  { href: "/places", label: "Places", icon: IconListDetails },
+  { href: "/map", label: "Radar map", icon: IconMap },
+];
+
+/**
+ * The button that opens the palette. Any number of these can sit in the page (the sidebar's, the
+ * phone header's); the one palette they open lives in the layout.
+ */
+export function SearchTrigger() {
+  return (
+    <Button
+      variant="outline"
+      className="size-9 justify-center gap-0 px-0 text-muted-foreground sm:w-full sm:justify-start sm:gap-2 sm:px-2.5"
+      onClick={() => window.dispatchEvent(new Event(OPEN_SEARCH_EVENT))}
+      aria-label="Search places"
+      aria-keyshortcuts="Control+K Meta+K /"
+    >
+      <IconSearch aria-hidden="true" className="size-4" />
+      <span className="hidden flex-1 text-left font-normal sm:inline">Search places</span>
+      <kbd className="hidden rounded border border-border px-1.5 font-heading text-[0.6875rem] sm:inline">
+        /
+      </kbd>
+    </Button>
+  );
+}
 interface SearchResult {
   /** The query these places answer. */
   query: string;
@@ -46,7 +81,22 @@ function isEditable(target: EventTarget | null) {
   );
 }
 
-export function SearchCommand() {
+interface SearchCommandProps {
+  /** The places you follow, home first: offered before anything is typed. */
+  places?: Place[];
+  homeKey?: string;
+  /** Render the trigger button too. Off when the layout supplies its own triggers. */
+  trigger?: boolean;
+}
+
+export function SearchCommand({
+  places: placesProp,
+  homeKey: homeKeyProp,
+  trigger = true,
+}: SearchCommandProps) {
+  const fromStore = usePalettePlaces();
+  const followed = placesProp ?? fromStore.places;
+  const homeKey = homeKeyProp ?? fromStore.homeKey;
   const router = useRouter();
   const { recents, add } = useRecentSearches();
   const [open, setOpen] = useState(false);
@@ -68,6 +118,11 @@ export function SearchCommand() {
   const searchable = query.length >= MIN_QUERY_LENGTH;
   // Typing "theme", "dark" etc. also surfaces the command, since there is no filtering to find it.
   const showTheme = !searchable || /theme|dark|light|mode|appearance/i.test(query);
+  const destinations = searchable
+    ? DESTINATIONS.filter((destination) =>
+        destination.label.toLowerCase().includes(query.toLowerCase()),
+      )
+    : DESTINATIONS;
 
   // ⌘K / Ctrl+K anywhere, or "/" when not typing in a field. "D" flips the theme under the same rule.
   useEffect(() => {
@@ -135,6 +190,17 @@ export function SearchCommand() {
     router.push(placeHref(place));
   }
 
+  // Places you already follow aren't "searches", so they stay out of the recents.
+  function openFollowed(place: Place) {
+    handleOpenChange(false);
+    router.push(placeHref(place));
+  }
+
+  function visit(href: string) {
+    handleOpenChange(false);
+    router.push(href);
+  }
+
   function locate() {
     if (!("geolocation" in navigator)) {
       setNotice("Your browser doesn't support location lookup.");
@@ -168,19 +234,7 @@ export function SearchCommand() {
 
   return (
     <>
-      <Button
-        variant="outline"
-        className="size-9 justify-center gap-0 px-0 text-muted-foreground sm:w-full sm:justify-start sm:gap-2 sm:px-2.5"
-        onClick={() => setOpen(true)}
-        aria-label="Search places"
-        aria-keyshortcuts="Control+K Meta+K /"
-      >
-        <IconSearch aria-hidden="true" className="size-4" />
-        <span className="hidden flex-1 text-left font-normal sm:inline">Search places</span>
-        <kbd className="hidden rounded border border-border px-1.5 font-heading text-[0.6875rem] sm:inline">
-          /
-        </kbd>
-      </Button>
+      {trigger && <SearchTrigger />}
 
       <CommandDialog
         open={open}
@@ -207,6 +261,19 @@ export function SearchCommand() {
               </CommandGroup>
             )}
 
+            {!searchable && followed.length > 0 && (
+              <CommandGroup heading="Your places">
+                {followed.map((place) => (
+                  <PlaceItem
+                    key={place.key}
+                    place={place}
+                    icon={place.key === homeKey ? IconHome : IconMapPin}
+                    onSelect={openFollowed}
+                  />
+                ))}
+              </CommandGroup>
+            )}
+
             {!searchable && recents.length > 0 && (
               <CommandGroup heading="Recent">
                 {recents.map((place) => (
@@ -219,8 +286,19 @@ export function SearchCommand() {
               <CommandGroup heading="Nearby">
                 <CommandItem value="my-location" onSelect={locate}>
                   <IconCurrentLocation aria-hidden="true" />
-                  Use my location
+                  Use My Location
                 </CommandItem>
+              </CommandGroup>
+            )}
+
+            {destinations.length > 0 && (
+              <CommandGroup heading="Go to">
+                {destinations.map(({ href, label, icon: Icon }) => (
+                  <CommandItem key={href} value={`go-${href}`} onSelect={() => visit(href)}>
+                    <Icon aria-hidden="true" />
+                    {label}
+                  </CommandItem>
+                ))}
               </CommandGroup>
             )}
 

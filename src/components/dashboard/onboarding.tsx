@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { OpenSearchButton } from "./open-search-button";
 
 export function Onboarding() {
@@ -10,8 +12,11 @@ export function Onboarding() {
         week-ahead comparison across all your places. Everything is stored on this device, so
         there&apos;s no account to create.
       </p>
-      <div className="mt-5">
+      <div className="mt-5 flex flex-wrap gap-2">
         <OpenSearchButton />
+        <Button asChild variant="outline">
+          <Link href="/">What Isobar Does</Link>
+        </Button>
       </div>
     </div>
   );

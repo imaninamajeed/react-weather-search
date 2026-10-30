@@ -32,7 +32,7 @@ export async function ConfidencePanel({
   const labels = unitLabels(units);
 
   return (
-    <div className="space-y-6 fit:flex fit:min-h-0 fit:flex-1 fit:flex-col fit:gap-3 fit:space-y-0">
+    <div className="space-y-6 fit:flex fit:flex-col fit:gap-3 fit:space-y-0">
       <p className="max-w-prose text-lg text-balance fit:text-base">
         {summarizeConfidence(days, units, today)}
       </p>
