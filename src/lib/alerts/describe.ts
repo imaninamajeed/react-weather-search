@@ -7,31 +7,34 @@ import {
   formatTime,
   formatWeekday,
 } from "@/lib/format";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { getMessages } from "@/lib/i18n/messages";
 import { formatPrecipitation, formatSnowfall, formatSpeed, formatTemperature } from "@/lib/units";
 import { aqiCategory } from "@/lib/weather/aqi";
 import type { Units } from "@/lib/weather/types";
 import type { ForecastHazard, OfficialAlert, WeatherAlert } from "./types";
 
 /** "Today", "Tomorrow", otherwise "Wed Oct 28". Dates are naive local; `today` is the place's current date. */
-export function relativeDay(date: string, today: string): string {
-  if (date === today) return "Today";
-  if (date === addDays(today, 1)) return "Tomorrow";
-  return `${formatWeekday(date)} ${formatDayMonth(date)}`;
+export function relativeDay(date: string, today: string, locale: Locale = DEFAULT_LOCALE): string {
+  const { day } = getMessages(locale).weather;
+  if (date === today) return day.todayTitle;
+  if (date === addDays(today, 1)) return day.tomorrowTitle;
+  return `${formatWeekday(date, "short", locale)} ${formatDayMonth(date, locale)}`;
 }
 
 /** "Today 3–6 PM" or "Today 11 PM – Wed Oct 28 2 AM" for a run of whole hours (end hour inclusive). */
-function hourWindow(start: string, end: string, today: string): string {
+function hourWindow(start: string, end: string, today: string, locale: Locale): string {
   const startDay = start.slice(0, 10);
   const endsAt = addHours(end, 1);
   if (startDay === end.slice(0, 10))
-    return `${relativeDay(startDay, today)} ${formatHourRange(start, end)}`;
-  return `${relativeDay(startDay, today)} ${formatHour(start)} – ${relativeDay(endsAt.slice(0, 10), today)} ${formatHour(endsAt)}`;
+    return `${relativeDay(startDay, today, locale)} ${formatHourRange(start, end, locale)}`;
+  return `${relativeDay(startDay, today, locale)} ${formatHour(start, locale)} – ${relativeDay(endsAt.slice(0, 10), today, locale)} ${formatHour(endsAt, locale)}`;
 }
 
-function dayWindow(start: string, end: string, today: string): string {
+function dayWindow(start: string, end: string, today: string, locale: Locale): string {
   return start === end
-    ? relativeDay(start, today)
-    : `${relativeDay(start, today)} – ${relativeDay(end, today)}`;
+    ? relativeDay(start, today, locale)
+    : `${relativeDay(start, today, locale)} – ${relativeDay(end, today, locale)}`;
 }
 
 export interface AlertDescription {
@@ -40,40 +43,31 @@ export interface AlertDescription {
   when: string;
 }
 
-const TITLES: Record<ForecastHazard["kind"], { advisory: string; warning: string }> = {
-  thunderstorm: { advisory: "Thunderstorms", warning: "Severe Thunderstorms with Hail" },
-  rain: { advisory: "Heavy Rain", warning: "Very Heavy Rain" },
-  wind: { advisory: "Strong Gusts", warning: "Damaging Gusts" },
-  heat: { advisory: "Hot Spell", warning: "Heat Wave" },
-  frost: { advisory: "Frost", warning: "Hard Freeze" },
-  snow: { advisory: "Heavy Snow", warning: "Very Heavy Snow" },
-  "air-quality": { advisory: "Unhealthy Air", warning: "Very Unhealthy Air" },
-};
-
-function hazardDetail(hazard: ForecastHazard, units: Units): string {
+function hazardDetail(hazard: ForecastHazard, units: Units, locale: Locale): string {
   const { peak } = hazard;
+  const text = getMessages(locale).weather.hazard;
   switch (hazard.metric) {
     case "probability":
-      return `Up to ${Math.round(peak)}% chance of rain.`;
+      return text.probability(Math.round(peak));
     case "rate":
-      return `Up to ${formatPrecipitation(peak, units)} an hour.`;
+      return text.rate(formatPrecipitation(peak, units));
     case "total":
-      return `Around ${formatPrecipitation(peak, units)} expected over the day.`;
+      return text.total(formatPrecipitation(peak, units));
     case "gust":
-      return `Gusts up to ${formatSpeed(peak, units)}.`;
+      return text.gust(formatSpeed(peak, units));
     case "max-temp": {
       const days =
         Math.round(
           (Date.parse(`${hazard.end}T00:00Z`) - Date.parse(`${hazard.start}T00:00Z`)) / 86_400_000,
         ) + 1;
-      return `Highs up to ${formatTemperature(peak, units)} for ${days} days.`;
+      return text.maxTemp(formatTemperature(peak, units), days);
     }
     case "min-temp":
-      return `Lows down to ${formatTemperature(peak, units)}.`;
+      return text.minTemp(formatTemperature(peak, units));
     case "snowfall":
-      return `Up to ${formatSnowfall(peak, units)} expected in a day.`;
+      return text.snowfall(formatSnowfall(peak, units));
     case "aqi":
-      return `US AQI ${Math.round(peak)} (${aqiCategory(peak).label}).`;
+      return text.aqi(Math.round(peak), aqiCategory(peak, locale).label);
   }
 }
 
@@ -81,38 +75,58 @@ export function describeHazard(
   hazard: ForecastHazard,
   units: Units,
   today: string,
+  locale: Locale = DEFAULT_LOCALE,
 ): AlertDescription {
+  const text = getMessages(locale).weather.hazard;
   const when =
     hazard.kind === "air-quality"
-      ? "Right now"
+      ? text.rightNow
       : hazard.granularity === "hour"
-        ? hourWindow(hazard.start, hazard.end, today)
-        : dayWindow(hazard.start, hazard.end, today);
+        ? hourWindow(hazard.start, hazard.end, today, locale)
+        : dayWindow(hazard.start, hazard.end, today, locale);
   return {
-    title: TITLES[hazard.kind][hazard.severity],
-    detail: hazardDetail(hazard, units),
+    title: text.titles[hazard.kind][hazard.severity],
+    detail: hazardDetail(hazard, units, locale),
     when,
   };
 }
 
 /** "Until 5:00 AM today", "Until 2:00 AM Thu Oct 29", or a "from – to" window for an upcoming alert. */
-export function describeOfficialWhen(alert: OfficialAlert, now: string, today: string): string {
+export function describeOfficialWhen(
+  alert: OfficialAlert,
+  now: string,
+  today: string,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const text = getMessages(locale).weather;
   const { starts, ends } = alert;
-  const stamp = (iso: string) => `${relativeDay(iso.slice(0, 10), today)} ${formatTime(iso)}`;
+  const stamp = (iso: string) =>
+    `${relativeDay(iso.slice(0, 10), today, locale)} ${formatTime(iso, locale)}`;
   if (ends && (!starts || starts <= now)) {
-    const day = relativeDay(ends.slice(0, 10), today);
+    const endDay = ends.slice(0, 10);
     // "5:00 AM today" / "8:00 AM tomorrow" read naturally; a named date goes after the time too.
-    return `Until ${formatTime(ends)} ${day === "Today" || day === "Tomorrow" ? day.toLowerCase() : day}`;
+    const day =
+      endDay === today
+        ? text.day.today
+        : endDay === addDays(today, 1)
+          ? text.day.tomorrow
+          : relativeDay(endDay, today, locale);
+    return text.hazard.until(formatTime(ends, locale), day);
   }
   if (starts && ends) return `${stamp(starts)} – ${stamp(ends)}`;
-  if (starts) return `From ${stamp(starts)}`;
-  return "Active now";
+  if (starts) return text.hazard.from(stamp(starts));
+  return text.hazard.activeNow;
 }
 
-export function describeAlert(alert: WeatherAlert, units: Units, now: string): AlertDescription {
+export function describeAlert(
+  alert: WeatherAlert,
+  units: Units,
+  now: string,
+  locale: Locale = DEFAULT_LOCALE,
+): AlertDescription {
   const today = now.slice(0, 10);
-  if (alert.source === "forecast") return describeHazard(alert, units, today);
-  return { title: alert.title, when: describeOfficialWhen(alert, now, today) };
+  if (alert.source === "forecast") return describeHazard(alert, units, today, locale);
+  return { title: alert.title, when: describeOfficialWhen(alert, now, today, locale) };
 }
 
 const SEVERITY_RANK = { warning: 0, advisory: 1 } as const;

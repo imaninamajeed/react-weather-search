@@ -5,7 +5,7 @@ test.describe("desktop", () => {
   test("the sidebar lists the destinations and highlights where you are", async ({ page }) => {
     await page.goto("/dashboard");
     const nav = page.getByRole("navigation", { name: "Main" });
-    for (const name of ["Dashboard", "Alerts", "Places", "Map"]) {
+    for (const name of ["Dashboard", "Alerts", "Locations", "Map"]) {
       await expect(nav.getByRole("link", { name })).toBeVisible();
     }
     await expect(nav.getByRole("link", { name: "Dashboard" })).toHaveAttribute(
@@ -26,7 +26,7 @@ test.describe("desktop", () => {
     await seedPlaces(context, baseURL!);
     await page.goto("/place/1850147-tokyo");
     const nav = page.getByRole("navigation", { name: "Main" });
-    await expect(nav.getByRole("link", { name: "Places" })).not.toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "Locations" })).not.toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -47,7 +47,7 @@ test.describe("desktop", () => {
     await seedPlaces(context, baseURL!);
     await page.goto("/place/1850147-tokyo/outlook");
 
-    const places = page.getByRole("navigation", { name: "Your Places" });
+    const places = page.getByRole("navigation", { name: "Your Locations" });
     await expect(places.getByRole("link", { name: "Tokyo" })).toHaveAttribute(
       "aria-current",
       "page",
@@ -72,7 +72,7 @@ test.describe("desktop", () => {
   }) => {
     await seedPlaces(context, baseURL!);
     await page.goto("/dashboard");
-    const places = page.getByRole("navigation", { name: "Your Places" });
+    const places = page.getByRole("navigation", { name: "Your Locations" });
     const home = places.getByRole("link", { name: /Subang Jaya/ });
     await expect(home).toContainText("Home");
     await expect(home).toContainText(/\d+°/);
@@ -122,7 +122,7 @@ test.describe("desktop", () => {
     // Labels are clipped to the icons, but every destination and place is still a link.
     await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link")).toHaveCount(4);
     await expect(
-      page.getByRole("navigation", { name: "Your Places" }).getByRole("link"),
+      page.getByRole("navigation", { name: "Your Locations" }).getByRole("link"),
     ).toHaveCount(2);
 
     await page.reload();
@@ -134,7 +134,7 @@ test.describe("desktop", () => {
 
   test("the sidebar shows the default home place when nothing is saved", async ({ page }) => {
     await page.goto("/dashboard");
-    const places = page.getByRole("navigation", { name: "Your Places" });
+    const places = page.getByRole("navigation", { name: "Your Locations" });
     await expect(places.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
     await expect(places.getByRole("link", { name: "Subang Jaya" })).not.toHaveAttribute(
       "aria-current",
@@ -156,7 +156,7 @@ test.describe("mobile", () => {
       "aria-current",
       "page",
     );
-    await expect(page.getByRole("navigation", { name: "Your Places" })).toBeHidden();
+    await expect(page.getByRole("navigation", { name: "Your Locations" })).toBeHidden();
 
     // One tap to get anywhere.
     await tabs.getByRole("link", { name: "Map" }).click();
@@ -186,7 +186,7 @@ test.describe("preferences", () => {
   test("the toolbar sits beside search in the header", async ({ page }) => {
     await page.goto("/dashboard");
     const header = page.getByRole("banner");
-    await expect(header.getByRole("button", { name: "Search Places" })).toBeVisible();
+    await expect(header.getByRole("button", { name: "Search Locations" })).toBeVisible();
     await expect(header.getByRole("radiogroup", { name: "Units" })).toBeVisible();
     await expect(header.getByRole("button", { name: "Theme" })).toBeVisible();
     // Nothing is left behind in the sidebar.
@@ -242,7 +242,7 @@ test.describe("preferences", () => {
       await seedPlaces(context, baseURL!);
       await page.goto("/dashboard");
       await page.getByRole("button", { name: "Toggle Sidebar" }).click();
-      const places = page.getByRole("navigation", { name: "Your Places" });
+      const places = page.getByRole("navigation", { name: "Your Locations" });
       await expect(places).toBeVisible();
 
       await places.getByRole("link", { name: /Tokyo/ }).click();

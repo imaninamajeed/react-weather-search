@@ -14,7 +14,7 @@ test.describe("desktop", () => {
       page.getByRole("banner").getByRole("navigation", { name: "breadcrumb" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("navigation", { name: "Your Places" }).getByRole("link", {
+      page.getByRole("navigation", { name: "Your Locations" }).getByRole("link", {
         name: /Subang Jaya/,
       }),
     ).toHaveAttribute("aria-current", "page");
@@ -30,7 +30,7 @@ test.describe("large phone", () => {
     const trail = page.getByRole("navigation", { name: "breadcrumb" });
 
     await expect(trail.getByRole("link", { name: "Dashboard" })).toBeVisible();
-    await expect(trail.getByRole("link", { name: "Places" })).toBeVisible();
+    await expect(trail.getByRole("link", { name: "Locations" })).toBeVisible();
     await expect(trail.getByRole("link", { name: "Subang Jaya" })).toHaveAttribute(
       "href",
       "/place/8504423-subang-jaya",
@@ -41,17 +41,17 @@ test.describe("large phone", () => {
     await expect(current).toHaveAttribute("aria-disabled", "true");
     await expect(current).not.toHaveAttribute("href");
 
-    await trail.getByRole("link", { name: "Places" }).click();
+    await trail.getByRole("link", { name: "Locations" }).click();
     await expect(page).toHaveURL(/\/places$/);
   });
 
   test("the dropdown switches place and keeps the view you are on", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya/outlook");
-    await page.getByRole("button", { name: "Switch Place" }).click();
+    await page.getByRole("button", { name: "Switch Location" }).click();
 
     const menu = page.getByRole("menu");
     await expect(menu.getByRole("menuitem", { name: /Subang Jaya/ })).toContainText("Current");
-    await expect(menu.getByRole("menuitem", { name: "All Places" })).toBeVisible();
+    await expect(menu.getByRole("menuitem", { name: "All Locations" })).toBeVisible();
 
     await menu.getByRole("menuitem", { name: "Tokyo" }).click();
     await expect(page).toHaveURL(/\/place\/1850147-tokyo\/outlook$/);
@@ -64,7 +64,7 @@ test.describe("large phone", () => {
   test("includes the place you are viewing even when it isn't saved", async ({ page }) => {
     // A dropped pin: not saved, but still listed as where you are.
     await page.goto("/place/51.51,-0.13");
-    await page.getByRole("button", { name: "Switch Place" }).click();
+    await page.getByRole("button", { name: "Switch Location" }).click();
     await expect(page.getByRole("menuitem", { name: /51\.51/ })).toContainText("Current");
     await expect(page.getByRole("menuitem", { name: "Tokyo" })).toBeVisible();
   });
@@ -73,7 +73,7 @@ test.describe("large phone", () => {
     await page.goto("/places");
     const trail = page.getByRole("navigation", { name: "breadcrumb" });
     await expect(trail.getByRole("link", { name: "Dashboard" })).toBeVisible();
-    await expect(trail.getByText("Places")).toHaveAttribute("aria-current", "page");
+    await expect(trail.getByText("Locations")).toHaveAttribute("aria-current", "page");
 
     await mockMapNetwork(page);
     await page.goto("/map");
@@ -99,15 +99,15 @@ test.describe("large phone", () => {
     // Client-side navigation updates it too.
     await page
       .getByRole("navigation", { name: "Main" })
-      .getByRole("link", { name: "Places" })
+      .getByRole("link", { name: "Locations" })
       .click();
     await expect(page).toHaveURL(/\/places$/);
-    await expect(trail.getByText("Places")).toHaveAttribute("aria-current", "page");
+    await expect(trail.getByText("Locations")).toHaveAttribute("aria-current", "page");
   });
 
   test("the open dropdown is accessible", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
-    await page.getByRole("button", { name: "Switch Place" }).click();
+    await page.getByRole("button", { name: "Switch Location" }).click();
     await expect(page.getByRole("menu")).toBeVisible();
     await expectNoSeriousViolations(page);
   });
@@ -118,8 +118,10 @@ test.describe("mobile", () => {
 
   test("the header fits a phone: icon-only search, no horizontal scroll", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya/outlook");
-    await expect(page.getByRole("button", { name: "Search Places" })).toBeVisible();
-    await expect(page.getByRole("banner").getByText("Search Places", { exact: true })).toBeHidden(); // the label, not the button name
+    await expect(page.getByRole("button", { name: "Search Locations" })).toBeVisible();
+    await expect(
+      page.getByRole("banner").getByText("Search Locations", { exact: true }),
+    ).toBeHidden(); // the label, not the button name
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
@@ -131,11 +133,11 @@ test.describe("mobile", () => {
     const trail = page.getByRole("navigation", { name: "breadcrumb" });
 
     // Only the last two levels stay on screen.
-    await expect(trail.getByRole("link", { name: "Places" })).toBeHidden();
+    await expect(trail.getByRole("link", { name: "Locations" })).toBeHidden();
     await expect(trail.getByRole("link", { name: "Subang Jaya" })).toBeVisible();
 
     await trail.getByRole("button", { name: "Show Earlier Levels" }).click();
-    await page.getByRole("menuitem", { name: "Places" }).click();
+    await page.getByRole("menuitem", { name: "Locations" }).click();
     await expect(page).toHaveURL(/\/places$/);
   });
 });

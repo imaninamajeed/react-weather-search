@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
  * The Isobar mark: the closed isobars around the low in design/og-image.html, on the same ink and
  * pressure ramp (magenta at the core, teal outside). Each ring is an exact contour of that low's
  * pressure formula, scaled to a set size and nudged down-left so the system leans the way the
- * fronts run. The white core is both the low's centre and "your place".
+ * fronts run. The white core is both the low's centre and "your location".
  *
  * Three optical sizes, one shape:
  *   full     48 px and up: app icons, splash screens, the social image

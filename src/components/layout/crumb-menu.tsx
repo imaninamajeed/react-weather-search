@@ -2,6 +2,8 @@
 
 import { IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { useMessages } from "@/lib/i18n/client";
 import { BreadcrumbEllipsis } from "@/components/ui/breadcrumb";
 import {
   DropdownMenu,
@@ -13,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export interface MenuLink {
-  label: string;
+  label: ReactNode;
   href: string;
   /** Marks the page you are already on. */
   current?: boolean;
@@ -21,12 +23,13 @@ export interface MenuLink {
 
 /** The "…" that stands in for earlier levels on narrow screens. */
 export function EllipsisMenu({ items }: { items: MenuLink[] }) {
+  const t = useMessages();
   return (
     // Non-modal: a small navigation menu shouldn't hide the rest of the page (and its skip link) from
     // assistive tech while open, which is what a modal Radix menu does.
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
-        aria-label="Show Earlier Levels"
+        aria-label={t.nav.showEarlierLevels}
         className="flex size-7 items-center justify-center rounded-full hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden"
       >
         <BreadcrumbEllipsis />
@@ -42,7 +45,7 @@ export function EllipsisMenu({ items }: { items: MenuLink[] }) {
   );
 }
 
-/** A chevron beside a crumb that lists alternatives at the same level, e.g. your other places. */
+/** A chevron beside a crumb that lists alternatives at the same level, e.g. your other locations. */
 export function SwitcherMenu({
   label,
   items,
@@ -53,6 +56,7 @@ export function SwitcherMenu({
   items: MenuLink[];
   footer?: MenuLink;
 }) {
+  const t = useMessages();
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
@@ -68,7 +72,7 @@ export function SwitcherMenu({
             <Link href={item.href} aria-current={item.current ? "page" : undefined}>
               {item.label}
               {item.current && (
-                <span className="ml-auto text-xs text-muted-foreground">Current</span>
+                <span className="ml-auto text-xs text-muted-foreground">{t.common.current}</span>
               )}
             </Link>
           </DropdownMenuItem>

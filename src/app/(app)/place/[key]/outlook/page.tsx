@@ -17,7 +17,7 @@ export async function generateMetadata({
 }: PageProps<"/place/[key]/outlook">): Promise<Metadata> {
   const { key } = await params;
   const place = await lookupPlace(key);
-  return { title: place ? `${place.name} 14-Day Outlook` : "Place Not Found" };
+  return { title: place ? `${place.name} 14-Day Outlook` : "Location Not Found" };
 }
 
 async function OutlookRoute({ params }: Pick<PageProps<"/place/[key]/outlook">, "params">) {

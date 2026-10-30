@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { StateScreen } from "@/components/shared/state-screen";
 import { Button } from "@/components/ui/button";
+import { useMessages } from "@/lib/i18n/client";
 
 export default function Error({
   error,
@@ -13,6 +14,7 @@ export default function Error({
   error: Error & { digest?: string };
   retry: () => void;
 }) {
+  const t = useMessages();
   useEffect(() => {
     // The digest matches the server-side log entry for this failure.
     console.error(error);
@@ -21,21 +23,23 @@ export default function Error({
   return (
     <StateScreen
       icon={IconCloudOff}
-      label="Something Went Wrong"
-      title="The Forecast Didn't Load"
+      label={t.states.error.label}
+      title={t.states.error.title}
       actions={
         <>
-          <Button onClick={() => retry()}>Try Again</Button>
+          <Button onClick={() => retry()}>{t.common.tryAgain}</Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard">Back to Dashboard</Link>
+            <Link href="/dashboard">{t.states.error.backToDashboard}</Link>
           </Button>
         </>
       }
     >
       <p>
-        Our weather provider didn&apos;t respond in time. This is usually temporary.
+        {t.states.error.body}
         {error.digest && (
-          <span className="mt-2 block font-heading text-xs">Reference: {error.digest}</span>
+          <span className="mt-2 block font-heading text-xs">
+            {t.states.reference(error.digest)}
+          </span>
         )}
       </p>
     </StateScreen>

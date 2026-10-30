@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 import { EllipsisMenu, SwitcherMenu, type MenuLink } from "./crumb-menu";
 
 export interface Crumb {
-  label: string;
+  /** A place's name, or <Text id="…"/> for a fixed label in the visitor's language. */
+  label: ReactNode;
   /** Omit on the last crumb: it is the current page and isn't a link. */
   href?: string;
   /** Adds a dropdown of alternatives beside the crumb (e.g. switch to another place). */
@@ -48,7 +49,7 @@ export function PageBreadcrumb({ trail }: { trail: Crumb[] }) {
           const last = index === trail.length - 1;
           const hidden = isCollapsed(index);
           return (
-            <Fragment key={`${crumb.label}-${index}`}>
+            <Fragment key={index}>
               <BreadcrumbItem className={cn("min-w-0", hidden && hideOnMobile)}>
                 {last || !crumb.href ? (
                   <BreadcrumbPage className="block whitespace-nowrap">{crumb.label}</BreadcrumbPage>

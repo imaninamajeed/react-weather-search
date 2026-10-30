@@ -12,22 +12,22 @@ export async function PlacesBanner() {
   );
 
   const none = places.length === 0;
-  const figures = [{ label: "Places", value: places.length }];
+  const figures = [{ label: "Locations", value: places.length }];
   if (countries.size > 0) figures.push({ label: "Countries", value: countries.size });
 
   return (
     <PageBanner
       id="places-banner"
-      label="Manage and Compare"
+      label="Locations"
       title={
         none
-          ? "No places yet"
-          : `Following ${places.length} ${places.length === 1 ? "place" : "places"}`
+          ? "No locations yet"
+          : `Following ${places.length} ${places.length === 1 ? "location" : "locations"}`
       }
       lead={
         none
-          ? "Search for a city to follow it here, and compare the week ahead across all of them."
-          : `Home is ${home.name}. Reorder your places, choose another home, and compare the week ahead.`
+          ? "Search for a city to follow it and compare the week ahead."
+          : `Home is ${home.name}. Reorder, change home, compare the week.`
       }
       aside={<BannerFigures figures={figures} />}
     />

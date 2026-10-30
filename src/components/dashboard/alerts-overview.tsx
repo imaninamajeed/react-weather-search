@@ -42,7 +42,7 @@ export async function AlertsOverview({
     .sort((a, b) => compareAlerts(a.alert, b.alert));
   const shown = all.slice(0, SUMMARY_LIMIT);
   const signature = alertsSignature(all.map(({ alert, place }) => `${place.key}:${alert.id}`));
-  const placesLabel = places.length === 1 ? "your place" : `your ${places.length} places`;
+  const placesLabel = places.length === 1 ? "your location" : `your ${places.length} locations`;
 
   const allAlerts = (
     <Button asChild variant="outline" size="sm" className="shrink-0">
@@ -55,7 +55,7 @@ export async function AlertsOverview({
   const failedNote = failed > 0 && (
     <p className="flex items-center gap-1.5 font-medium">
       <TriangleAlert aria-hidden="true" className="size-3.5 shrink-0 text-warning" />
-      Couldn&apos;t check {failed === 1 ? "one place" : `${failed} places`} just now.
+      Couldn&apos;t check {failed === 1 ? "one location" : `${failed} locations`} just now.
     </p>
   );
   const sourceNote = sources.length > 0 && (

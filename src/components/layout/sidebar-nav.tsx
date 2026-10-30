@@ -9,7 +9,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { DESTINATIONS, isActive } from "./main-nav-client";
+import { useMessages } from "@/lib/i18n/client";
+import { DESTINATIONS, destinationLabel, isActive } from "./main-nav-client";
 
 /** The mark's own magenta-to-teal, running down the edge of whatever you are on. */
 export const CURRENT_EDGE =
@@ -17,8 +18,9 @@ export const CURRENT_EDGE =
 
 /** The four destinations. A null pathname renders no highlight, for the prerendered shell. */
 export function SidebarNavView({ pathname }: { pathname: string | null }) {
+  const t = useMessages();
   return (
-    <nav aria-label="Main">
+    <nav aria-label={t.nav.main}>
       <SidebarMenu>
         {DESTINATIONS.map((destination) => {
           const active = isActive(destination, pathname);
@@ -27,12 +29,12 @@ export function SidebarNavView({ pathname }: { pathname: string | null }) {
               <SidebarMenuButton
                 asChild
                 isActive={active}
-                tooltip={destination.label}
+                tooltip={destinationLabel(destination, t)}
                 className={CURRENT_EDGE}
               >
                 <Link href={destination.href} aria-current={active ? "page" : undefined}>
                   {destination.icon}
-                  <span>{destination.label}</span>
+                  <span>{destinationLabel(destination, t)}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

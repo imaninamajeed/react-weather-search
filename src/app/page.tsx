@@ -3,7 +3,7 @@ import { WelcomeHero } from "@/components/welcome/welcome-hero";
 
 export const metadata: Metadata = {
   description:
-    "What Isobar does: forecasts, severe-weather alerts, forecast confidence, climate history and live radar for the places you follow, with no account.",
+    "What Isobar does: forecasts, severe-weather alerts, forecast confidence, climate history and live radar for the locations you follow, with no account.",
 };
 
 /** The landing page at `/`. Outside the `(app)` route group on purpose: no sidebar, header or footer. */

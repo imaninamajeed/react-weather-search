@@ -53,7 +53,7 @@ afterEach(() => vi.unstubAllGlobals());
 async function openDialog() {
   const user = userEvent.setup();
   render(<SearchCommand />);
-  await user.click(screen.getByRole("button", { name: "Search Places" }));
+  await user.click(screen.getByRole("button", { name: "Search Locations" }));
   return { user, input: await screen.findByPlaceholderText("Search a city…") };
 }
 
@@ -178,7 +178,7 @@ describe("SearchCommand", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ places: [] })));
     const { user, input } = await openDialog();
     await user.type(input, "zzzz");
-    expect(await screen.findByText("No places match “zzzz”.")).toBeInTheDocument();
+    expect(await screen.findByText("No locations match “zzzz”.")).toBeInTheDocument();
   });
 
   it("does not search for a single character", async () => {

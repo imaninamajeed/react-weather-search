@@ -1,4 +1,6 @@
 import { minutesOfDay } from "@/lib/format";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { getMessages } from "@/lib/i18n/messages";
 import type { HourlyPoint } from "./types";
 
 export interface UvCategory {
@@ -8,12 +10,13 @@ export interface UvCategory {
 }
 
 /** WHO UV index bands. */
-export function uvCategory(uv: number): UvCategory {
-  if (uv < 3) return { label: "Low", level: 0 };
-  if (uv < 6) return { label: "Moderate", level: 1 };
-  if (uv < 8) return { label: "High", level: 2 };
-  if (uv < 11) return { label: "Very High", level: 3 };
-  return { label: "Extreme", level: 4 };
+export function uvCategory(uv: number, locale: Locale = DEFAULT_LOCALE): UvCategory {
+  const { uv: text } = getMessages(locale).weather;
+  if (uv < 3) return { label: text.low, level: 0 };
+  if (uv < 6) return { label: text.moderate, level: 1 };
+  if (uv < 8) return { label: text.high, level: 2 };
+  if (uv < 11) return { label: text.veryHigh, level: 3 };
+  return { label: text.extreme, level: 4 };
 }
 
 /**

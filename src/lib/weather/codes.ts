@@ -1,3 +1,6 @@
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { getMessages } from "@/lib/i18n/messages";
+
 /** Icon identifiers; components/shared/weather-icon.tsx maps these to lucide icons. */
 export type WeatherIconName =
   | "clear-day"
@@ -18,44 +21,49 @@ export interface WeatherDescription {
   icon: WeatherIconName;
 }
 
-type Entry = { label: string; day: WeatherIconName; night?: WeatherIconName };
+type Entry = { day: WeatherIconName; night?: WeatherIconName };
 
 // WMO weather interpretation codes as used by Open-Meteo.
 const CODES: Record<number, Entry> = {
-  0: { label: "Clear Sky", day: "clear-day", night: "clear-night" },
-  1: { label: "Mainly Clear", day: "clear-day", night: "clear-night" },
-  2: { label: "Partly Cloudy", day: "partly-cloudy-day", night: "partly-cloudy-night" },
-  3: { label: "Overcast", day: "cloudy" },
-  45: { label: "Fog", day: "fog" },
-  48: { label: "Freezing Fog", day: "fog" },
-  51: { label: "Light Drizzle", day: "drizzle" },
-  53: { label: "Drizzle", day: "drizzle" },
-  55: { label: "Heavy Drizzle", day: "drizzle" },
-  56: { label: "Light Freezing Drizzle", day: "freezing-rain" },
-  57: { label: "Freezing Drizzle", day: "freezing-rain" },
-  61: { label: "Light Rain", day: "rain" },
-  63: { label: "Rain", day: "rain" },
-  65: { label: "Heavy Rain", day: "rain" },
-  66: { label: "Light Freezing Rain", day: "freezing-rain" },
-  67: { label: "Freezing Rain", day: "freezing-rain" },
-  71: { label: "Light Snow", day: "snow" },
-  73: { label: "Snow", day: "snow" },
-  75: { label: "Heavy Snow", day: "snow" },
-  77: { label: "Snow Grains", day: "snow" },
-  80: { label: "Light Showers", day: "rain" },
-  81: { label: "Showers", day: "rain" },
-  82: { label: "Violent Showers", day: "rain" },
-  85: { label: "Light Snow Showers", day: "snow" },
-  86: { label: "Heavy Snow Showers", day: "snow" },
-  95: { label: "Thunderstorm", day: "thunderstorm" },
-  96: { label: "Thunderstorm with Hail", day: "hail" },
-  99: { label: "Severe Thunderstorm with Hail", day: "hail" },
+  0: { day: "clear-day", night: "clear-night" },
+  1: { day: "clear-day", night: "clear-night" },
+  2: { day: "partly-cloudy-day", night: "partly-cloudy-night" },
+  3: { day: "cloudy" },
+  45: { day: "fog" },
+  48: { day: "fog" },
+  51: { day: "drizzle" },
+  53: { day: "drizzle" },
+  55: { day: "drizzle" },
+  56: { day: "freezing-rain" },
+  57: { day: "freezing-rain" },
+  61: { day: "rain" },
+  63: { day: "rain" },
+  65: { day: "rain" },
+  66: { day: "freezing-rain" },
+  67: { day: "freezing-rain" },
+  71: { day: "snow" },
+  73: { day: "snow" },
+  75: { day: "snow" },
+  77: { day: "snow" },
+  80: { day: "rain" },
+  81: { day: "rain" },
+  82: { day: "rain" },
+  85: { day: "snow" },
+  86: { day: "snow" },
+  95: { day: "thunderstorm" },
+  96: { day: "hail" },
+  99: { day: "hail" },
 };
 
-export function describeWeather(code: number, isDay = true): WeatherDescription {
+export function describeWeather(
+  code: number,
+  isDay = true,
+  locale: Locale = DEFAULT_LOCALE,
+): WeatherDescription {
+  const { weather } = getMessages(locale);
   const entry = CODES[code];
-  if (!entry) return { label: "Unknown Conditions", icon: "cloudy" };
-  return { label: entry.label, icon: isDay ? entry.day : (entry.night ?? entry.day) };
+  if (!entry) return { label: weather.unknownConditions, icon: "cloudy" };
+  return { label: weather.codes[code], icon: isDay ? entry.day : (entry.night ?? entry.day) };
 }
 
 export function isThunderstorm(code: number): boolean {

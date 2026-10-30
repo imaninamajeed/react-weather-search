@@ -14,7 +14,7 @@ export function PlaceNav({
 }) {
   const base = placeHref({ key: placeKey });
   return (
-    <nav aria-label="Place Sections" className="-ml-3 flex gap-1">
+    <nav aria-label="Location Sections" className="-ml-3 flex gap-1">
       <Link
         href={base}
         aria-current={current === "forecast" ? "page" : undefined}

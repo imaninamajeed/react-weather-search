@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useMessages } from "@/lib/i18n/client";
 import type { AlertSeverity } from "@/lib/alerts/types";
 import { cn } from "@/lib/utils";
 import type { WeatherIconName } from "@/lib/weather/codes";
@@ -54,6 +55,7 @@ export function SidebarPlacesView({
   pathname: string | null;
 }) {
   const { setOpenMobile } = useSidebar();
+  const t = useMessages();
   const view = pathname?.match(PLACE_PAGE)?.[1] ?? "";
   const currentRef = useRef<HTMLAnchorElement>(null);
 
@@ -64,10 +66,10 @@ export function SidebarPlacesView({
 
   return (
     <SidebarGroup className="min-h-0 flex-1">
-      <SidebarGroupLabel>Your Places</SidebarGroupLabel>
+      <SidebarGroupLabel>{t.nav.yourLocations}</SidebarGroupLabel>
       <SidebarGroupAction
-        aria-label="Follow Another Place"
-        title="Follow Another Place"
+        aria-label={t.nav.followAnother}
+        title={t.nav.followAnother}
         onClick={() => {
           setOpenMobile(false);
           window.dispatchEvent(new Event(OPEN_SEARCH_EVENT));
@@ -76,7 +78,7 @@ export function SidebarPlacesView({
         <IconPlus aria-hidden="true" />
       </SidebarGroupAction>
       <SidebarGroupContent className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
-        <nav aria-label="Your Places">
+        <nav aria-label={t.nav.yourLocations}>
           <SidebarMenu>
             {places.map((place) => {
               const current =
@@ -105,7 +107,7 @@ export function SidebarPlacesView({
                         <IconMapPin aria-hidden="true" className="text-muted-foreground" />
                       )}
                       <span className="min-w-0 flex-1 truncate">
-                        {place.home && <span className="sr-only">Home: </span>}
+                        {place.home && <span className="sr-only">{t.nav.homePrefix}</span>}
                         {place.name}
                       </span>
                       {/* Fixed columns on every row (home, alert, temperature), so each kind of marker
@@ -126,7 +128,11 @@ export function SidebarPlacesView({
                                   place.severity === "warning" ? "text-warning" : "text-advisory",
                                 )}
                               />
-                              <span className="sr-only">{place.severity}</span>
+                              <span className="sr-only">
+                                {place.severity === "warning"
+                                  ? t.common.warning
+                                  : t.common.advisory}
+                              </span>
                             </>
                           )}
                         </span>

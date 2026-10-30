@@ -18,7 +18,7 @@ export async function generateMetadata({
 }: PageProps<"/place/[key]/history">): Promise<Metadata> {
   const { key } = await params;
   const place = await lookupPlace(key);
-  return { title: place ? `${place.name} Climate History` : "Place Not Found" };
+  return { title: place ? `${place.name} Climate History` : "Location Not Found" };
 }
 
 async function HistoryRoute({ params }: Pick<PageProps<"/place/[key]/history">, "params">) {

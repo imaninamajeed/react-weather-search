@@ -1,4 +1,6 @@
 import { formatHour, formatHourRange } from "@/lib/format";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { getMessages } from "@/lib/i18n/messages";
 import { formatSpeed } from "@/lib/units";
 import { isThunderstorm } from "./codes";
 import type { Forecast, HourlyPoint, Units } from "./types";
@@ -7,23 +9,28 @@ const HORIZON_HOURS = 24;
 const GUST_NOTICE_KMH = 50;
 
 /** Describes how it feels using apparent temperature, which already accounts for humidity and wind. */
-export function describeFeel(apparentTemperature: number, dewPoint: number): string {
+export function describeFeel(
+  apparentTemperature: number,
+  dewPoint: number,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const { feel } = getMessages(locale).weather;
   const base =
     apparentTemperature < 5
-      ? "Cold"
+      ? feel.cold
       : apparentTemperature < 12
-        ? "Chilly"
+        ? feel.chilly
         : apparentTemperature < 20
-          ? "Cool"
+          ? feel.cool
           : apparentTemperature < 26
-            ? "Mild"
+            ? feel.mild
             : apparentTemperature < 32
-              ? "Warm"
+              ? feel.warm
               : apparentTemperature < 38
-                ? "Hot"
-                : "Very hot";
+                ? feel.hot
+                : feel.veryHot;
   // Dew points above ~20 °C feel muggy to most people.
-  return dewPoint >= 20 && apparentTemperature >= 24 ? `${base} and humid` : base;
+  return dewPoint >= 20 && apparentTemperature >= 24 ? feel.andHumid(base) : base;
 }
 
 const isWet = (hour: HourlyPoint) =>
@@ -33,11 +40,12 @@ const isWet = (hour: HourlyPoint) =>
 
 const isSnowCode = (code: number) => (code >= 71 && code <= 77) || code === 85 || code === 86;
 
-function precipitationKind(run: HourlyPoint[]): string {
-  if (run.some((hour) => isThunderstorm(hour.weatherCode))) return "Thunderstorms";
-  if (run.some((hour) => isSnowCode(hour.weatherCode))) return "Snow";
-  if (run.some((hour) => hour.precipitation >= 4)) return "Heavy rain";
-  return "Rain";
+function precipitationKind(run: HourlyPoint[], locale: Locale): string {
+  const { kind } = getMessages(locale).weather;
+  if (run.some((hour) => isThunderstorm(hour.weatherCode))) return kind.thunderstorms;
+  if (run.some((hour) => isSnowCode(hour.weatherCode))) return kind.snow;
+  if (run.some((hour) => hour.precipitation >= 4)) return kind.heavyRain;
+  return kind.rain;
 }
 
 /** The first run of consecutive wet hours within the horizon, with its position. */
@@ -54,31 +62,39 @@ function firstWetRun(hours: HourlyPoint[]) {
  * "Warm and humid. Thunderstorms likely 3–6 PM today."
  * Rule-based on purpose: it is testable, instant and never wrong in a creative way.
  */
-export function summarizeToday(forecast: Forecast, units: Units): string {
+export function summarizeToday(
+  forecast: Forecast,
+  units: Units,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const { summary, day: dayNames } = getMessages(locale).weather;
   const { current, hourly } = forecast;
   const horizon = hourly.slice(0, HORIZON_HOURS);
-  const sentences = [`${describeFeel(current.apparentTemperature, current.dewPoint)}.`];
+  const sentences = [
+    summary.sentence(describeFeel(current.apparentTemperature, current.dewPoint, locale)),
+  ];
 
   const run = firstWetRun(horizon);
   if (!run) {
-    sentences.push("Staying dry for the next 24 hours.");
+    sentences.push(summary.dry);
   } else {
-    const kind = precipitationKind(run.hours);
+    const kind = precipitationKind(run.hours, locale);
     const first = run.hours[0].time;
     const last = run.hours[run.hours.length - 1].time;
-    const range = formatHourRange(first, last);
+    const range = formatHourRange(first, last, locale);
     if (run.start === 0 && run.end === horizon.length - 1) {
-      sentences.push(`${kind} continuing through the next 24 hours.`);
+      sentences.push(summary.continuing(kind));
     } else if (run.start === 0) {
-      sentences.push(`${kind} now, easing around ${range.split("–").pop()}.`);
+      sentences.push(summary.easing(kind, range.split("–").pop() ?? range));
     } else {
-      const day = first.slice(0, 10) === current.time.slice(0, 10) ? "today" : "tomorrow";
-      sentences.push(`${kind} likely ${range} ${day}.`);
+      const day =
+        first.slice(0, 10) === current.time.slice(0, 10) ? dayNames.today : dayNames.tomorrow;
+      sentences.push(summary.likely(kind, range, day));
     }
   }
 
   const peakGust = Math.max(...horizon.map((hour) => hour.windGusts), current.windGusts);
-  if (peakGust >= GUST_NOTICE_KMH) sentences.push(`Gusts up to ${formatSpeed(peakGust, units)}.`);
+  if (peakGust >= GUST_NOTICE_KMH) sentences.push(summary.gusts(formatSpeed(peakGust, units)));
 
   return sentences.join(" ");
 }
@@ -88,16 +104,23 @@ export function summarizeToday(forecast: Forecast, units: Units): string {
  * "Thunderstorms from 4 AM tomorrow", or "Dry for the next 24 h". It uses the same notion of a wet hour
  * (and the same kind of weather) as summarizeToday, so a tile and the hero never disagree.
  */
-export function describeRainOutlook(hourly: HourlyPoint[]): string {
+export function describeRainOutlook(
+  hourly: HourlyPoint[],
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const { rainOutlook } = getMessages(locale).weather;
   const horizon = hourly.slice(0, HORIZON_HOURS);
   const run = firstWetRun(horizon);
-  if (!run) return "Dry for the next 24 h";
+  if (!run) return rainOutlook.dry;
 
-  const kind = precipitationKind(run.hours);
+  const kind = precipitationKind(run.hours, locale);
   const first = run.hours[0].time;
   const last = run.hours[run.hours.length - 1].time;
-  if (run.start === 0 && run.end === horizon.length - 1) return `${kind} for the next 24 h`;
-  if (run.start === 0) return `${kind} until ${formatHourRange(first, last).split("–").pop()}`;
+  if (run.start === 0 && run.end === horizon.length - 1) return rainOutlook.throughout(kind);
+  if (run.start === 0) {
+    const range = formatHourRange(first, last, locale);
+    return rainOutlook.until(kind, range.split("–").pop() ?? range);
+  }
   const tomorrow = first.slice(0, 10) !== horizon[0].time.slice(0, 10);
-  return `${kind} from ${formatHour(first)}${tomorrow ? " tomorrow" : ""}`;
+  return rainOutlook.from(kind, formatHour(first, locale), tomorrow);
 }

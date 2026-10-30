@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Isobar: weather, alerts and forecast confidence",
     short_name: "Isobar",
     description:
-      "Forecasts, severe-weather alerts, forecast confidence, climate history and live radar for the places you follow.",
+      "Forecasts, severe-weather alerts, forecast confidence, climate history and live radar for the locations you follow.",
     start_url: "/dashboard",
     scope: "/",
     display: "standalone",
@@ -39,7 +39,7 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "390x844",
         type: "image/jpeg",
         form_factor: "narrow",
-        label: "Dashboard with alerts and saved places",
+        label: "Dashboard with alerts and saved locations",
       },
       {
         src: "/screenshots/dashboard-wide.jpg",

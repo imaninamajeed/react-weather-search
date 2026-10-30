@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { SearchTrigger } from "@/components/search/search-command";
-import { IsobarMark } from "@/components/shared/isobar-mark";
+import { HeaderBrand } from "./header-brand";
 import { PreferenceControls } from "./preference-controls";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -17,14 +16,7 @@ export function AppHeader({ crumbs }: { crumbs: ReactNode }) {
     <header className="sticky top-0 z-20 flex flex-wrap items-center gap-x-2 border-b border-border bg-background/85 px-4 py-2 backdrop-blur">
       <SidebarTrigger className="-ml-1 hidden shrink-0 md:inline-flex" />
       <Separator orientation="vertical" className="mx-1 hidden h-4 md:block" />
-      <Link
-        href="/dashboard"
-        aria-label="Isobar Home"
-        className="flex shrink-0 items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden md:hidden"
-      >
-        <IsobarMark detail="compact" animated className="size-8" />
-        <span className="font-heading text-xl leading-none">Isobar</span>
-      </Link>
+      <HeaderBrand />
 
       <div className="flex h-8 min-w-0 items-center max-md:order-last max-md:basis-full md:flex-1">
         <div className="min-w-0 flex-1">

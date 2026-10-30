@@ -1,4 +1,6 @@
 import { addDays, formatDayMonth, formatWeekday } from "@/lib/format";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { getMessages } from "@/lib/i18n/messages";
 import { formatPrecipitation } from "@/lib/units";
 import type { Units } from "./types";
 
@@ -80,36 +82,36 @@ export function assessDay(day: ModelDay): DayConfidence {
 
 export const assessConfidence = (days: ModelDay[]): DayConfidence[] => days.map(assessDay);
 
-const dayName = (date: string, today: string) =>
-  date === today
-    ? "today"
+const dayName = (date: string, today: string, locale: Locale) => {
+  const { day } = getMessages(locale).weather;
+  return date === today
+    ? day.today
     : date === addDays(today, 1)
-      ? "tomorrow"
-      : `${formatWeekday(date)} ${formatDayMonth(date)}`;
+      ? day.tomorrow
+      : `${formatWeekday(date, "short", locale)} ${formatDayMonth(date, locale)}`;
+};
 
 /**
  * Plain-language read of how far to trust the week, e.g.
  * "The models agree closely through Thu Oct 29, then start to diverge."
  */
-export function summarizeConfidence(days: DayConfidence[], units: Units, today: string): string {
-  if (days.every((day) => day.level === null)) {
-    return "There isn't enough model data to compare forecasts for this location.";
-  }
+export function summarizeConfidence(
+  days: DayConfidence[],
+  units: Units,
+  today: string,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const text = getMessages(locale).weather.confidence;
+  if (days.every((day) => day.level === null)) return text.notEnoughData;
 
   const sentences: string[] = [];
   const firstUncertain = days.findIndex((day) => day.level !== "high");
   if (firstUncertain === -1) {
-    sentences.push("The models agree closely all week.");
+    sentences.push(text.agreeAllWeek);
   } else if (firstUncertain === 0) {
-    sentences.push(
-      days[0].level === "low"
-        ? "The models disagree noticeably even about today, so treat the details as uncertain."
-        : "The models are only loosely aligned, even for today.",
-    );
+    sentences.push(days[0].level === "low" ? text.disagreeToday : text.looselyAligned);
   } else {
-    sentences.push(
-      `The models agree closely through ${dayName(days[firstUncertain - 1].date, today)}, then start to diverge.`,
-    );
+    sentences.push(text.agreeThrough(dayName(days[firstUncertain - 1].date, today, locale)));
   }
 
   // The most striking disagreement over heavy rain: one model far wetter than the rest.
@@ -124,7 +126,13 @@ export function summarizeConfidence(days: DayConfidence[], units: Units, today: 
     const [wettest, amount] = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
     const others = entries.filter(([id]) => id !== wettest).map(([, value]) => value);
     sentences.push(
-      `${MODEL_LABELS[wettest]} expects ${formatPrecipitation(amount, units)} of rain ${dayName(outlier.date, today)}, far more than the other models (${formatPrecipitation(Math.min(...others), units)} to ${formatPrecipitation(Math.max(...others), units)}).`,
+      text.outlier(
+        MODEL_LABELS[wettest],
+        formatPrecipitation(amount, units),
+        dayName(outlier.date, today, locale),
+        formatPrecipitation(Math.min(...others), units),
+        formatPrecipitation(Math.max(...others), units),
+      ),
     );
   }
 

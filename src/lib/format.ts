@@ -8,54 +8,61 @@
  * `getDay()`, which silently shifted every time into the viewer's timezone.)
  */
 
-const LOCALE = "en-US";
+import { DEFAULT_LOCALE, INTL_TAGS, type Locale } from "@/lib/i18n/locales";
+import { getMessages } from "@/lib/i18n/messages";
 
 function wallClock(iso: string): Date {
   return new Date(iso.length === 10 ? `${iso}T00:00:00Z` : `${iso}Z`);
 }
 
-function format(iso: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat(LOCALE, { ...options, timeZone: "UTC" }).format(wallClock(iso));
+function format(iso: string, options: Intl.DateTimeFormatOptions, locale: Locale): string {
+  return new Intl.DateTimeFormat(INTL_TAGS[locale], { ...options, timeZone: "UTC" }).format(
+    wallClock(iso),
+  );
 }
 
 /** "Tue" / "Tuesday" */
-export function formatWeekday(iso: string, style: "short" | "long" = "short"): string {
-  return format(iso, { weekday: style });
+export function formatWeekday(
+  iso: string,
+  style: "short" | "long" = "short",
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  return format(iso, { weekday: style }, locale);
 }
 
 /** "Oct 27" */
-export function formatDayMonth(iso: string): string {
-  return format(iso, { day: "numeric", month: "short" });
+export function formatDayMonth(iso: string, locale: Locale = DEFAULT_LOCALE): string {
+  return format(iso, { day: "numeric", month: "short" }, locale);
 }
 
 /** "Tuesday, October 27" */
-export function formatLongDate(iso: string): string {
-  return format(iso, { weekday: "long", day: "numeric", month: "long" });
+export function formatLongDate(iso: string, locale: Locale = DEFAULT_LOCALE): string {
+  return format(iso, { weekday: "long", day: "numeric", month: "long" }, locale);
 }
 
 /** "3 PM" */
-export function formatHour(iso: string): string {
-  return format(iso, { hour: "numeric", hour12: true });
+export function formatHour(iso: string, locale: Locale = DEFAULT_LOCALE): string {
+  return format(iso, { hour: "numeric", hour12: true }, locale);
 }
 
 /** "6:12 AM" */
-export function formatTime(iso: string): string {
-  return format(iso, { hour: "numeric", minute: "2-digit", hour12: true });
+export function formatTime(iso: string, locale: Locale = DEFAULT_LOCALE): string {
+  return format(iso, { hour: "numeric", minute: "2-digit", hour12: true }, locale);
 }
 
 /** "Tuesday 14:05" – used for the "local time" line in the hero. */
-export function formatWeekdayClock(iso: string): string {
-  const weekday = format(iso, { weekday: "long" });
-  const clock = format(iso, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+export function formatWeekdayClock(iso: string, locale: Locale = DEFAULT_LOCALE): string {
+  const weekday = format(iso, { weekday: "long" }, locale);
+  const clock = format(iso, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }, locale);
   return `${weekday} ${clock}`;
 }
 
 /** "12h 05m" */
-export function formatDuration(seconds: number): string {
+export function formatDuration(seconds: number, locale: Locale = DEFAULT_LOCALE): string {
   const totalMinutes = Math.round(seconds / 60);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  return `${hours}h ${String(minutes).padStart(2, "0")}m`;
+  return getMessages(locale).common.duration(hours, String(minutes).padStart(2, "0"));
 }
 
 /** "Subang Jaya" subtitle pieces, skipping a region that repeats the name. */
@@ -76,17 +83,23 @@ export function isSameDay(a: string, b: string): boolean {
 }
 
 const hour12 = (hour: number) => hour % 12 || 12;
-const meridiem = (hour: number) => (hour < 12 ? "AM" : "PM");
+const meridiem = (hour: number, locale: Locale) =>
+  getMessages(locale).common[hour < 12 ? "am" : "pm"];
 
 /**
  * "3–6 PM" or "11 AM–2 PM" for a run of whole hours, from the first hour's start to the
  * end of the last hour. Both arguments are naive local timestamps.
  */
-export function formatHourRange(firstHour: string, lastHour: string): string {
+export function formatHourRange(
+  firstHour: string,
+  lastHour: string,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
   const start = Number(firstHour.slice(11, 13));
   const end = (Number(lastHour.slice(11, 13)) + 1) % 24;
-  if (meridiem(start) === meridiem(end)) return `${hour12(start)}–${hour12(end)} ${meridiem(end)}`;
-  return `${hour12(start)} ${meridiem(start)}–${hour12(end)} ${meridiem(end)}`;
+  const [from, to] = [meridiem(start, locale), meridiem(end, locale)];
+  if (from === to) return `${hour12(start)}–${hour12(end)} ${to}`;
+  return `${hour12(start)} ${from}–${hour12(end)} ${to}`;
 }
 
 /** "UTC+8", "UTC+5:30", "UTC−3" */

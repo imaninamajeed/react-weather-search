@@ -130,8 +130,8 @@ export default function AboutPage() {
                       <Source href="https://open-meteo.com/">Open-Meteo</Source>
                     </TableCell>
                     <TableCell className="whitespace-normal">
-                      Forecasts, the three-model comparison (ECMWF, GFS, ICON), air quality, place
-                      search and the ERA5 climate record
+                      Forecasts, the three-model comparison (ECMWF, GFS, ICON), air quality,
+                      location search and the ERA5 climate record
                     </TableCell>
                     <TableCell className="whitespace-normal">
                       CC BY 4.0, free for non-commercial use
@@ -154,7 +154,7 @@ export default function AboutPage() {
                       </Source>
                     </TableCell>
                     <TableCell className="whitespace-normal">
-                      Official alerts for US places
+                      Official alerts for US locations
                     </TableCell>
                     <TableCell className="whitespace-normal">US government data</TableCell>
                   </TableRow>
@@ -191,7 +191,7 @@ export default function AboutPage() {
                   they are not warnings and can be wrong.
                 </p>
                 <p>
-                  Official warnings are matched to a place by name (state and district), so a
+                  Official warnings are matched to a location by name (state and district), so a
                   district-level warning can be missed; the matching is built to miss rather than
                   raise a false alarm. Each official alert links to its issuer for the authoritative
                   text. If a feed can&apos;t be reached, the app says so rather than implying there
@@ -252,10 +252,10 @@ export default function AboutPage() {
               <div className="max-w-prose space-y-3 text-muted-foreground">
                 <p>
                   The climate page compares the last twelve months with what is normal for that
-                  place, using {NORMALS_PERIOD.start.slice(0, 4)}–{NORMALS_PERIOD.end.slice(0, 4)}{" "}
-                  as the baseline. Both come from the ERA5 reanalysis, pinned to the same dataset on
-                  purpose: mixing datasets made recent years look several degrees warmer than they
-                  were.
+                  location, using {NORMALS_PERIOD.start.slice(0, 4)}–
+                  {NORMALS_PERIOD.end.slice(0, 4)} as the baseline. Both come from the ERA5
+                  reanalysis, pinned to the same dataset on purpose: mixing datasets made recent
+                  years look several degrees warmer than they were.
                 </p>
                 <p>
                   &quot;Normal&quot; for a day is the middle 80% of daily highs on the same calendar
@@ -269,8 +269,8 @@ export default function AboutPage() {
             <Section id="privacy" title="Privacy">
               <ul className="max-w-prose list-disc space-y-2 pl-5 text-muted-foreground">
                 <li>
-                  Your saved places, home place and units are stored in a cookie on this device.
-                  There are no accounts.
+                  Your saved locations, home location and units are stored in a cookie on this
+                  device. There are no accounts.
                 </li>
                 <li>
                   Recent searches are kept in this browser&apos;s local storage and never leave it.
@@ -297,7 +297,7 @@ export default function AboutPage() {
                   Forecasts are model output on a grid, not a measurement at your door, so local
                   effects such as a single storm cell can differ.
                 </li>
-                <li>Saved places don&apos;t sync across devices.</li>
+                <li>Saved locations don&apos;t sync across devices.</li>
                 <li>
                   Official warnings are only available for Malaysia and the United States so far.
                 </li>

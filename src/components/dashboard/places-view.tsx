@@ -7,6 +7,7 @@ import { homePlace } from "@/lib/preferences-core";
 import { OpenSearchButton } from "./open-search-button";
 import { Onboarding } from "./onboarding";
 import { PlaceCard } from "./place-card";
+import { SortablePlaces } from "./sortable-places";
 import { WeekAheadTable } from "./week-ahead-table";
 
 /**
@@ -25,23 +26,26 @@ export async function PlacesView() {
         id="places"
         title="Following"
         className="fit:col-span-6"
-        aside={<OpenSearchButton label="Add a Place" variant="outline" size="sm" />}
+        aside={<OpenSearchButton label="Add a Location" variant="outline" size="sm" />}
       >
         {places.length === 0 ? (
           <Onboarding />
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 fit:grid-cols-2">
-            {places.map((place, index) => (
-              <li key={place.key}>
+          <SortablePlaces
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 fit:grid-cols-2"
+            items={places.map((place, index) => ({
+              key: place.key,
+              name: place.name,
+              node: (
                 <PlaceCard
                   place={place}
                   units={units}
                   isHome={place.key === home.key}
                   manage={{ isFirst: index === 0, isLast: index === places.length - 1 }}
                 />
-              </li>
-            ))}
-          </ul>
+              ),
+            }))}
+          />
         )}
       </SectionCard>
 

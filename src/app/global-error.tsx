@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useMessages } from "@/lib/i18n/client";
 
 /**
  * Last-resort boundary: it replaces the root layout, so it can't rely on the app's CSS, fonts or
@@ -13,6 +14,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   retry: () => void;
 }) {
+  const t = useMessages();
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -33,10 +35,10 @@ export default function GlobalError({
         }}
       >
         <main style={{ maxWidth: "32rem" }}>
-          <h1 style={{ fontSize: "2rem", margin: "0 0 0.5rem" }}>Something Went Wrong</h1>
+          <h1 style={{ fontSize: "2rem", margin: "0 0 0.5rem" }}>{t.states.globalError.title}</h1>
           <p style={{ margin: "0 0 1.5rem", lineHeight: 1.5 }}>
-            Isobar hit an unexpected error. Trying again usually fixes it.
-            {error.digest ? ` (Reference: ${error.digest})` : ""}
+            {t.states.globalError.body}
+            {error.digest ? ` (${t.states.reference(error.digest)})` : ""}
           </p>
           <button
             onClick={() => retry()}
@@ -50,7 +52,7 @@ export default function GlobalError({
               cursor: "pointer",
             }}
           >
-            Try Again
+            {t.common.tryAgain}
           </button>
         </main>
       </body>

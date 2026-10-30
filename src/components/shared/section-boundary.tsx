@@ -3,8 +3,10 @@
 import { catchError, type ErrorInfo } from "next/error";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { useMessages } from "@/lib/i18n/client";
 
 function Fallback({ title }: { title: string }, { retry }: ErrorInfo) {
+  const t = useMessages();
   return (
     <div
       role="alert"
@@ -12,13 +14,11 @@ function Fallback({ title }: { title: string }, { retry }: ErrorInfo) {
     >
       <div className="flex items-center gap-2 text-sm font-medium">
         <IconAlertTriangle aria-hidden="true" className="size-4 text-muted-foreground" />
-        {title} is unavailable
+        {t.common.unavailable(title)}
       </div>
-      <p className="text-sm text-muted-foreground">
-        The data provider didn&apos;t respond. The rest of the page is unaffected.
-      </p>
+      <p className="text-sm text-muted-foreground">{t.common.providerDidntRespond}</p>
       <Button variant="outline" size="sm" onClick={() => retry()}>
-        Try Again
+        {t.common.tryAgain}
       </Button>
     </div>
   );

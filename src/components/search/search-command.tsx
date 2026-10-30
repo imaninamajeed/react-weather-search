@@ -42,7 +42,7 @@ export const OPEN_SEARCH_EVENT = "isobar:open-search";
 const DESTINATIONS = [
   { href: "/dashboard", label: "Dashboard", icon: IconLayoutDashboard },
   { href: "/alerts", label: "Alerts", icon: IconAlertTriangle },
-  { href: "/places", label: "Places", icon: IconListDetails },
+  { href: "/places", label: "Locations", icon: IconListDetails },
   { href: "/map", label: "Radar Map", icon: IconMap },
 ];
 
@@ -56,11 +56,11 @@ export function SearchTrigger() {
       variant="outline"
       className="size-9 justify-center gap-0 px-0 text-muted-foreground sm:w-full sm:justify-start sm:gap-2 sm:px-2.5"
       onClick={() => window.dispatchEvent(new Event(OPEN_SEARCH_EVENT))}
-      aria-label="Search Places"
+      aria-label="Search Locations"
       aria-keyshortcuts="Control+K Meta+K /"
     >
       <IconSearch aria-hidden="true" className="size-4" />
-      <span className="hidden flex-1 text-left font-normal sm:inline">Search Places</span>
+      <span className="hidden flex-1 text-left font-normal sm:inline">Search Locations</span>
       <kbd className="hidden rounded border border-border px-1.5 font-heading text-[0.6875rem] sm:inline">
         /
       </kbd>
@@ -228,8 +228,8 @@ export function SearchCommand({
   } else if (!status && searchable) {
     if (loading) status = "Searching…";
     else if (failed) status = "Search is unavailable right now. Try again in a moment.";
-    else if (places.length === 0) status = `No places match “${query}”.`;
-    else status = `${places.length} ${places.length === 1 ? "place" : "places"} found.`;
+    else if (places.length === 0) status = `No locations match “${query}”.`;
+    else status = `${places.length} ${places.length === 1 ? "location" : "locations"} found.`;
   }
 
   return (
@@ -239,7 +239,7 @@ export function SearchCommand({
       <CommandDialog
         open={open}
         onOpenChange={handleOpenChange}
-        title="Search Places"
+        title="Search Locations"
         description="Search for a city, then press Enter to open its forecast."
       >
         {/* Results come from the server, so cmdk's own filtering is turned off. */}
@@ -254,7 +254,7 @@ export function SearchCommand({
           </p>
           <CommandList>
             {places.length > 0 && (
-              <CommandGroup heading="Places">
+              <CommandGroup heading="Locations">
                 {places.map((place) => (
                   <PlaceItem key={place.key} place={place} icon={IconMapPin} onSelect={go} />
                 ))}
@@ -262,7 +262,7 @@ export function SearchCommand({
             )}
 
             {!searchable && followed.length > 0 && (
-              <CommandGroup heading="Your Places">
+              <CommandGroup heading="Your Locations">
                 {followed.map((place) => (
                   <PlaceItem
                     key={place.key}

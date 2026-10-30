@@ -17,7 +17,7 @@ import { formatTemperature } from "@/lib/units";
 export const metadata: Metadata = {
   title: "Map",
   description:
-    "Live rain radar with your saved places. Click anywhere for the weather at that spot.",
+    "Live rain radar with your saved locations. Click anywhere for the weather at that spot.",
 };
 
 /** Radar opened from a place keeps a way back to that place's forecast. */
@@ -97,7 +97,7 @@ export default function MapPage(props: PageProps<"/map">) {
         <PageHeader
           label="Live Radar"
           title="Map"
-          lead="Rain radar for the last two hours, with the places you follow. Click anywhere for the weather at that spot."
+          lead="Rain radar for the last two hours, with the locations you follow. Click anywhere for the weather at that spot."
           aside={
             <Suspense fallback={null}>
               <BackToPlace searchParams={props.searchParams} />

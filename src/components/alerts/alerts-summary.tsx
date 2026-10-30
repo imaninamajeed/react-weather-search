@@ -50,7 +50,7 @@ export function AlertsSummary({
           ]
             .filter(Boolean)
             .join(" and ");
-  const placesLabel = places === 1 ? "your place" : `your ${places} places`;
+  const placesLabel = places === 1 ? "your location" : `your ${places} locations`;
   const lead = unchecked
     ? "Alerts are unavailable right now. Try again in a moment."
     : clear
@@ -87,7 +87,7 @@ export function AlertsSummary({
       }
     >
       {clear && checked.length > 0 && (
-        <ul aria-label="Places checked" className="mt-6 flex flex-wrap gap-2">
+        <ul aria-label="Locations checked" className="mt-6 flex flex-wrap gap-2">
           {checked.map((place) => (
             <li key={place.key}>
               <Link

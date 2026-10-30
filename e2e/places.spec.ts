@@ -105,13 +105,13 @@ test.describe("dashboard versus places", () => {
     await expect(page.getByRole("button", { name: /^Move / })).toHaveCount(0);
     await expect(page.getByRole("region", { name: "Week Ahead", exact: true })).toHaveCount(0);
 
-    await page.getByRole("link", { name: /Manage and Compare/ }).click();
+    await page.getByRole("main").getByRole("link", { name: "Locations", exact: true }).click();
     await expect(page).toHaveURL(/\/places$/);
   });
 
   test("the places page manages and compares", async ({ page }) => {
     await page.goto("/places");
-    await expect(page.getByRole("heading", { level: 1, name: "Places" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Locations" })).toBeVisible();
     await expect(page.locator("article:visible h3")).toHaveText(["Subang Jaya", "Tokyo"]);
     await expect(page.getByRole("button", { name: "Move Tokyo up" })).toBeVisible();
 
@@ -165,4 +165,30 @@ test.describe("first-visit units", () => {
     await expect(units.getByRole("radio", { name: /Metric/ })).toBeChecked();
     await expect(page.getByText(/km\/h/).filter({ visible: true }).first()).toBeVisible();
   });
+});
+
+test("dragging a card to another slot reorders your places, and the order is kept", async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  await seedPlaces(context, baseURL!);
+  await page.goto("/places");
+  const cards = page.locator("article:visible");
+  const names = page.locator("article:visible h3");
+  await expect(names).toHaveText(["Subang Jaya", "Tokyo"]);
+
+  // Pick up Subang Jaya by its card and drop it on Tokyo's slot.
+  const from = (await cards.nth(0).boundingBox())!;
+  const to = (await cards.nth(1).boundingBox())!;
+  await page.mouse.move(from.x + from.width / 2, from.y + 40);
+  await page.mouse.down();
+  await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 12 });
+  await expect(names).toHaveText(["Tokyo", "Subang Jaya"]);
+  await page.mouse.up();
+
+  // Letting go saves it: still in this order after a reload, and the drag did not open a card.
+  await expect(page).toHaveURL(/\/places$/);
+  await page.reload();
+  await expect(names).toHaveText(["Tokyo", "Subang Jaya"]);
 });

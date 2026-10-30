@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { Suspense } from "react";
-import { IsobarMark } from "@/components/shared/isobar-mark";
 import {
   Sidebar,
   SidebarContent,
@@ -8,16 +6,14 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { SidebarBrand } from "./sidebar-brand";
+import { SidebarCredits } from "./sidebar-credits";
 import { ActiveSidebarAbout, SidebarAboutView } from "./sidebar-about";
 import { SidebarPlaces } from "./sidebar-places";
 import { ActiveSidebarNav, CloseDrawerOnNavigate, SidebarNavView } from "./sidebar-nav";
-
-const linkClass =
-  "underline decoration-sidebar-border underline-offset-4 hover:text-sidebar-foreground";
 
 /**
  * The app's navigation from md up (a phone has the bottom tab bar instead): where you
@@ -30,12 +26,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg" tooltip="Isobar">
-              <Link href="/dashboard" aria-label="Isobar Home">
-                <IsobarMark detail="compact" animated className="size-8!" />
-                <span className="font-heading text-2xl leading-none">Isobar</span>
-              </Link>
-            </SidebarMenuButton>
+            <SidebarBrand />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -53,41 +44,7 @@ export function AppSidebar() {
         <Suspense fallback={<SidebarAboutView pathname={null} />}>
           <ActiveSidebarAbout />
         </Suspense>
-        {/* Attribution and credit, which the icon rail has no room for. */}
-        <div className="space-y-1 px-2 pb-1 text-xs text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
-          <p>
-            Weather data by{" "}
-            <a
-              href="https://open-meteo.com/"
-              className={linkClass}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open-Meteo.com
-            </a>{" "}
-            (CC BY 4.0)
-          </p>
-          <p>
-            Built by{" "}
-            <a
-              href="https://www.linkedin.com/in/imaninamajeed/"
-              className={linkClass}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Imanina
-            </a>
-            {" · "}
-            <a
-              href="https://github.com/imaninamajeed"
-              className={linkClass}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub
-            </a>
-          </p>
-        </div>
+        <SidebarCredits />
       </SidebarFooter>
 
       <SidebarRail />

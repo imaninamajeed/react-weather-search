@@ -9,7 +9,7 @@ import { AddPlaceTile } from "./add-place-tile";
 import { LocationTile } from "./location-tile";
 
 /**
- * How many tiles the dashboard shows. /places already compares every place you follow, so this
+ * How many tiles the dashboard shows. /places already compares every location you follow, so this
  * panel stays a glance: the few that most need it, then a way to the rest.
  */
 export const MAX_TILES = 3;
@@ -65,7 +65,7 @@ export async function PlacesGrid({ places, units }: { places: Place[]; units: Un
           className="mt-3"
           shown={shown.length}
           total={places.length}
-          noun="other places"
+          noun="other locations"
         />
       )}
     </>

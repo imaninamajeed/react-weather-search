@@ -56,7 +56,7 @@ const rise = (index: number) => ({ "--i": index }) as CSSProperties;
 
 /**
  * The personalised landing page, built to be read top to bottom in one pass: anything you need to
- * know across your places, home right now, then the other places you follow. Managing
+ * know across your locations, home right now, then the other locations you follow. Managing
  * and comparing places lives on /places.
  */
 export async function Dashboard({ searchParams }: { searchParams: Promise<{ manage?: string }> }) {
@@ -66,7 +66,7 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
 
   const { units, places } = preferences;
   const home = homePlace(preferences);
-  // The home place is the hero above, so it isn't repeated as a tile.
+  // The home location is the hero above, so it isn't repeated as a tile.
   const others = places.filter((place) => place.key !== home.key);
   const followed = [home, ...others];
   // The alerts you closed and haven't changed since: no banner, so no placeholder for it either.
@@ -102,13 +102,13 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
           keepPadding
           // Darker than a normal card by night, so the near-black tiles still read as tiles on it.
           cardClassName="dark:bg-[color-mix(in_oklab,var(--card),black_22%)]"
-          title="Your Places"
-          description="Open any place for its full forecast"
+          title="Your Locations"
+          description="Open any location for its full forecast"
           aside={
             places.length > 0 ? (
               <Button asChild variant="outline" size="sm">
                 <Link href="/places">
-                  Manage and Compare
+                  Locations
                   <ArrowRight aria-hidden="true" />
                 </Link>
               </Button>
@@ -119,7 +119,7 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
             <Onboarding />
           ) : others.length === 0 ? (
             // Nothing to compare yet, so the way to add a place stands alone, full width.
-            <AddPlaceTile description="Your home place is the only one you follow so far. Add another to see its conditions here." />
+            <AddPlaceTile description="Your home location is the only one you follow so far. Add another to see its conditions here." />
           ) : (
             <Suspense fallback={<TilesSkeleton />}>
               <PlacesGrid places={others} units={units} />

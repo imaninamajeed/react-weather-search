@@ -86,7 +86,7 @@ function showFrame(
   }
 }
 
-/** A saved place as a focusable link on the map. Built with the DOM API, never innerHTML. */
+/** A saved location as a focusable link on the map. Built with the DOM API, never innerHTML. */
 function markerElement(place: MapPlace, onOpen: (href: string) => void): HTMLAnchorElement {
   const href = placeHref(place);
   const link = document.createElement("a");
@@ -327,7 +327,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
       <div
         className="relative h-[calc(100svh-23.5rem)] min-h-96 overflow-hidden rounded-xl border border-border bg-muted lg:h-[calc(100svh-19.5rem)]"
         role="region"
-        aria-label="Weather map. Saved places are links; click anywhere else for the weather at that spot."
+        aria-label="Weather map. Saved locations are links; click anywhere else for the weather at that spot."
       >
         <div ref={containerRef} className="size-full" />
         {failed && (
@@ -337,7 +337,8 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
           >
             <p className="max-w-sm text-muted-foreground">
               The map couldn&apos;t load. This usually means your browser has WebGL turned off, or
-              the map provider is unreachable. Your places are still available from the dashboard.
+              the map provider is unreachable. Your locations are still available from the
+              dashboard.
             </p>
           </div>
         )}
@@ -399,7 +400,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
         </div>
       ) : (
         <p className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Rain radar is unavailable right now. The map and your places still work.
+          Rain radar is unavailable right now. The map and your locations still work.
         </p>
       )}
 

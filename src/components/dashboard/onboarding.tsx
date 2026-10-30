@@ -9,7 +9,7 @@ export function Onboarding() {
       <p className="mt-2 max-w-prose text-muted-foreground">
         Subang Jaya stays as your home until you choose another. Search for a city and press{" "}
         <strong className="font-medium text-foreground">Save</strong> to track it here, with a
-        week-ahead comparison across all your places. Everything is stored on this device, so
+        week-ahead comparison across all your locations. Everything is stored on this device, so
         there&apos;s no account to create.
       </p>
       <div className="mt-5 flex flex-wrap gap-2">

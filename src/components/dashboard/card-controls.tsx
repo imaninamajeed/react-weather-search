@@ -1,6 +1,6 @@
 "use client";
 
-import { IconArrowDown, IconArrowUp, IconHome, IconX } from "@tabler/icons-react";
+import { IconArrowDown, IconArrowUp, IconGripVertical, IconHome, IconX } from "@tabler/icons-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { movePlace, removePlace, restorePlace, setHome } from "@/app/actions";
@@ -15,7 +15,7 @@ interface CardControlsProps {
   isLast: boolean;
 }
 
-/** Reorder, set-home and remove for one saved place (manage mode). */
+/** Reorder, set-home and remove for one saved location (manage mode). */
 export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: CardControlsProps) {
   const [pending, startTransition] = useTransition();
   // Reordering and removing change the saved list on the server, so they need a connection.
@@ -45,6 +45,17 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
 
   return (
     <div className="relative z-10 mt-4 flex flex-wrap items-center gap-1 border-t border-border/60 pt-3">
+      {/* The grip for touch and pen (a mouse can grab the whole card); a keyboard uses the arrows. */}
+      {!(isFirst && isLast) && (
+        <span
+          data-drag-handle
+          aria-hidden="true"
+          title="Drag to Reorder"
+          className="grid size-8 shrink-0 cursor-grab touch-none place-items-center rounded-full text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        >
+          <IconGripVertical className="size-4" />
+        </span>
+      )}
       <Button
         variant="ghost"
         size="icon-sm"

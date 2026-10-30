@@ -34,7 +34,7 @@ export function AddPlaceTile({
         <Plus className="size-4" />
       </span>
       <p className="min-w-0 flex-1 text-sm">
-        <span className="font-medium">Follow another place.</span>{" "}
+        <span className="font-medium">Follow another location.</span>{" "}
         <span className="text-muted-foreground">{description}</span>
       </p>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -43,7 +43,7 @@ export function AddPlaceTile({
           size="sm"
           onClick={() => window.dispatchEvent(new Event(OPEN_SEARCH_EVENT))}
         >
-          Add a Place
+          Add a Location
         </Button>
         <Link
           href="/map"

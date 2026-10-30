@@ -32,7 +32,7 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
       >
         <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-left fit:min-w-0">
           <caption className="sr-only">
-            Daily high, conditions and chance of rain for each saved place over the next week
+            Daily high, conditions and chance of rain for each saved location over the next week
           </caption>
           <thead>
             <tr>

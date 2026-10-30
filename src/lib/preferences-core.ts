@@ -8,9 +8,9 @@ import type { Units } from "@/lib/weather/types";
  */
 export interface Preferences {
   units: Units;
-  /** Saved places, in display order. */
+  /** Saved locations, in display order. */
   places: Place[];
-  /** Key of the home place (always one of `places`), or null to use the default city. */
+  /** Key of the home location (always one of `places`), or null to use the default city. */
   homeKey: string | null;
 }
 
@@ -123,7 +123,19 @@ export function movePlace(
   return { ...preferences, places };
 }
 
-/** Makes a place the home place, saving it first if needed. Null when the list is full. */
+/**
+ * Puts the saved places in the order given (a drag and drop sends the whole new order). Null unless
+ * `keys` is exactly the saved places, each once: this is client input, and it may only reorder.
+ */
+export function reorderPlaces(preferences: Preferences, keys: string[]): Preferences | null {
+  const byKey = new Map(preferences.places.map((place) => [place.key, place]));
+  if (keys.length !== byKey.size || new Set(keys).size !== keys.length) return null;
+  const places = keys.map((key) => byKey.get(key));
+  if (places.some((place) => place === undefined)) return null;
+  return { ...preferences, places: places as Place[] };
+}
+
+/** Makes a place the home location, saving it first if needed. Null when the list is full. */
 export function setHome(preferences: Preferences, place: Place): Preferences | null {
   const withPlace = addPlace(preferences, place);
   return withPlace && { ...withPlace, homeKey: place.key };

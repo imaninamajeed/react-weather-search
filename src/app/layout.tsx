@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, Oxanium } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { SkipLink } from "@/components/layout/skip-link";
+import { DocumentLanguage } from "@/lib/i18n/client";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { SearchHost } from "@/components/search/search-host";
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s · Isobar",
   },
   description:
-    "Forecasts, severe-weather alerts, forecast confidence, 30-year climate comparison and live radar for the places you care about.",
+    "Forecasts, severe-weather alerts, forecast confidence, 30-year climate comparison and live radar for the locations you care about.",
 };
 
 export const viewport: Viewport = {
@@ -51,16 +53,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           disableTransitionOnChange
         >
           <TooltipProvider>
-            <a
-              href="#main"
-              className="sr-only z-50 rounded-md bg-primary px-3 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
-            >
-              Skip to Content
-            </a>
+            <SkipLink />
             {children}
             <SearchHost />
             <Toaster />
             <ServiceWorkerRegister />
+            <DocumentLanguage />
           </TooltipProvider>
         </ThemeProvider>
       </body>

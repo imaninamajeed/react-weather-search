@@ -10,6 +10,7 @@ import {
   movePlace,
   parsePreferences,
   removePlace,
+  reorderPlaces,
   serializePreferences,
   setHome,
   setUnits,
@@ -61,7 +62,7 @@ describe("parsePreferences", () => {
     expect(new Set(prefs.places.map((p) => p.key)).size).toBe(MAX_PLACES);
   });
 
-  it("ignores a home key that isn't a saved place", () => {
+  it("ignores a home key that isn't a saved location", () => {
     const raw = JSON.stringify({ units: "metric", places: [place(1)], homeKey: "99-ghost" });
     expect(parsePreferences(raw).homeKey).toBeNull();
   });
@@ -96,7 +97,7 @@ describe("mutations", () => {
     expect(insertPlace(preferences, place(2), 99)!.places.at(-1)).toEqual(place(2));
   });
 
-  it("undoing the removal of the home place makes it home again", () => {
+  it("undoing the removal of the home location makes it home again", () => {
     const prefs = { ...withPlaces(1, 2), homeKey: "1-p1" };
     const { preferences, index, wasHome } = removePlace(prefs, "1-p1")!;
     expect(preferences.homeKey).toBeNull();
@@ -141,5 +142,22 @@ describe("defaultUnitsFor", () => {
     [null, "metric"],
   ])("%s → %s", (header, expected) => {
     expect(defaultUnitsFor(header)).toBe(expected);
+  });
+});
+
+describe("reorderPlaces", () => {
+  it("applies a new order and keeps home", () => {
+    const prefs = { ...withPlaces(1, 2, 3), homeKey: "2-p2" };
+    const next = reorderPlaces(prefs, ["3-p3", "1-p1", "2-p2"])!;
+    expect(next.places.map((p) => p.key)).toEqual(["3-p3", "1-p1", "2-p2"]);
+    expect(next.homeKey).toBe("2-p2");
+  });
+
+  it("refuses anything that is not exactly the saved places, once each", () => {
+    const prefs = withPlaces(1, 2, 3);
+    expect(reorderPlaces(prefs, ["1-p1", "2-p2"])).toBeNull();
+    expect(reorderPlaces(prefs, ["1-p1", "2-p2", "3-p3", "4-p4"])).toBeNull();
+    expect(reorderPlaces(prefs, ["1-p1", "1-p1", "2-p2"])).toBeNull();
+    expect(reorderPlaces(prefs, ["1-p1", "2-p2", "9-p9"])).toBeNull();
   });
 });

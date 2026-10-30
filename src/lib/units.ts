@@ -1,3 +1,5 @@
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { getMessages } from "@/lib/i18n/messages";
 import type { Units } from "@/lib/weather/types";
 
 export const DEFAULT_UNITS: Units = "metric";
@@ -73,27 +75,8 @@ export function formatDistance(metres: number, units: Units): string {
   return `${value >= 10 ? Math.round(value) : value.toFixed(1)} ${unitLabels(units).distance}`;
 }
 
-const COMPASS = [
-  "N",
-  "NNE",
-  "NE",
-  "ENE",
-  "E",
-  "ESE",
-  "SE",
-  "SSE",
-  "S",
-  "SSW",
-  "SW",
-  "WSW",
-  "W",
-  "WNW",
-  "NW",
-  "NNW",
-];
-
 /** Direction the wind is blowing *from*, as a 16-point compass label. */
-export function compassPoint(degrees: number): string {
+export function compassPoint(degrees: number, locale: Locale = DEFAULT_LOCALE): string {
   const index = Math.round((((degrees % 360) + 360) % 360) / 22.5) % 16;
-  return COMPASS[index];
+  return getMessages(locale).weather.compass[index];
 }

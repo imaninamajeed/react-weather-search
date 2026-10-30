@@ -1,14 +1,6 @@
-import {
-  ArrowRight,
-  ChartLine,
-  ChevronDown,
-  House,
-  OctagonAlert,
-  ShieldCheck,
-  TriangleAlert,
-} from "lucide-react";
+import { ArrowRight, House, ShieldCheck, TriangleAlert } from "lucide-react";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { AlertList } from "@/components/alerts/alert-list";
 import { loadAlerts } from "@/components/alerts/load-alerts";
 import { SourceNote } from "@/components/alerts/source-note";
@@ -21,36 +13,15 @@ import { cn } from "@/lib/utils";
 import type { Units } from "@/lib/weather/types";
 import { AlertsFilter } from "./alerts-filter";
 import { AlertsSummary } from "./alerts-summary";
+import { ReadingAlertsDialog } from "./reading-alerts-dialog";
 
 /** Staggers a section's arrival, as on the dashboard; position only, and not at all with reduced motion. */
 const rise = (index: number) => ({ "--i": index }) as CSSProperties;
 
-function LegendRow({
-  icon,
-  term,
-  children,
-}: {
-  icon: ReactNode;
-  term: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex gap-3">
-      <span aria-hidden="true" className="mt-0.5 shrink-0">
-        {icon}
-      </span>
-      <div>
-        <dt className="font-medium">{term}</dt>
-        <dd className="text-muted-foreground">{children}</dd>
-      </div>
-    </div>
-  );
-}
-
 /**
- * Every alert for every place you follow, grouped by place, with a filter for official warnings only.
- * The alerts are one calm column; what the labels mean and what was checked sit beside them on wide
- * screens (and after them on narrow ones), so the column itself carries nothing but the alerts.
+ * Every alert for every location you follow, grouped by place, with a filter for official warnings only.
+ * The alerts are one calm column; what the labels mean waits behind a button at the right of the filter,
+ * and what was checked follows them, so the column itself carries nothing but the alerts.
  */
 export async function AlertsView({
   places,
@@ -103,15 +74,16 @@ export async function AlertsView({
 
       <div className="mt-4 flex min-w-0 flex-col gap-4">
         {/* With no alerts there is nothing to filter, so the control would only offer two zeros. */}
-        {totalAll > 0 && (
-          <div className="rise" style={rise(1)}>
+        <div className="rise flex flex-wrap items-center gap-2" style={rise(1)}>
+          {totalAll > 0 && (
             <AlertsFilter
               totalAll={totalAll}
               totalOfficial={totalOfficial}
               officialOnly={officialOnly}
             />
-          </div>
-        )}
+          )}
+          <ReadingAlertsDialog className="ml-auto" />
+        </div>
 
         {groups.length === 0 ? (
           // With no alerts at all the banner already says so; only a filter needs a word here.
@@ -199,57 +171,13 @@ export async function AlertsView({
         className="rise flex flex-col gap-3 text-sm"
         style={rise(groups.length + 2)}
       >
-        {/* Folded away: the legend is for the first visit, not for every one. */}
-        <details className="group rounded-3xl border border-border px-4 py-2.5">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-md font-medium marker:content-none [&::-webkit-details-marker]:hidden">
-            Reading Alerts
-            <ChevronDown
-              aria-hidden="true"
-              className="size-4 text-muted-foreground transition-transform group-open:rotate-180"
-            />
-          </summary>
-          <dl className="mt-4 mb-2 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
-            <LegendRow
-              term="Warning"
-              icon={
-                <span className="grid size-6 place-items-center rounded-full bg-warning text-warning-foreground">
-                  <OctagonAlert className="size-3.5" />
-                </span>
-              }
-            >
-              Serious or damaging conditions.
-            </LegendRow>
-            <LegendRow
-              term="Advisory"
-              icon={
-                <span className="grid size-6 place-items-center rounded-full bg-advisory text-advisory-foreground">
-                  <TriangleAlert className="size-3.5" />
-                </span>
-              }
-            >
-              Worth planning around.
-            </LegendRow>
-            <LegendRow
-              term="Official"
-              icon={<ShieldCheck className="size-6 p-1 text-(--brand-teal-text)" />}
-            >
-              Issued by a national weather service.
-            </LegendRow>
-            <LegendRow
-              term="Forecast Signal"
-              icon={<ChartLine className="size-6 p-1 text-muted-foreground" />}
-            >
-              Our own check of the forecast against set thresholds.
-            </LegendRow>
-          </dl>
-        </details>
-
         {(failed > 0 || sources.length > 0) && (
           <div className="flex flex-wrap items-center gap-x-6 gap-y-1 px-1">
             {failed > 0 && (
               <p className="flex items-center gap-2 font-medium">
                 <TriangleAlert aria-hidden="true" className="size-4 shrink-0 text-warning" />
-                Couldn&apos;t check {failed === 1 ? "one place" : `${failed} places`} just now.
+                Couldn&apos;t check {failed === 1 ? "one location" : `${failed} locations`} just
+                now.
               </p>
             )}
             {sources.length > 0 && (

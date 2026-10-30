@@ -4,7 +4,7 @@ test("unknown places show a helpful not-found page", async ({ page }) => {
   for (const key of ["nope", "999999999-nowhere", "91,10"]) {
     await page.goto(`/place/${key}`);
     await expect(
-      page.getByRole("heading", { level: 1, name: "We Couldn't Find That Place" }),
+      page.getByRole("heading", { level: 1, name: "We Couldn't Find That Location" }),
     ).toBeVisible();
     // Next.js emits the tag in both <head> and the streamed body.
     await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);

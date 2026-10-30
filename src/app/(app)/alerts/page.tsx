@@ -7,7 +7,7 @@ import { homePlace } from "@/lib/preferences-core";
 
 export const metadata: Metadata = {
   title: "Alerts",
-  description: "Official warnings and forecast signals for every place you follow.",
+  description: "Official warnings and forecast signals for every location you follow.",
 };
 
 async function AlertsContent({ searchParams }: Pick<PageProps<"/alerts">, "searchParams">) {

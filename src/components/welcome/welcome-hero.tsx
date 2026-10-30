@@ -105,8 +105,8 @@ export function WelcomeHero() {
             </span>
           </p>
           <p className="mt-5 max-w-xl text-muted-foreground">
-            Weather for the places you follow. There&apos;s no account: your places stay on this
-            device.
+            Weather for the locations you follow. There&apos;s no account: your locations stay on
+            this device.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
