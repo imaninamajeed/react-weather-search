@@ -6,6 +6,29 @@ export const map = defineMessages(
     label: "Live Radar",
     lead: "Rain radar for the last two hours, with the locations you follow. Click anywhere for the weather at that spot.",
     backToPlace: (name: string) => `${name} forecast`,
+    banner: {
+      title: "Last 2 Hours",
+      locations: "Locations",
+    },
+    reading: {
+      title: "Reading the Map",
+      description: "What the colours, pills and controls on the radar mean.",
+      rainTerm: "Radar Colours",
+      rain: "Colour shows how hard it is raining: pale blue is light, and deeper, warmer colours are heavier. Snow is drawn in its own colours.",
+      timelineTerm: "Timeline",
+      timeline:
+        "Play steps through the last two hours, oldest first. Drag the slider to stop on one moment; the caption says how long before the latest frame it is.",
+      homeTerm: "Home",
+      home: "Your home location, outlined, with its temperature now.",
+      savedTerm: "Saved Locations",
+      saved:
+        "The other locations you follow, with their temperature now. Click one to open its forecast.",
+      clickTerm: "Anywhere Else",
+      click:
+        "Click any spot for the weather there: the temperature, what it feels like, wind and the chance of rain.",
+      zoomTerm: "Zoomed In Close",
+      zoom: "The radar looks blocky up close because it is scaled up from coarser data. It shows where rain is, not exactly which street.",
+    },
     popup: {
       loading: "Loading weather…",
       failed: "Couldn't load the weather here. Try again in a moment.",
@@ -41,6 +64,29 @@ export const map = defineMessages(
     label: "Radar Langsung",
     lead: "Radar hujan untuk dua jam lalu, bersama lokasi yang anda ikuti. Klik di mana-mana untuk melihat cuaca di tempat itu.",
     backToPlace: (name) => `Ramalan ${name}`,
+    banner: {
+      title: "2 Jam Lepas",
+      locations: "Lokasi",
+    },
+    reading: {
+      title: "Membaca Peta",
+      description: "Maksud warna, pil dan kawalan pada radar.",
+      rainTerm: "Warna Radar",
+      rain: "Warna menunjukkan kederasan hujan: biru pucat ialah hujan renyai, dan warna yang lebih pekat serta hangat ialah hujan lebih lebat. Salji dilukis dengan warnanya sendiri.",
+      timelineTerm: "Garis Masa",
+      timeline:
+        "Main bergerak melalui dua jam lalu, bermula yang terlama. Seret peluncur untuk berhenti pada satu detik; kapsyen memberitahu berapa lama sebelum bingkai terkini.",
+      homeTerm: "Rumah",
+      home: "Lokasi rumah anda, bergaris, dengan suhunya sekarang.",
+      savedTerm: "Lokasi Tersimpan",
+      saved:
+        "Lokasi lain yang anda ikuti, dengan suhunya sekarang. Klik satu untuk membuka ramalannya.",
+      clickTerm: "Tempat Lain",
+      click:
+        "Klik mana-mana tempat untuk melihat cuaca di situ: suhu, rasa suhu, angin dan kemungkinan hujan.",
+      zoomTerm: "Zum Dekat",
+      zoom: "Radar kelihatan berpetak dari dekat kerana dibesarkan daripada data yang lebih kasar. Ia menunjukkan di mana hujan, bukan jalan yang tepat.",
+    },
     popup: {
       loading: "Memuatkan cuaca…",
       failed: "Tidak dapat memuatkan cuaca di sini. Cuba lagi sebentar nanti.",

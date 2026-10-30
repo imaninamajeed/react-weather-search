@@ -1,18 +1,14 @@
-import { IconArrowLeft } from "@tabler/icons-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
+import { MapBanner } from "@/components/map/map-banner";
+import { ReadingMapDialog } from "@/components/map/reading-map-dialog";
 import { WeatherMap, type MapPlace } from "@/components/map/weather-map";
-import { PageHeader } from "@/components/shared/page-header";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getI18n } from "@/lib/i18n/server";
 import { Text } from "@/lib/i18n/text";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { getRadarFrames } from "@/lib/radar";
 import { getPreferences } from "@/lib/preferences";
 import { homePlace } from "@/lib/preferences-core";
-import { placeHref } from "@/lib/places";
 import { lookupPlace } from "@/lib/resolve-place";
 import { formatTemperature } from "@/lib/units";
 
@@ -21,24 +17,6 @@ export const metadata: Metadata = {
   description:
     "Live rain radar with your saved locations. Click anywhere for the weather at that spot.",
 };
-
-/** Radar opened from a place keeps a way back to that place's forecast. */
-async function BackToPlace({ searchParams }: Pick<PageProps<"/map">, "searchParams">) {
-  const { place: key } = await searchParams;
-  const [place, { t }] = await Promise.all([
-    typeof key === "string" ? lookupPlace(key) : null,
-    getI18n(),
-  ]);
-  if (!place) return null;
-  return (
-    <Button asChild variant="outline" size="sm">
-      <Link href={placeHref(place)}>
-        <IconArrowLeft aria-hidden="true" />
-        {t.map.backToPlace(place.name)}
-      </Link>
-    </Button>
-  );
-}
 
 async function MapContent({ searchParams }: Pick<PageProps<"/map">, "searchParams">) {
   const [preferences, params] = await Promise.all([getPreferences(), searchParams]);
@@ -96,19 +74,19 @@ export default function MapPage(props: PageProps<"/map">) {
     <main
       data-wide
       id="main"
-      className="mx-auto w-full max-w-(--page-max) flex-1 px-4 py-8 fit:pt-3 fit:pb-3"
+      className="mx-auto w-full max-w-(--page-max) flex-1 px-4 pt-2 pb-6 md:pt-4 fit:pb-3"
     >
-      <div className="mb-6 space-y-6 fit:mb-3 fit:space-y-0">
-        <PageHeader
-          label={<Text id="map.label" />}
-          title={<Text id="nav.map" />}
-          lead={<Text id="map.lead" />}
-          aside={
-            <Suspense fallback={null}>
-              <BackToPlace searchParams={props.searchParams} />
-            </Suspense>
-          }
-        />
+      {/* As on the Alerts page, the banner is the page's heading: the `h1` is for assistive tech only. */}
+      <h1 className="sr-only">
+        <Text id="nav.map" />
+      </h1>
+      <div className="mb-4 space-y-4 fit:mb-3 fit:space-y-3">
+        <Suspense fallback={<Skeleton aria-hidden="true" className="h-56 w-full rounded-4xl" />}>
+          <MapBanner searchParams={props.searchParams} />
+        </Suspense>
+        <div className="flex justify-end">
+          <ReadingMapDialog />
+        </div>
       </div>
       <Suspense fallback={<Skeleton aria-hidden="true" className="h-[60svh] w-full rounded-xl" />}>
         <MapContent searchParams={props.searchParams} />

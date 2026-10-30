@@ -1,7 +1,7 @@
 "use client";
 
 import { ChartLine, CircleHelp, OctagonAlert, ShieldCheck, TriangleAlert } from "lucide-react";
-import type { ReactNode } from "react";
+import { LegendRow } from "@/components/shared/legend-row";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,28 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { useMessages } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
-
-function LegendRow({
-  icon,
-  term,
-  children,
-}: {
-  icon: ReactNode;
-  term: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex gap-3">
-      <span aria-hidden="true" className="mt-0.5 shrink-0">
-        {icon}
-      </span>
-      <div>
-        <dt className="font-medium">{term}</dt>
-        <dd className="text-muted-foreground">{children}</dd>
-      </div>
-    </div>
-  );
-}
 
 /** What the alert labels mean, kept out of sight until asked for: a tab-like button that opens a dialog. */
 export function ReadingAlertsDialog({ className }: { className?: string }) {
