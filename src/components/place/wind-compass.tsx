@@ -33,12 +33,16 @@ export function WindCompass({
         <IconChip icon={IconWind} accent="var(--brand-teal-text)" />
         Wind
       </p>
-      <p className="mt-3 text-3xl leading-none font-semibold tabular-nums">
+      <p className="mt-3 text-3xl leading-none font-semibold tabular-nums fit:mt-2 fit:text-2xl">
         {Math.round(convertSpeed(current.windSpeed, units))}
         <span className="ml-1 text-base font-normal text-muted-foreground">{labels.speed}</span>
       </p>
 
-      <svg viewBox="0 0 120 126" aria-hidden="true" className="mx-auto mt-3 h-auto w-36">
+      <svg
+        viewBox="0 0 120 126"
+        aria-hidden="true"
+        className="mx-auto mt-3 h-auto w-36 fit:mt-1 fit:w-24"
+      >
         <defs>
           <linearGradient id="wind-needle" x1="0" x2="0" y1="0" y2="1">
             <stop offset="0" style={{ stopColor: "var(--brand-teal-text)" }} />
@@ -81,7 +85,7 @@ export function WindCompass({
         />
       </svg>
 
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-3 text-sm text-muted-foreground fit:mt-1 fit:text-xs">
         From the {compassPoint(current.windDirection)} · gusts{" "}
         {formatSpeed(current.windGusts, units)}
       </p>

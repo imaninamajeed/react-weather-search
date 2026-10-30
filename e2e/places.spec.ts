@@ -141,15 +141,15 @@ test("units switch between metric and imperial and persist", async ({ page }) =>
   await page.goto("/place/8504423-subang-jaya");
   const units = page.getByRole("radiogroup", { name: "Units" });
   await expect(units.getByRole("radio", { name: /Metric/ })).toBeChecked();
-  await expect(page.getByText(/km\/h/).first()).toBeVisible();
+  await expect(page.getByText(/km\/h/).filter({ visible: true }).first()).toBeVisible();
 
   await units.getByRole("radio", { name: /Imperial/ }).click();
   await expect(units.getByRole("radio", { name: /Imperial/ })).toBeChecked();
-  await expect(page.getByText(/mph/).first()).toBeVisible();
+  await expect(page.getByText(/mph/).filter({ visible: true }).first()).toBeVisible();
 
   await page.reload();
   await expect(units.getByRole("radio", { name: /Imperial/ })).toBeChecked();
-  await expect(page.getByText(/mph/).first()).toBeVisible();
+  await expect(page.getByText(/mph/).filter({ visible: true }).first()).toBeVisible();
 });
 
 test.describe("first-visit units", () => {
@@ -159,10 +159,10 @@ test.describe("first-visit units", () => {
     await page.goto("/place/8504423-subang-jaya");
     const units = page.getByRole("radiogroup", { name: "Units" });
     await expect(units.getByRole("radio", { name: /Imperial/ })).toBeChecked();
-    await expect(page.getByText(/mph/).first()).toBeVisible();
+    await expect(page.getByText(/mph/).filter({ visible: true }).first()).toBeVisible();
 
     await units.getByRole("radio", { name: /Metric/ }).click();
     await expect(units.getByRole("radio", { name: /Metric/ })).toBeChecked();
-    await expect(page.getByText(/km\/h/).first()).toBeVisible();
+    await expect(page.getByText(/km\/h/).filter({ visible: true }).first()).toBeVisible();
   });
 });

@@ -7,7 +7,7 @@ export function HourlyTable({ hours, units }: { hours: HourlyPoint[]; units: Uni
   const labels = unitLabels(units);
   return (
     <details className="group mt-4 overflow-hidden rounded-2xl border border-border">
-      <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
+      <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none fit:py-1.5">
         View as table
       </summary>
       <div

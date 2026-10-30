@@ -15,25 +15,33 @@ export function HourStrip({
   forecast,
   units,
   tone = "default",
+  hours = HOURS,
+  className,
 }: {
   forecast: Forecast;
   units: Units;
   tone?: "default" | "glass";
+  hours?: number;
+  /** Replaces the bleed past the parent's padding, for use outside the hero. */
+  className?: string;
 }) {
   const glass = tone === "glass";
   return (
     <ol
-      className="relative -mx-6 flex gap-2 overflow-x-auto px-6 pb-1 md:-mx-10 md:px-10"
-      aria-label="Next 12 hours"
+      className={cn(
+        "relative -mx-6 flex gap-2 overflow-x-auto px-6 pb-1 md:-mx-10 md:px-10",
+        className,
+      )}
+      aria-label={`Next ${hours} hours`}
     >
-      {forecast.hourly.slice(0, HOURS).map((hour, index) => {
+      {forecast.hourly.slice(0, hours).map((hour, index) => {
         const weather = describeWeather(hour.weatherCode, hour.isDay);
         const now = index === 0;
         return (
           <li
             key={hour.time}
             className={cn(
-              "flex min-w-16 shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-2 py-3",
+              "flex min-w-16 flex-1 shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-2 py-3",
               glass
                 ? cn(
                     "border-border bg-background/60 backdrop-blur-sm dark:border-white/10 dark:bg-white/5",

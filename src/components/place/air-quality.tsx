@@ -32,12 +32,16 @@ export async function AirQualityTile({
 
   return (
     <Tile
-      label="Air quality (US AQI)"
+      label="Air quality"
       icon={IconLeaf}
       accent="var(--brand-teal-text)"
       value={Math.round(airQuality.usAqi)}
       unit={category.label}
-      caption={pm25 === null ? category.advice : `${category.advice} PM2.5 ${pm25} µg/m³.`}
+      caption={
+        pm25 === null
+          ? `US AQI. ${category.advice}`
+          : `US AQI. ${category.advice} PM2.5 ${pm25} µg/m³.`
+      }
     >
       <Meter
         value={airQuality.usAqi}

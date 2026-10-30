@@ -2,17 +2,10 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
+import { SectionCard } from "@/components/shared/section-card";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { HeroSkeleton, RowsSkeleton } from "@/components/shared/skeletons";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { getPreferences } from "@/lib/preferences";
@@ -90,95 +83,95 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
   const followed = [home, ...others];
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4 fit:min-h-0 fit:flex-1 fit:grid-cols-12 fit:gap-3">
       <h1 className="sr-only">Dashboard</h1>
 
-      <SectionBoundary title="Your home forecast">
-        <Suspense fallback={<HeroSkeleton />}>
-          <Hero place={home} units={units} />
-        </Suspense>
-      </SectionBoundary>
+      <div className="contents fit:col-span-4 fit:flex fit:min-h-0 fit:flex-col fit:gap-3">
+        <SectionBoundary title="Your home forecast">
+          <Suspense fallback={<HeroSkeleton />}>
+            <Hero place={home} units={units} />
+          </Suspense>
+        </SectionBoundary>
 
-      <SectionBoundary title="Today's conditions">
-        <Suspense fallback={<StatsSkeleton />}>
-          <Stats place={home} units={units} />
-        </Suspense>
-      </SectionBoundary>
+        <div className="fit:hidden">
+          <SectionBoundary title="Today's conditions">
+            <Suspense fallback={<StatsSkeleton />}>
+              <Stats place={home} units={units} />
+            </Suspense>
+          </SectionBoundary>
+        </div>
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle className="text-xl">Next 24 hours</CardTitle>
-            <CardDescription>
-              Temperature in {home.name}, with the chance of rain beneath
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SectionBoundary title="The 24-hour chart">
-              <Suspense fallback={<Skeleton aria-hidden="true" className="h-72 w-full" />}>
-                <DayChartCard place={home} units={units} />
-              </Suspense>
-            </SectionBoundary>
-          </CardContent>
-        </Card>
-
-        <section aria-labelledby="alerts-title" className="lg:col-span-2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle id="alerts-title" role="heading" aria-level={2} className="text-xl">
-                Alerts
-              </CardTitle>
-              <CardDescription>
-                Across {followed.length === 1 ? "your place" : `your ${followed.length} places`}
-              </CardDescription>
-              <CardAction>
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/alerts">
-                    All alerts
-                    <IconArrowRight aria-hidden="true" />
-                  </Link>
-                </Button>
-              </CardAction>
-            </CardHeader>
-            <CardContent>
-              <SectionBoundary title="Alerts">
-                <Suspense fallback={<RowsSkeleton rows={1} />}>
-                  <AlertsOverview places={followed} units={units} />
-                </Suspense>
-              </SectionBoundary>
-            </CardContent>
-          </Card>
-        </section>
-      </div>
-
-      <section aria-labelledby="places-title" className="space-y-4 pt-6">
-        <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-          <h2 id="places-title" className="font-heading text-3xl leading-none">
-            Your places
-          </h2>
-          {places.length > 0 && (
+        <SectionCard
+          id="alerts"
+          title="Alerts"
+          description={`Across ${followed.length === 1 ? "your place" : `your ${followed.length} places`}`}
+          className="fit:min-h-0 fit:flex-1"
+          aside={
             <Button asChild variant="outline" size="sm">
-              <Link href="/places">
-                Manage and compare
+              <Link href="/alerts">
+                All alerts
                 <IconArrowRight aria-hidden="true" />
               </Link>
             </Button>
-          )}
-        </header>
-        {places.length === 0 ? (
-          <Onboarding />
-        ) : others.length === 0 ? (
-          <OnlyHome />
-        ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((place) => (
-              <li key={place.key}>
-                <PlaceCard place={place} units={units} isHome={false} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+          }
+        >
+          <SectionBoundary title="Alerts">
+            <Suspense fallback={<RowsSkeleton rows={1} />}>
+              <AlertsOverview places={followed} units={units} />
+            </Suspense>
+          </SectionBoundary>
+        </SectionCard>
+      </div>
+
+      <div className="contents fit:col-span-8 fit:flex fit:min-h-0 fit:flex-col fit:gap-3">
+        <SectionCard
+          id="day"
+          title="Next 24 hours"
+          description={`Temperature in ${home.name}, with the chance of rain beneath`}
+          className="fit:flex-1"
+          bodyClassName="fit:flex fit:flex-col fit:overflow-visible"
+        >
+          <SectionBoundary title="The 24-hour chart">
+            <Suspense fallback={<Skeleton aria-hidden="true" className="h-72 w-full" />}>
+              <DayChartCard place={home} units={units} />
+            </Suspense>
+          </SectionBoundary>
+        </SectionCard>
+
+        <section
+          aria-labelledby="places-title"
+          className="space-y-4 pt-6 fit:flex fit:min-h-0 fit:flex-1 fit:flex-col fit:gap-3 fit:space-y-0 fit:pt-0"
+        >
+          <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+            <h2 id="places-title" className="font-heading text-3xl leading-none fit:text-xl">
+              Your places
+            </h2>
+            {places.length > 0 && (
+              <Button asChild variant="outline" size="sm">
+                <Link href="/places">
+                  Manage and compare
+                  <IconArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
+            )}
+          </header>
+          <div className="fit:-m-1 fit:min-h-0 fit:flex-1 fit:overflow-y-auto fit:p-1">
+            {places.length === 0 ? (
+              <Onboarding />
+            ) : others.length === 0 ? (
+              <OnlyHome />
+            ) : (
+              <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 fit:gap-3">
+                {others.map((place) => (
+                  <li key={place.key}>
+                    <PlaceCard place={place} units={units} isHome={false} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

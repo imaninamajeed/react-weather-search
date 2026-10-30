@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+/* Wide and tall enough for a page marked data-fit to fill the viewport instead of scrolling it. */
+@custom-variant fit (@media (min-width: 1024px) and (min-height: 800px));
 
 @theme inline {
   --font-sans: var(--font-sans);
@@ -206,6 +208,33 @@
   /* Small uppercase mono label used for data captions. */
   .label-caps {
     @apply font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase;
+  }
+}
+
+/*
+ * Pages that opt in with data-fit become one screen on large displays: the shell is pinned to the
+ * viewport, the footer shrinks to a single line, and the page's own grid divides what is left.
+ * Anywhere smaller they scroll as usual. Keep the query in step with the `fit` variant above.
+ */
+@media (min-width: 1024px) and (min-height: 800px) {
+  body:has([data-fit]) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  body:has([data-fit]) > [data-shell] {
+    min-height: 0;
+  }
+  body:has([data-fit]) [data-fit] {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0;
+  }
+  body:has([data-fit]) footer {
+    margin-top: 0;
+  }
+  body:has([data-fit]) footer > div {
+    padding-block: 0.5rem;
   }
 }
 

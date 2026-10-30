@@ -37,99 +37,105 @@ export function DailyList({
   const position = (celsius: number) => ((celsius - scaleMin) / span) * 100;
 
   return (
-    <ol className="divide-y divide-border/70">
-      {daily.slice(0, limit).map((day, index) => {
-        const weather = describeWeather(day.weatherCode);
-        const left = position(day.temperatureMin);
-        const width = Math.max(position(day.temperatureMax) - left, 2);
-        return (
-          <Fragment key={day.date}>
-            {index === FIRM_DAYS && (
-              <li className="label-caps py-3 text-center">
-                Days {FIRM_DAYS + 1}–{daily.length}: indicative only, see forecast confidence below
-              </li>
-            )}
-            <li
-              className={cn(
-                "grid items-center gap-x-3 py-2.5",
-                confidence
-                  ? "grid-cols-[3.5rem_1.75rem_3.25rem_1fr_2.5rem] sm:grid-cols-[5.5rem_11rem_4.5rem_1fr_6.5rem]"
-                  : "grid-cols-[3.5rem_1.75rem_3.25rem_1fr] sm:grid-cols-[5.5rem_11rem_4.5rem_1fr]",
+    <div className="@container/daily">
+      <ol className="divide-y divide-border/70">
+        {daily.slice(0, limit).map((day, index) => {
+          const weather = describeWeather(day.weatherCode);
+          const left = position(day.temperatureMin);
+          const width = Math.max(position(day.temperatureMax) - left, 2);
+          return (
+            <Fragment key={day.date}>
+              {index === FIRM_DAYS && (
+                <li className="label-caps py-3 text-center">
+                  Days {FIRM_DAYS + 1}–{daily.length}: indicative only, see forecast confidence
+                  below
+                </li>
               )}
-            >
-              <div>
-                <p className="text-sm font-medium">
-                  {index === 0 ? "Today" : formatWeekday(day.date)}
-                </p>
-                <p className="label-caps hidden sm:block">{formatDayMonth(day.date)}</p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <WeatherIcon name={weather.icon} className="size-5" />
-                <span className="hidden text-sm sm:inline">{weather.label}</span>
-                <span className="sr-only sm:hidden">{weather.label}</span>
-              </div>
-
-              <p
-                className="flex items-center gap-1 text-sm text-muted-foreground"
-                title={formatPrecipitation(day.precipitationSum, units)}
+              <li
+                className={cn(
+                  "grid items-center gap-x-3 py-2.5",
+                  confidence
+                    ? "grid-cols-[3.5rem_1.75rem_3.25rem_1fr_2.5rem] @lg/daily:grid-cols-[5.5rem_11rem_4.5rem_1fr_6.5rem]"
+                    : "grid-cols-[3.5rem_1.75rem_3.25rem_1fr] @max-[17rem]/daily:grid-cols-[2.75rem_1.25rem_1fr] @lg/daily:grid-cols-[5.5rem_11rem_4.5rem_1fr]",
+                )}
               >
-                <IconDroplets aria-hidden="true" className="size-3.5" />
-                <span className="tnum">{day.precipitationProbabilityMax}%</span>
-                <span className="sr-only">chance of rain</span>
-              </p>
+                <div>
+                  <p className="text-sm font-medium">
+                    {index === 0 ? "Today" : formatWeekday(day.date)}
+                  </p>
+                  <p className="label-caps hidden @lg/daily:block">{formatDayMonth(day.date)}</p>
+                </div>
 
-              <div className="flex items-center gap-3">
-                <span className="tnum w-9 text-right text-sm text-muted-foreground">
-                  {formatTemperature(day.temperatureMin, units)}
-                </span>
-                <div aria-hidden="true" className="relative h-1.5 flex-1 rounded-full bg-muted">
-                  <div
-                    className="absolute inset-y-0 rounded-full"
-                    style={{
-                      left: `${left}%`,
-                      width: `${width}%`,
-                      backgroundImage: temperatureGradient(day.temperatureMin, day.temperatureMax),
-                    }}
-                  />
-                  {index === 0 && (
-                    <span
-                      className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-card"
+                <div className="flex items-center gap-2">
+                  <WeatherIcon name={weather.icon} className="size-5" />
+                  <span className="hidden text-sm @lg/daily:inline">{weather.label}</span>
+                  <span className="sr-only @lg/daily:hidden">{weather.label}</span>
+                </div>
+
+                <p
+                  className="flex items-center gap-1 text-sm text-muted-foreground @max-[17rem]/daily:hidden"
+                  title={formatPrecipitation(day.precipitationSum, units)}
+                >
+                  <IconDroplets aria-hidden="true" className="size-3.5" />
+                  <span className="tnum">{day.precipitationProbabilityMax}%</span>
+                  <span className="sr-only">chance of rain</span>
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <span className="tnum w-9 text-right text-sm text-muted-foreground">
+                    {formatTemperature(day.temperatureMin, units)}
+                  </span>
+                  <div aria-hidden="true" className="relative h-1.5 flex-1 rounded-full bg-muted">
+                    <div
+                      className="absolute inset-y-0 rounded-full"
                       style={{
-                        left: `${position(current.temperature)}%`,
-                        backgroundColor: temperatureColor(current.temperature),
+                        left: `${left}%`,
+                        width: `${width}%`,
+                        backgroundImage: temperatureGradient(
+                          day.temperatureMin,
+                          day.temperatureMax,
+                        ),
                       }}
                     />
-                  )}
+                    {index === 0 && (
+                      <span
+                        className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-card"
+                        style={{
+                          left: `${position(current.temperature)}%`,
+                          backgroundColor: temperatureColor(current.temperature),
+                        }}
+                      />
+                    )}
+                  </div>
+                  <span className="tnum w-9 text-sm font-medium">
+                    {formatTemperature(day.temperatureMax, units)}
+                  </span>
                 </div>
-                <span className="tnum w-9 text-sm font-medium">
-                  {formatTemperature(day.temperatureMax, units)}
-                </span>
-              </div>
 
-              {confidence && (
-                <p className="flex items-center justify-end gap-2 text-sm">
-                  {confidence[day.date] ? (
-                    <>
-                      <ConfidenceDots level={confidence[day.date]} />
-                      <span className="hidden sm:inline">
-                        {CONFIDENCE_LABEL[confidence[day.date]!]}
+                {confidence && (
+                  <p className="flex items-center justify-end gap-2 text-sm">
+                    {confidence[day.date] ? (
+                      <>
+                        <ConfidenceDots level={confidence[day.date]} />
+                        <span className="hidden @lg/daily:inline">
+                          {CONFIDENCE_LABEL[confidence[day.date]!]}
+                        </span>
+                        <span className="sr-only">
+                          {CONFIDENCE_LABEL[confidence[day.date]!]} confidence
+                        </span>
+                      </>
+                    ) : (
+                      <span aria-hidden="true" className="text-muted-foreground">
+                        –
                       </span>
-                      <span className="sr-only">
-                        {CONFIDENCE_LABEL[confidence[day.date]!]} confidence
-                      </span>
-                    </>
-                  ) : (
-                    <span aria-hidden="true" className="text-muted-foreground">
-                      –
-                    </span>
-                  )}
-                </p>
-              )}
-            </li>
-          </Fragment>
-        );
-      })}
-    </ol>
+                    )}
+                  </p>
+                )}
+              </li>
+            </Fragment>
+          );
+        })}
+      </ol>
+    </div>
   );
 }

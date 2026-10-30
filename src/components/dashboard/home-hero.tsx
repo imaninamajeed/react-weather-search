@@ -22,6 +22,8 @@ export function HomeHero({
       forecast={forecast}
       units={units}
       headingLevel={2}
+      fit
+      className="fit:flex-none"
       actions={
         <div className="flex shrink-0 items-center gap-2">
           <Badge variant="secondary" className="dark:bg-white/10 dark:text-white">

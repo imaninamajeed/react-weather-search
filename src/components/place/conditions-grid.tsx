@@ -110,9 +110,9 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <SunArc forecast={forecast} className="sm:col-span-2" />
-      <WindCompass forecast={forecast} units={units} />
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 fit:grid-cols-5 fit:grid-rows-2">
+      <SunArc forecast={forecast} className="sm:col-span-2 fit:col-span-1 fit:row-span-2" />
+      <WindCompass forecast={forecast} units={units} className="fit:row-span-2" />
       {tiles}
     </div>
   );

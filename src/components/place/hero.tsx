@@ -4,7 +4,14 @@ import { WeatherIcon } from "@/components/shared/weather-icon";
 import { HourStrip } from "@/components/dashboard/hour-strip";
 import { formatPlaceSubtitle, formatUtcOffset, formatWeekdayClock } from "@/lib/format";
 import type { Place } from "@/lib/places";
-import { convertTemperature } from "@/lib/units";
+import { cn } from "@/lib/utils";
+import {
+  compassPoint,
+  convertTemperature,
+  formatPrecipitation,
+  formatSpeed,
+  formatTemperature,
+} from "@/lib/units";
 import { describeWeather } from "@/lib/weather/codes";
 import { summarizeToday } from "@/lib/weather/summary";
 import type { Forecast, Units } from "@/lib/weather/types";
@@ -17,6 +24,9 @@ interface PlaceHeroProps {
   actions?: ReactNode;
   /** The dashboard owns the page's h1, so its hero heading is an h2. */
   headingLevel?: 1 | 2;
+  /** On screens that fit a page to the viewport, stand tall in a side column and show the day's numbers beneath. */
+  fit?: boolean;
+  className?: string;
 }
 
 const caption =
@@ -28,15 +38,30 @@ const caption =
  * uses the mark's own ink; light mode is a white panel with the same colours washed out. The art
  * is faded out well before the text, which always sits on a plain, low-chroma surface.
  */
-export function PlaceHero({ place, forecast, units, actions, headingLevel = 1 }: PlaceHeroProps) {
+export function PlaceHero({
+  place,
+  forecast,
+  units,
+  actions,
+  headingLevel = 1,
+  fit = false,
+  className,
+}: PlaceHeroProps) {
   const Heading = headingLevel === 1 ? "h1" : "h2";
   const { current } = forecast;
+  const today = forecast.daily[0];
   const weather = describeWeather(current.weatherCode, current.isDay);
   const temperature = Math.round(convertTemperature(current.temperature, units));
   const localTimeLine = `${formatWeekdayClock(current.time)} · local time (${formatUtcOffset(forecast.utcOffsetSeconds)})`;
 
   return (
-    <header className="relative isolate overflow-hidden rounded-4xl bg-card text-card-foreground shadow-md ring-1 ring-foreground/5 [--glow-magenta:10%] [--glow-teal:10%] dark:bg-(--brand-ink) dark:text-white dark:ring-white/10 dark:[--glow-magenta:30%] dark:[--glow-teal:18%]">
+    <header
+      className={cn(
+        "relative isolate overflow-hidden rounded-4xl bg-card text-card-foreground shadow-md ring-1 ring-foreground/5 [--glow-magenta:10%] [--glow-teal:10%] dark:bg-(--brand-ink) dark:text-white dark:ring-white/10 dark:[--glow-magenta:30%] dark:[--glow-teal:18%]",
+        fit && "fit:flex fit:flex-col",
+        className,
+      )}
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
@@ -53,7 +78,12 @@ export function PlaceHero({ place, forecast, units, actions, headingLevel = 1 }:
         className="pointer-events-none absolute -top-32 -right-28 -z-10 size-[36rem] mask-[radial-gradient(closest-side,black_40%,transparent)] opacity-60 motion-safe:animate-[spin_240s_linear_infinite]"
       />
 
-      <div className="grid gap-8 p-6 md:p-10 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div
+        className={cn(
+          "grid gap-8 p-6 md:p-10 lg:grid-cols-[1fr_auto] lg:items-end",
+          fit && "fit:flex fit:flex-col fit:gap-3 fit:p-4 fit:pb-3",
+        )}
+      >
         <div>
           <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
             <p className={caption}>{localTimeLine}</p>
@@ -61,23 +91,38 @@ export function PlaceHero({ place, forecast, units, actions, headingLevel = 1 }:
           </div>
           <Heading
             id="place-title"
-            className="mt-3 font-heading text-5xl leading-[0.95] md:text-7xl"
+            className={cn(
+              "mt-3 font-heading text-5xl leading-[0.95] md:text-7xl",
+              fit && "fit:text-5xl",
+            )}
           >
             {place.name}
           </Heading>
           <p className="mt-2 text-muted-foreground dark:text-white/80">
             {formatPlaceSubtitle(place)}
           </p>
-          <p className="mt-6 max-w-prose text-lg text-balance">{summarizeToday(forecast, units)}</p>
+          <p
+            className={cn(
+              "mt-6 max-w-prose text-lg text-balance",
+              fit && "fit:mt-2 fit:line-clamp-2 fit:text-base",
+            )}
+          >
+            {summarizeToday(forecast, units)}
+          </p>
         </div>
 
         <div className="flex items-center gap-5">
           <WeatherIcon
             name={weather.icon}
-            className="size-16 text-(--brand-teal-text) md:size-24 dark:drop-shadow-[0_0_18px_var(--brand-teal)]"
+            className="size-16 text-(--brand-teal-text) md:size-24 dark:drop-shadow-[0_0_18px_var(--brand-teal)] fit:size-16"
           />
           <div>
-            <p className="text-7xl leading-none font-medium tracking-tight md:text-9xl">
+            <p
+              className={cn(
+                "text-7xl leading-none font-medium tracking-tight md:text-9xl",
+                fit && "fit:text-6xl",
+              )}
+            >
               <span className="sr-only">
                 {temperature} degrees {units === "metric" ? "Celsius" : "Fahrenheit"}
               </span>
@@ -93,9 +138,50 @@ export function PlaceHero({ place, forecast, units, actions, headingLevel = 1 }:
         </div>
       </div>
 
-      <div className="border-t border-border px-6 pt-4 pb-5 md:px-10 dark:border-white/10">
+      {fit && (
+        <dl className="hidden grid-cols-2 gap-x-4 gap-y-2 border-t border-border px-6 py-4 dark:border-white/10 fit:grid">
+          <Stat label="Feels like" value={formatTemperature(current.apparentTemperature, units)} />
+          <Stat
+            label="High / Low"
+            value={`${formatTemperature(today.temperatureMax, units)} / ${formatTemperature(today.temperatureMin, units)}`}
+          />
+          <Stat
+            label="Rain today"
+            value={`${today.precipitationProbabilityMax}%`}
+            detail={formatPrecipitation(today.precipitationSum, units)}
+          />
+          <Stat
+            label="Wind"
+            value={formatSpeed(current.windSpeed, units)}
+            detail={`from ${compassPoint(current.windDirection)}`}
+          />
+        </dl>
+      )}
+
+      <div
+        className={cn(
+          "border-t border-border px-6 pt-4 pb-5 md:px-10 dark:border-white/10",
+          fit && "fit:hidden",
+        )}
+      >
         <HourStrip forecast={forecast} units={units} tone="glass" />
       </div>
     </header>
+  );
+}
+
+function Stat({ label, value, detail }: { label: string; value: string; detail?: string }) {
+  return (
+    <div>
+      <dt className={caption}>{label}</dt>
+      <dd className="mt-1 text-xl font-medium">
+        {value}
+        {detail && (
+          <span className="ml-2 block text-sm font-normal text-muted-foreground xl:inline dark:text-white/75">
+            {detail}
+          </span>
+        )}
+      </dd>
+    </div>
   );
 }

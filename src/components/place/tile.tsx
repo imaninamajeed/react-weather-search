@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 /** The surface every reading sits on: inset in its card, with the card's own hairline ring. */
 export const PANEL =
-  "rounded-3xl bg-muted/50 p-4 ring-1 ring-foreground/5 dark:bg-white/5 dark:ring-white/10";
+  "rounded-3xl bg-muted/50 p-4 fit:p-3 ring-1 ring-foreground/5 dark:bg-white/5 dark:ring-white/10";
 
 /** A round chip for a reading's icon, tinted by one of the app mark's colours. */
 export function IconChip({ icon: ChipIcon, accent }: { icon: Icon; accent: string }) {
@@ -45,17 +45,20 @@ export function Tile({
   className,
 }: TileProps) {
   return (
-    <div className={cn(PANEL, className)}>
+    <div
+      className={cn(PANEL, "min-w-0", className)}
+      title={typeof caption === "string" ? caption : undefined}
+    >
       <p className="label-caps flex items-center gap-2">
         {icon && accent && <IconChip icon={icon} accent={accent} />}
         {label}
       </p>
-      <p className="mt-3 text-3xl leading-none font-semibold tabular-nums">
+      <p className="mt-3 text-3xl leading-none font-semibold tabular-nums fit:mt-2 fit:text-2xl">
         {value}
         {unit && <span className="ml-1 text-base font-normal text-muted-foreground">{unit}</span>}
       </p>
       {children}
-      {caption && <p className="mt-3 text-sm text-muted-foreground">{caption}</p>}
+      {caption && <p className="mt-3 text-sm text-muted-foreground fit:sr-only">{caption}</p>}
     </div>
   );
 }
@@ -89,7 +92,7 @@ export function Meter({
       aria-valuemin={0}
       aria-valuemax={max}
       aria-valuenow={Math.round(value)}
-      className={cn("mt-3 h-1.5 overflow-hidden rounded-full", TONES[tone].track)}
+      className={cn("mt-3 h-1.5 overflow-hidden rounded-full fit:mt-2", TONES[tone].track)}
     >
       <div
         className={cn("h-full rounded-full", TONES[tone].fill)}

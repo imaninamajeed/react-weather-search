@@ -48,8 +48,8 @@ export function DayChart({ hours, units }: { hours: HourlyPoint[]; units: Units 
   const summary = `Temperature and chance of rain for the next ${rows.length} hours, ${formatWeekday(first.time)} ${formatHour(first.time)} to ${formatWeekday(last.time)} ${formatHour(last.time)}.`;
 
   return (
-    <div role="group" aria-label={summary}>
-      <ChartContainer config={config} className="aspect-auto h-72 w-full">
+    <div role="group" aria-label={summary} className="fit:min-h-0 fit:flex-1">
+      <ChartContainer config={config} className="aspect-auto h-72 w-full fit:h-full">
         <ComposedChart
           data={rows}
           margin={{ top: 12, right: 8, bottom: 0, left: 0 }}

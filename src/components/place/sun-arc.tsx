@@ -42,15 +42,17 @@ export function SunArc({ forecast, className }: { forecast: Forecast; className?
         <IconChip icon={IconSunrise} accent="var(--brand-magenta)" />
         Sun
       </p>
-      <p className="mt-3 text-3xl leading-none font-semibold">
+      <p className="mt-3 text-3xl leading-none font-semibold fit:mt-2 fit:text-2xl">
         {formatDuration(today.daylightSeconds)}
-        <span className="ml-2 text-base font-normal text-muted-foreground">of daylight</span>
+        <span className="ml-2 text-base font-normal text-muted-foreground fit:hidden">
+          of daylight
+        </span>
       </p>
 
       <svg
         viewBox="0 0 320 128"
         aria-hidden="true"
-        className="mx-auto mt-4 h-auto w-full max-w-sm overflow-visible"
+        className="mx-auto mt-4 h-auto w-full max-w-sm overflow-visible fit:mt-3"
       >
         <defs>
           <linearGradient
@@ -115,7 +117,7 @@ export function SunArc({ forecast, className }: { forecast: Forecast; className?
         )}
       </svg>
 
-      <dl className="mt-1 grid grid-cols-2 gap-x-4 text-sm">
+      <dl className="mt-1 grid grid-cols-2 gap-x-4 text-sm fit:text-xs">
         <div>
           <dt className="label-caps">Sunrise</dt>
           <dd className="mt-1 font-medium tabular-nums">{formatTime(today.sunrise)}</dd>
@@ -125,7 +127,7 @@ export function SunArc({ forecast, className }: { forecast: Forecast; className?
           <dd className="mt-1 font-medium tabular-nums">{formatTime(today.sunset)}</dd>
         </div>
       </dl>
-      <p className="mt-3 text-sm text-muted-foreground">{status}</p>
+      <p className="mt-3 text-sm text-muted-foreground fit:sr-only">{status}</p>
     </div>
   );
 }

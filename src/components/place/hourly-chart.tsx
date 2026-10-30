@@ -59,7 +59,7 @@ const METRIC_LABELS: Record<Metric, string> = {
   wind: "Wind",
 };
 
-const HEIGHT = "h-64 w-full aspect-auto";
+const HEIGHT = "h-64 w-full aspect-auto fit:h-full fit:min-h-0";
 
 /** Consecutive night hours as [from, to] pairs, drawn as faint bands behind the series. */
 function nightBands(rows: Row[]) {
@@ -175,8 +175,8 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
   const summary = `${METRIC_LABELS[metric]} for the next ${rows.length} hours, ${formatWeekday(first.time)} ${formatHour(first.time)} to ${formatWeekday(last.time)} ${formatHour(last.time)}. A table with every value follows the chart.`;
 
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+    <div className="fit:flex fit:min-h-0 fit:flex-1 fit:flex-col">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 fit:mb-2">
         <ToggleGroup
           type="single"
           value={metric}
@@ -194,7 +194,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
         </ToggleGroup>
 
         {series.length > 1 && (
-          <ul className="flex gap-4 text-xs text-muted-foreground" aria-label="Legend">
+          <ul className="flex gap-3 text-xs text-muted-foreground" aria-label="Legend">
             {series.map((s) => (
               <li key={s.key} className="flex items-center gap-2">
                 <span
@@ -209,7 +209,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
         )}
       </div>
 
-      <div role="group" aria-label={summary}>
+      <div role="group" aria-label={summary} className="fit:min-h-0 fit:flex-1">
         {metric === "temperature" && (
           <ChartContainer config={config} className={HEIGHT}>
             <AreaChart {...shared}>
@@ -281,7 +281,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
         )}
       </div>
 
-      <p className="mt-2 text-xs text-muted-foreground">
+      <p className="mt-2 text-xs text-muted-foreground fit:hidden">
         Shaded bands are night hours
         {metric === "rain" ? ". Bars show the chance of rain in each hour" : ""}.
       </p>

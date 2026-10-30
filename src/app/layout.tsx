@@ -68,7 +68,7 @@ export default function RootLayout({ children, crumbs }: LayoutProps<"/">) {
               Skip to content
             </a>
             {/* Room for the bottom tab bar, which only exists below lg. */}
-            <div className="flex flex-1 flex-col pb-17 lg:pb-0">
+            <div data-shell className="flex flex-1 flex-col pb-17 lg:pb-0">
               <OfflineBanner />
               <TopBar />
               <CrumbBar crumbs={crumbs} />
