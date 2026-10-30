@@ -57,8 +57,8 @@ export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units:
   const unit = metric === "temperature" ? labels.temperature : labels.precipitation;
 
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+    <div className="fit:flex fit:min-h-0 fit:min-h-40 fit:flex-1 fit:flex-col">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 fit:mb-2">
         <ToggleGroup
           type="single"
           value={metric}
@@ -94,9 +94,10 @@ export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units:
 
       <div
         role="group"
+        className="fit:min-h-0 fit:flex-1"
         aria-label={`${metric === "temperature" ? "Daily high temperature" : "Daily rainfall"} predicted by ECMWF, GFS and ICON for the next ${rows.length} days. A table with every value follows the chart.`}
       >
-        <ChartContainer config={config} className="aspect-auto h-64 w-full">
+        <ChartContainer config={config} className="aspect-auto h-64 w-full fit:h-full fit:min-h-0">
           <ComposedChart
             data={rows}
             margin={{ top: 12, right: 12, bottom: 0, left: 0 }}

@@ -228,6 +228,8 @@
     flex: 1 1 0;
     flex-direction: column;
     min-height: 0;
+    /* Whatever a page is showing (even a loading skeleton) stays inside the viewport. */
+    overflow: hidden;
   }
   body:has([data-fit]) footer {
     margin-top: 0;

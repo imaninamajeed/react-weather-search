@@ -34,7 +34,7 @@ export function HistoryTables({
   const labels = unitLabels(units);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 fit:grid fit:grid-cols-2 fit:items-start fit:gap-2 fit:space-y-0">
       <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
           Monthly rainfall as a table

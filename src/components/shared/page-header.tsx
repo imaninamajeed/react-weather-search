@@ -14,11 +14,15 @@ export function PageHeader({
   aside?: ReactNode;
 }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+    <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 fit:items-center">
       <div>
-        <p className="label-caps">{label}</p>
-        <h1 className="mt-2 font-heading text-5xl leading-[0.95] md:text-6xl">{title}</h1>
-        <p className="mt-3 max-w-prose text-muted-foreground">{lead}</p>
+        <p className="label-caps fit:sr-only">{label}</p>
+        <h1 className="mt-2 font-heading text-5xl leading-[0.95] md:text-6xl fit:mt-0 fit:text-4xl">
+          {title}
+        </h1>
+        <p className="mt-3 max-w-prose text-muted-foreground fit:mt-1 fit:max-w-none fit:text-sm">
+          {lead}
+        </p>
       </div>
       {aside}
     </header>

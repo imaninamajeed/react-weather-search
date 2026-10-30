@@ -1,39 +1,75 @@
 import { expect, test } from "@playwright/test";
-import { expectNoSeriousViolations, seedPlaces } from "./helpers";
+import { expectNoSeriousViolations, mockMapNetwork, seedPlaces } from "./helpers";
 
-// Wide and tall enough for the `fit` variant (see globals.css): the page is one screen, not a scroll.
+// The map needs WebGL, which headless Chromium only has through a software renderer.
+test.use({
+  launchOptions: {
+    args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"],
+  },
+});
+
+// Wide and tall enough for the `fit` variant (see globals.css): every page is one screen, not a scroll.
 const SIZES = [
   { width: 1366, height: 800 },
+  { width: 1440, height: 900 },
   { width: 1920, height: 1080 },
 ];
 
 const PAGES = [
   ["dashboard", "/"],
   ["forecast", "/place/8504423-subang-jaya"],
+  ["outlook", "/place/8504423-subang-jaya/outlook"],
+  ["climate", "/place/8504423-subang-jaya/history"],
+  ["alerts", "/alerts"],
+  ["places", "/places"],
+  ["map", "/map"],
+  ["about", "/about"],
+  ["offline", "/offline"],
+  ["not found", "/place/nope"],
 ] as const;
 
-for (const size of SIZES) {
-  for (const [name, path] of PAGES) {
-    test.describe(`${name} at ${size.width}×${size.height}`, () => {
-      test.use({ viewport: size });
+async function open(
+  page: import("@playwright/test").Page,
+  context: import("@playwright/test").BrowserContext,
+  baseURL: string,
+  path: string,
+  scheme: "light" | "dark",
+) {
+  await seedPlaces(context, baseURL);
+  await mockMapNetwork(page);
+  await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
+  await page.goto(path);
+  await page.waitForLoadState("networkidle");
+}
 
-      test("fits the viewport without scrolling the page", async ({ page, context, baseURL }) => {
-        await seedPlaces(context, baseURL!);
-        await page.goto(path);
-        await page.waitForLoadState("networkidle");
+for (const scheme of ["light", "dark"] as const) {
+  for (const size of SIZES) {
+    for (const [name, path] of PAGES) {
+      test(`${name} fits ${size.width}×${size.height} without scrolling (${scheme})`, async ({
+        page,
+        context,
+        baseURL,
+      }) => {
+        await page.setViewportSize(size);
+        await open(page, context, baseURL!, path, scheme);
         const { doc, win } = await page.evaluate(() => ({
           doc: document.documentElement.scrollHeight,
           win: window.innerHeight,
         }));
         expect(doc).toBeLessThanOrEqual(win);
       });
+    }
+  }
 
-      test("has no serious accessibility violations", async ({ page, context, baseURL }) => {
-        await seedPlaces(context, baseURL!);
-        await page.goto(path);
-        await page.waitForLoadState("networkidle");
-        await expectNoSeriousViolations(page);
-      });
+  for (const [name, path] of PAGES) {
+    test(`${name} has no serious accessibility violations at 1366×800 (${scheme})`, async ({
+      page,
+      context,
+      baseURL,
+    }) => {
+      await page.setViewportSize(SIZES[0]);
+      await open(page, context, baseURL!, path, scheme);
+      await expectNoSeriousViolations(page);
     });
   }
 }

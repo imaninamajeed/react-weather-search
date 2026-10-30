@@ -44,7 +44,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
   }
 
   return (
-    <div className="relative z-10 mt-4 flex items-center gap-1 border-t border-border/60 pt-3">
+    <div className="relative z-10 mt-4 flex flex-wrap items-center gap-1 border-t border-border/60 pt-3">
       <Button
         variant="ghost"
         size="icon-sm"

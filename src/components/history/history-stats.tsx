@@ -11,7 +11,7 @@ export function HistoryStats({ summary, units }: { summary: HistorySummary; unit
   const rain = summary.rainPercentOfNormal;
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 fit:grid-cols-6">
       <Tile
         label="Daily highs vs normal"
         value={inLine ? "On par" : formatTemperatureDelta(anomaly, units)}

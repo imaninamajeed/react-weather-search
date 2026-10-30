@@ -14,6 +14,7 @@ interface SectionProps {
 export function Section({ id, title, aside, className, children }: SectionProps) {
   return (
     <section
+      id={id}
       aria-labelledby={`${id}-title`}
       className={cn("border-t border-border pt-6", className)}
     >

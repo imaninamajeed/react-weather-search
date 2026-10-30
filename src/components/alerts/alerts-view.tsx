@@ -33,7 +33,7 @@ export async function AlertsView({
     .filter((entry) => entry.alerts.length > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fit:flex fit:min-h-0 fit:flex-1 fit:flex-col fit:gap-3 fit:space-y-0">
       <nav aria-label="Filter alerts" className="flex flex-wrap gap-2">
         <Link
           href="/alerts"
@@ -58,10 +58,14 @@ export async function AlertsView({
             : `No active alerts across your ${places.length === 1 ? "place" : `${places.length} places`}.`}
         </p>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-8 fit:grid fit:min-h-0 fit:flex-1 fit:grid-cols-[repeat(auto-fit,minmax(24rem,1fr))] fit:content-start fit:gap-3 fit:space-y-0 fit:overflow-y-auto">
           {groups.map(({ place, alerts, now }) => (
-            <section key={place.key} aria-labelledby={`alerts-${place.key}`}>
-              <h2 id={`alerts-${place.key}`} className="mb-3 font-heading text-2xl">
+            <section
+              key={place.key}
+              aria-labelledby={`alerts-${place.key}`}
+              className="fit:min-w-0 fit:self-start fit:rounded-4xl fit:bg-card fit:p-5 fit:shadow-md fit:ring-1 fit:ring-foreground/5"
+            >
+              <h2 id={`alerts-${place.key}`} className="mb-3 font-heading text-2xl fit:text-xl">
                 <Link
                   href={placeHref(place)}
                   className="underline decoration-border underline-offset-4 hover:decoration-foreground"

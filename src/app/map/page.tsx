@@ -69,15 +69,26 @@ async function MapContent({ searchParams }: Pick<PageProps<"/map">, "searchParam
 
 export default function MapPage(props: PageProps<"/map">) {
   return (
-    <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-      <div className="mb-6 space-y-6">
+    <main
+      data-fit
+      id="main"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 fit:py-2 fit:pb-3"
+    >
+      <div className="mb-6 space-y-6 fit:mb-3 fit:space-y-0">
         <PageHeader
           label="Live radar"
           title="Map"
           lead="Rain radar for the last two hours, with the places you follow. Click anywhere for the weather at that spot."
         />
       </div>
-      <Suspense fallback={<Skeleton aria-hidden="true" className="h-[60svh] w-full rounded-xl" />}>
+      <Suspense
+        fallback={
+          <Skeleton
+            aria-hidden="true"
+            className="h-[60svh] w-full rounded-xl fit:h-auto fit:flex-1"
+          />
+        }
+      >
         <MapContent searchParams={props.searchParams} />
       </Suspense>
     </main>

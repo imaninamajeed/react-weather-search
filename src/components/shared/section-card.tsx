@@ -1,13 +1,7 @@
 import type { ReactNode } from "react";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { ScrollBody } from "./scroll-body";
 
 interface SectionCardProps {
   id: string;
@@ -16,6 +10,8 @@ interface SectionCardProps {
   /** Top-right of the card header (a link or control). */
   aside?: ReactNode;
   className?: string;
+  /** Keep the title for assistive tech only where space is short (the content explains itself). */
+  quietTitleAtFit?: boolean;
   /** Classes for the card body, e.g. to let a chart fill it. */
   bodyClassName?: string;
   children: ReactNode;
@@ -29,12 +25,13 @@ export function SectionCard({
   aside,
   className,
   bodyClassName,
+  quietTitleAtFit,
   children,
 }: SectionCardProps) {
   return (
     <section aria-labelledby={`${id}-title`} className={cn("fit:min-h-0", className)}>
       <Card className="h-full fit:[--card-spacing:--spacing(4)]">
-        <CardHeader className="max-sm:grid-cols-1!">
+        <CardHeader className={cn("max-sm:grid-cols-1!", quietTitleAtFit && "fit:sr-only")}>
           <CardTitle id={`${id}-title`} role="heading" aria-level={2} className="text-xl">
             {title}
           </CardTitle>
@@ -45,11 +42,11 @@ export function SectionCard({
             </CardAction>
           )}
         </CardHeader>
-        <CardContent
+        <ScrollBody
           className={cn("space-y-4 fit:min-h-0 fit:flex-1 fit:overflow-y-auto", bodyClassName)}
         >
           {children}
-        </CardContent>
+        </ScrollBody>
       </Card>
     </section>
   );

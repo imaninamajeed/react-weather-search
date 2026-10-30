@@ -11,8 +11,12 @@ export const metadata: Metadata = {
 
 export default function PlacesPage() {
   return (
-    <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-      <div className="space-y-10">
+    <main
+      data-fit
+      id="main"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 fit:py-2 fit:pb-3"
+    >
+      <div className="space-y-10 fit:flex fit:min-h-0 fit:flex-1 fit:flex-col fit:gap-3 fit:space-y-0">
         <PageHeader
           label="Manage and compare"
           title="Places"

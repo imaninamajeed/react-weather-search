@@ -323,9 +323,9 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
     : "";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 fit:flex fit:min-h-0 fit:flex-1 fit:flex-col fit:gap-3 fit:space-y-0">
       <div
-        className="relative h-[calc(100svh-23.5rem)] min-h-96 overflow-hidden rounded-xl border border-border bg-muted lg:h-[calc(100svh-19.5rem)]"
+        className="relative h-[calc(100svh-23.5rem)] min-h-96 overflow-hidden rounded-xl border border-border bg-muted lg:h-[calc(100svh-19.5rem)] fit:h-auto fit:min-h-0 fit:flex-1"
         role="region"
         aria-label="Weather map. Saved places are links; click anywhere else for the weather at that spot."
       >
@@ -344,7 +344,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
       </div>
 
       {radar && latest ? (
-        <div className="grid gap-4 rounded-xl border border-border p-4 md:grid-cols-[1fr_16rem] md:items-center">
+        <div className="grid gap-4 rounded-xl border border-border p-4 md:grid-cols-[1fr_16rem] md:items-center fit:p-3">
           <div className="flex items-center gap-4">
             <Button
               variant="outline"

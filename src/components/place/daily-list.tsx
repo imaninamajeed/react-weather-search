@@ -53,7 +53,7 @@ export function DailyList({
               )}
               <li
                 className={cn(
-                  "grid items-center gap-x-3 py-2.5",
+                  "grid items-center gap-x-3 py-2.5 fit:py-1.5",
                   confidence
                     ? "grid-cols-[3.5rem_1.75rem_3.25rem_1fr_2.5rem] @lg/daily:grid-cols-[5.5rem_11rem_4.5rem_1fr_6.5rem]"
                     : "grid-cols-[3.5rem_1.75rem_3.25rem_1fr] @max-[17rem]/daily:grid-cols-[2.75rem_1.25rem_1fr] @lg/daily:grid-cols-[5.5rem_11rem_4.5rem_1fr]",

@@ -30,13 +30,13 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
         role="region"
         aria-label="Week ahead table"
       >
-        <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-left">
+        <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-left fit:min-w-0">
           <caption className="sr-only">
             Daily high, conditions and chance of rain for each saved place over the next week
           </caption>
           <thead>
             <tr>
-              <th scope="col" className="sticky left-0 bg-background px-2 py-2" />
+              <th scope="col" className="sticky left-0 bg-card px-2 py-2" />
               {dates.map((date, index) => (
                 <th key={date} scope="col" className="px-1 py-2 text-center font-normal">
                   <span className="block text-sm font-medium">
@@ -55,7 +55,7 @@ export async function WeekAheadTable({ places, units }: { places: Place[]; units
                 <tr key={place.key}>
                   <th
                     scope="row"
-                    className="sticky left-0 max-w-40 truncate bg-background px-2 py-1 text-left text-sm font-medium"
+                    className="sticky left-0 max-w-40 truncate bg-card px-2 py-1 text-left text-sm font-medium"
                   >
                     {place.name}
                   </th>
