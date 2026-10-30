@@ -15,6 +15,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
+import { useLocale, useMessages } from "@/lib/i18n/client";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { formatHour, formatWeekday } from "@/lib/format";
 import { convertPrecipitation, convertSpeed, convertTemperature, unitLabels } from "@/lib/units";
@@ -35,7 +36,8 @@ interface Row {
 
 interface SeriesDef {
   key: keyof Row;
-  label: string;
+  /** Names the series in `place.hourly.series`. */
+  label: "temperature" | "feelsLike" | "chanceOfRain" | "wind" | "gusts";
   color: string;
   dashed?: boolean;
 }
@@ -43,21 +45,17 @@ interface SeriesDef {
 // Colours are assigned by entity (see the note in globals.css), never by position.
 const SERIES: Record<Metric, SeriesDef[]> = {
   temperature: [
-    { key: "temperature", label: "Temperature", color: "var(--chart-1)" },
-    { key: "feelsLike", label: "Feels Like", color: "var(--chart-2)", dashed: true },
+    { key: "temperature", label: "temperature", color: "var(--chart-1)" },
+    { key: "feelsLike", label: "feelsLike", color: "var(--chart-2)", dashed: true },
   ],
-  rain: [{ key: "probability", label: "Chance of Rain", color: "var(--chart-3)" }],
+  rain: [{ key: "probability", label: "chanceOfRain", color: "var(--chart-3)" }],
   wind: [
-    { key: "wind", label: "Wind", color: "var(--chart-4)" },
-    { key: "gusts", label: "Gusts", color: "var(--chart-5)", dashed: true },
+    { key: "wind", label: "wind", color: "var(--chart-4)" },
+    { key: "gusts", label: "gusts", color: "var(--chart-5)", dashed: true },
   ],
 };
 
-const METRIC_LABELS: Record<Metric, string> = {
-  temperature: "Temperature",
-  rain: "Rain",
-  wind: "Wind",
-};
+const METRICS: Metric[] = ["temperature", "rain", "wind"];
 
 const HEIGHT = "h-64 w-full aspect-auto";
 
@@ -76,6 +74,9 @@ function nightBands(rows: Row[]) {
 }
 
 export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Units }) {
+  const locale = useLocale();
+  const t = useMessages();
+  const text = t.place.hourly;
   const [metric, setMetric] = useState<Metric>("temperature");
   const labels = unitLabels(units);
 
@@ -96,7 +97,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
 
   const series = SERIES[metric];
   const config = Object.fromEntries(
-    series.map((s) => [s.key, { label: s.label, color: s.color }]),
+    series.map((s) => [s.key, { label: text.series[s.label], color: s.color }]),
   ) satisfies ChartConfig;
   const unit =
     metric === "temperature" ? labels.temperature : metric === "rain" ? "%" : labels.speed;
@@ -126,7 +127,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
           x={row.time}
           stroke="var(--border)"
           label={{
-            value: formatWeekday(row.time),
+            value: formatWeekday(row.time, "short", locale),
             position: "insideTopLeft",
             fill: "var(--muted-foreground)",
             fontSize: 11,
@@ -140,7 +141,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
     <XAxis
       key="x"
       dataKey="time"
-      tickFormatter={formatHour}
+      tickFormatter={(iso: string) => formatHour(iso, locale)}
       interval={5}
       tickLine={false}
       axisLine={{ stroke: "var(--border)" }}
@@ -172,7 +173,12 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
 
   const first = rows[0];
   const last = rows[rows.length - 1];
-  const summary = `${METRIC_LABELS[metric]} for the next ${rows.length} hours, ${formatWeekday(first.time)} ${formatHour(first.time)} to ${formatWeekday(last.time)} ${formatHour(last.time)}. A table with every value follows the chart.`;
+  const summary = text.summary(
+    text.metrics[metric],
+    rows.length,
+    `${formatWeekday(first.time, "short", locale)} ${formatHour(first.time, locale)}`,
+    `${formatWeekday(last.time, "short", locale)} ${formatHour(last.time, locale)}`,
+  );
 
   return (
     <div className="fit:flex fit:flex-col">
@@ -184,17 +190,17 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
           onValueChange={(value) => value && setMetric(value as Metric)}
           variant="outline"
           size="sm"
-          aria-label="Chart Metric"
+          aria-label={text.chartMetric}
         >
-          {(Object.keys(METRIC_LABELS) as Metric[]).map((key) => (
+          {METRICS.map((key) => (
             <ToggleGroupItem key={key} value={key}>
-              {METRIC_LABELS[key]}
+              {text.metrics[key]}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
 
         {series.length > 1 && (
-          <ul className="flex gap-3 text-xs text-muted-foreground" aria-label="Legend">
+          <ul className="flex gap-3 text-xs text-muted-foreground" aria-label={text.legend}>
             {series.map((s) => (
               <li key={s.key} className="flex items-center gap-2">
                 <span
@@ -202,7 +208,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
                   className="inline-block w-5 border-t-2"
                   style={{ borderColor: s.color, borderStyle: s.dashed ? "dashed" : "solid" }}
                 />
-                {s.label}
+                {text.series[s.label]}
               </li>
             ))}
           </ul>
@@ -282,8 +288,7 @@ export function HourlyChart({ hours, units }: { hours: HourlyPoint[]; units: Uni
       </div>
 
       <p className="mt-2 text-xs text-muted-foreground fit:hidden">
-        Shaded bands are night hours
-        {metric === "rain" ? ". Bars show the chance of rain in each hour" : ""}.
+        {[text.nightNote, metric === "rain" && text.barsNote].filter(Boolean).join(". ")}.
       </p>
     </div>
   );
@@ -302,6 +307,8 @@ interface TooltipProps {
 
 /** Values lead, labels follow; each row is keyed by a short stroke of its series colour. */
 function HourTooltip({ active, payload, metric, series, unit, units }: TooltipProps) {
+  const locale = useLocale();
+  const text = useMessages().place.hourly;
   const row = payload?.[0]?.payload;
   if (!active || !row) return null;
 
@@ -315,7 +322,7 @@ function HourTooltip({ active, payload, metric, series, unit, units }: TooltipPr
   return (
     <div className="min-w-36 rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
       <p className="mb-1.5 font-medium text-popover-foreground">
-        {formatWeekday(row.time)} {formatHour(row.time)}
+        {formatWeekday(row.time, "short", locale)} {formatHour(row.time, locale)}
       </p>
       <ul className="space-y-1">
         {series.map((s) => (
@@ -326,13 +333,15 @@ function HourTooltip({ active, payload, metric, series, unit, units }: TooltipPr
               style={{ borderColor: s.color, borderStyle: s.dashed ? "dashed" : "solid" }}
             />
             <span className="text-sm font-semibold text-popover-foreground">{format(s.key)}</span>
-            <span className="text-muted-foreground">{s.label}</span>
+            <span className="text-muted-foreground">{text.series[s.label]}</span>
           </li>
         ))}
         {metric === "rain" && (
           <li className="pl-5 text-muted-foreground">
-            {row.rain.toFixed(units === "imperial" ? 2 : 1)} {unitLabels(units).precipitation}{" "}
-            expected
+            {text.expected(
+              row.rain.toFixed(units === "imperial" ? 2 : 1),
+              unitLabels(units).precipitation,
+            )}
           </li>
         )}
       </ul>

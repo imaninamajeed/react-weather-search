@@ -3,9 +3,10 @@
 import { IconSearch } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { OPEN_SEARCH_EVENT } from "@/components/search/search-command";
+import { useMessages } from "@/lib/i18n/client";
 
 export function OpenSearchButton({
-  label = "Search for a Location",
+  label,
   variant = "default",
   size = "default",
 }: {
@@ -13,6 +14,7 @@ export function OpenSearchButton({
   variant?: "default" | "outline";
   size?: "default" | "sm";
 }) {
+  const t = useMessages();
   return (
     <Button
       variant={variant}
@@ -20,7 +22,7 @@ export function OpenSearchButton({
       onClick={() => window.dispatchEvent(new Event(OPEN_SEARCH_EVENT))}
     >
       <IconSearch aria-hidden="true" />
-      {label}
+      {label ?? t.dashboard.searchLocation}
     </Button>
   );
 }

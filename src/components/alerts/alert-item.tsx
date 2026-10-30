@@ -10,6 +10,7 @@ import Link from "next/link";
 import { describeAlert } from "@/lib/alerts/describe";
 import type { WeatherAlert } from "@/lib/alerts/types";
 import type { Units } from "@/lib/weather/types";
+import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
 interface AlertItemProps {
@@ -35,8 +36,9 @@ const dot = (
  * Official warnings are visibly distinct from our own forecast signals (the source in the facts line,
  * and a full notice to open) so nobody mistakes one for the other.
  */
-export function AlertItem({ alert, units, now, place }: AlertItemProps) {
-  const description = describeAlert(alert, units, now);
+export async function AlertItem({ alert, units, now, place }: AlertItemProps) {
+  const { locale, t } = await getI18n();
+  const description = describeAlert(alert, units, now, locale);
   const isWarning = alert.severity === "warning";
   const Icon = isWarning ? OctagonAlert : TriangleAlert;
   const official = alert.source !== "forecast";
@@ -59,12 +61,12 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
 
         <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
           <span className="font-heading text-[0.6875rem] font-semibold tracking-[0.08em] text-foreground uppercase">
-            {isWarning ? "Warning" : "Advisory"}
+            {isWarning ? t.common.warning : t.common.advisory}
           </span>
           {dot}
           <span className="inline-flex items-center gap-1">
             <SourceIcon aria-hidden="true" className="size-3.5 shrink-0" />
-            {official ? `Official · ${alert.issuer}` : "Forecast Signal"}
+            {official ? t.alerts.item.official(alert.issuer) : t.alerts.item.forecastSignal}
           </span>
           {dot}
           <span className="inline-flex items-center gap-1">
@@ -89,7 +91,7 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
         {alert.source !== "forecast" && (
           <details className="group mt-3 text-sm">
             <summary className="inline-flex cursor-pointer items-center gap-1 rounded-full font-medium select-none">
-              Full Notice
+              {t.alerts.item.fullNotice}
               <ChevronDown
                 aria-hidden="true"
                 className="size-4 transition-transform group-open:rotate-180"
@@ -105,7 +107,7 @@ export function AlertItem({ alert, units, now, place }: AlertItemProps) {
                 rel="noopener noreferrer"
                 className="inline-block underline decoration-border underline-offset-4 hover:text-foreground"
               >
-                Source: {alert.issuer}
+                {t.alerts.item.source(alert.issuer)}
               </a>
             </div>
           </details>

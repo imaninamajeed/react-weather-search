@@ -1,12 +1,29 @@
 import type { Locale } from "../locales";
+import { about } from "./about";
 import { alerts } from "./alerts";
 import { common } from "./common";
 import { dashboard } from "./dashboard";
+import { map } from "./map";
 import { nav } from "./nav";
+import { place } from "./place";
+import { search } from "./search";
 import { states } from "./states";
 import { weather } from "./weather";
+import { welcome } from "./welcome";
 
-const areas = { common, nav, states, weather, dashboard, alerts };
+const areas = {
+  common,
+  nav,
+  states,
+  weather,
+  dashboard,
+  alerts,
+  place,
+  map,
+  search,
+  about,
+  welcome,
+};
 
 type Areas = typeof areas;
 

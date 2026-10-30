@@ -7,9 +7,10 @@ export function PageHeader({
   lead,
   aside,
 }: {
-  label: string;
-  title: string;
-  lead: string;
+  /** Text for the visitor, or <Text id="…"/> where the page is prerendered. */
+  label: ReactNode;
+  title: ReactNode;
+  lead: ReactNode;
   /** A primary action for the page, aligned to the right of the title. */
   aside?: ReactNode;
 }) {

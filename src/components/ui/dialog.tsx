@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useMessages } from "@/lib/i18n/client"
 import { cn } from "cn"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
@@ -55,6 +56,7 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
 }) {
+  const t = useMessages()
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -76,7 +78,7 @@ function DialogContent({
             >
               <IconX
               />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{t.common.close}</span>
             </Button>
           </DialogPrimitive.Close>
         )}
@@ -103,6 +105,7 @@ function DialogFooter({
 }: React.ComponentProps<"div"> & {
   showCloseButton?: boolean
 }) {
+  const t = useMessages()
   return (
     <div
       data-slot="dialog-footer"
@@ -115,7 +118,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="outline">Close</Button>
+          <Button variant="outline">{t.common.close}</Button>
         </DialogPrimitive.Close>
       )}
     </div>

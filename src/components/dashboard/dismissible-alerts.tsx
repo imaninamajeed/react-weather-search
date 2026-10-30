@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useMessages } from "@/lib/i18n/client";
 import { DISMISSED_COOKIE, DISMISSED_DAYS } from "@/lib/alerts/dismissed";
 
 const write = (value: string, days: number) => {
@@ -22,6 +23,7 @@ export function DismissibleAlerts({
   signature: string;
   children: ReactNode;
 }) {
+  const t = useMessages();
   const [hidden, setHidden] = useState(false);
   if (hidden) return null;
 
@@ -32,16 +34,16 @@ export function DismissibleAlerts({
         type="button"
         variant="ghost"
         size="icon-sm"
-        aria-label="Dismiss these alerts"
-        title="Dismiss until something changes"
+        aria-label={t.dashboard.overview.dismiss}
+        title={t.dashboard.overview.dismissTitle}
         className="absolute top-1/2 right-2 -translate-y-1/2"
         onClick={() => {
           write(signature, DISMISSED_DAYS);
           setHidden(true);
-          toast("Alerts dismissed", {
-            description: "They come back if something changes. You can still see them on Alerts.",
+          toast(t.dashboard.overview.dismissed, {
+            description: t.dashboard.overview.dismissedDetail,
             action: {
-              label: "Undo",
+              label: t.common.undo,
               onClick: () => {
                 write("", 0);
                 setHidden(false);

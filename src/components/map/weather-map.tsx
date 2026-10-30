@@ -8,10 +8,14 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { useLocale, useMessages } from "@/lib/i18n/client";
+import { INTL_TAGS, type Locale } from "@/lib/i18n/locales";
+import { getMessages, type Messages } from "@/lib/i18n/messages";
 import { RADAR_MAX_ZOOM, minutesBeforeLatest, radarTileUrl, type RadarData } from "@/lib/map/radar";
 import type { PointWeather } from "@/lib/map/point";
 import { coordinateKey, coordinateLabel, placeHref } from "@/lib/places";
 import { formatSpeed, formatTemperature } from "@/lib/units";
+import { describeWeather } from "@/lib/weather/codes";
 import type { Units } from "@/lib/weather/types";
 
 export interface MapPlace {
@@ -112,6 +116,7 @@ function markerElement(place: MapPlace, onOpen: (href: string) => void): HTMLAnc
 function popupContent(
   data: PointWeather,
   units: Units,
+  locale: Locale,
   latitude: number,
   longitude: number,
   onOpen: (href: string) => void,
@@ -129,17 +134,22 @@ function popupContent(
     coordinateLabel(latitude, longitude),
   );
   add("text-3xl font-semibold leading-none", formatTemperature(data.temperature, units));
-  add("text-sm", `${data.condition} · feels ${formatTemperature(data.apparentTemperature, units)}`);
+  const text = getMessages(locale).map.popup;
+  const condition =
+    typeof data.weatherCode === "number"
+      ? describeWeather(data.weatherCode, data.isDay, locale).label
+      : data.condition;
+  add("text-sm", text.feels(condition, formatTemperature(data.apparentTemperature, units)));
   add(
     "text-sm text-muted-foreground",
-    `Wind ${formatSpeed(data.windSpeed, units)} · Rain ${data.rainChance}%`,
+    text.windRain(formatSpeed(data.windSpeed, units), data.rainChance),
   );
 
   const href = placeHref({ key: coordinateKey(latitude, longitude) });
   const link = document.createElement("a");
   link.href = href;
   link.className = "mt-2 inline-block text-sm font-medium underline underline-offset-4";
-  link.textContent = "Open Forecast →";
+  link.textContent = text.openForecast;
   link.addEventListener("click", (event) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
     event.preventDefault();
@@ -153,6 +163,8 @@ const noopSubscribe = () => () => {};
 
 export function WeatherMap({ places, radar, units, center, focused = false }: WeatherMapProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useMessages();
   const { resolvedTheme } = useTheme();
   const theme: Theme = resolvedTheme === "dark" ? "dark" : "light";
   // Frame times are shown in the viewer's timezone, which the server can't know.
@@ -179,19 +191,23 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
     theme: Theme;
     count: number;
     preload: boolean;
+    locale: Locale;
+    t: Messages;
   }>({
     index,
     opacity,
     theme,
     count: frames.length,
     preload,
+    locale,
+    t,
   });
 
   useEffect(() => {
-    live.current = { index, opacity, theme, count: frames.length, preload };
+    live.current = { index, opacity, theme, count: frames.length, preload, locale, t };
     const map = mapRef.current;
     if (map?.isStyleLoaded()) showFrame(map, frames.length, index, opacity, preload);
-  }, [index, opacity, theme, frames.length, preload]);
+  }, [index, opacity, theme, frames.length, preload, locale, t]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -271,7 +287,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
           const { lng, lat } = event.lngLat.wrap();
           const body = document.createElement("div");
           body.className = "text-sm";
-          body.textContent = "Loading weather…";
+          body.textContent = live.current.t.map.popup.loading;
           popup = new maplibre.Popup({ maxWidth: "280px" })
             .setLngLat(event.lngLat)
             .setDOMContent(body)
@@ -284,10 +300,12 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
               if (!response.ok) throw new Error(`Point weather failed (${response.status})`);
               return response.json() as Promise<PointWeather>;
             })
-            .then((data) => body.replaceChildren(popupContent(data, units, lat, lng, open)))
+            .then((data) =>
+              body.replaceChildren(popupContent(data, units, live.current.locale, lat, lng, open)),
+            )
             .catch((error: unknown) => {
               if (error instanceof DOMException && error.name === "AbortError") return;
-              body.textContent = "Couldn't load the weather here. Try again in a moment.";
+              body.textContent = live.current.t.map.popup.failed;
             });
         });
       } catch {
@@ -314,12 +332,12 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
   const earlier = minutesBeforeLatest(frames, index);
   const frameTime =
     mounted && frames[index]
-      ? new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(
+      ? new Intl.DateTimeFormat(INTL_TAGS[locale], { hour: "numeric", minute: "2-digit" }).format(
           new Date(frames[index].time * 1000),
         )
       : "";
   const frameLabel = frameTime
-    ? `${frameTime}${earlier === 0 ? " (latest)" : ` (${earlier} min earlier)`}`
+    ? `${frameTime} ${earlier === 0 ? t.map.radar.latest : t.map.radar.earlier(earlier)}`
     : "";
 
   return (
@@ -327,7 +345,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
       <div
         className="relative h-[calc(100svh-23.5rem)] min-h-96 overflow-hidden rounded-xl border border-border bg-muted lg:h-[calc(100svh-19.5rem)]"
         role="region"
-        aria-label="Weather map. Saved locations are links; click anywhere else for the weather at that spot."
+        aria-label={t.map.region}
       >
         <div ref={containerRef} className="size-full" />
         {failed && (
@@ -335,11 +353,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
             role="alert"
             className="absolute inset-0 flex items-center justify-center bg-card p-6 text-center"
           >
-            <p className="max-w-sm text-muted-foreground">
-              The map couldn&apos;t load. This usually means your browser has WebGL turned off, or
-              the map provider is unreachable. Your locations are still available from the
-              dashboard.
-            </p>
+            <p className="max-w-sm text-muted-foreground">{t.map.mapFailed}</p>
           </div>
         )}
       </div>
@@ -350,7 +364,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
             <Button
               variant="outline"
               size="icon"
-              aria-label={playing ? "Pause Radar Animation" : "Play Radar Animation"}
+              aria-label={playing ? t.map.radar.pause : t.map.radar.play}
               aria-pressed={playing}
               onClick={() => {
                 setPreload(true);
@@ -374,14 +388,14 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
                   setPlaying(false);
                   setIndex(value);
                 }}
-                thumbLabel="Radar Time"
+                thumbLabel={t.map.radar.time}
                 valueText={(value) => {
                   const m = minutesBeforeLatest(frames, value);
-                  return m === 0 ? "Latest frame" : `${m} minutes before the latest frame`;
+                  return m === 0 ? t.map.radar.latestFrame : t.map.radar.minutesBefore(m);
                 }}
               />
               <p className="label-caps mt-2" aria-live="off">
-                Radar · {frameLabel || "—"}
+                {t.map.radar.caption(frameLabel || "—")}
               </p>
             </div>
           </div>
@@ -392,20 +406,20 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
               step={5}
               value={[opacity]}
               onValueChange={([value]) => setOpacity(value)}
-              thumbLabel="Radar Opacity"
-              valueText={(value) => `${value} percent`}
+              thumbLabel={t.map.radar.opacity}
+              valueText={(value) => t.map.radar.percent(value)}
             />
-            <p className="label-caps mt-2">Radar Opacity · {opacity}%</p>
+            <p className="label-caps mt-2">{t.map.radar.opacityCaption(opacity)}</p>
           </div>
         </div>
       ) : (
         <p className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Rain radar is unavailable right now. The map and your locations still work.
+          {t.map.radar.unavailable}
         </p>
       )}
 
       <p className="text-xs text-muted-foreground">
-        Radar by{" "}
+        {t.map.credit.radarBy}{" "}
         <a
           className="underline underline-offset-4"
           href="https://www.rainviewer.com/"
@@ -414,7 +428,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
         >
           RainViewer
         </a>
-        ; at high zoom the radar image is scaled up from its coarsest tiles. Basemap by{" "}
+        {t.map.credit.afterRadar}{" "}
         <a
           className="underline underline-offset-4"
           href="https://openfreemap.org/"
@@ -423,7 +437,7 @@ export function WeatherMap({ places, radar, units, center, focused = false }: We
         >
           OpenFreeMap
         </a>
-        , © OpenMapTiles, data © OpenStreetMap contributors.
+        {t.map.credit.afterBasemap}
       </p>
     </div>
   );

@@ -1,28 +1,14 @@
-import { formatDayMonth, formatWeekday } from "@/lib/format";
+import { formatDayMonth, formatMonthName, formatWeekday } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
 import { convertPrecipitation, convertTemperature, unitLabels } from "@/lib/units";
 import type { DayComparison, MonthComparison } from "@/lib/weather/climate";
 import type { Units } from "@/lib/weather/types";
-
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 const wrapper = "relative max-h-80 overflow-auto border-t border-border";
 const th = "px-2 py-2 text-right font-medium";
 
 /** Data twins for both history charts. */
-export function HistoryTables({
+export async function HistoryTables({
   days,
   months,
   units,
@@ -31,30 +17,32 @@ export function HistoryTables({
   months: MonthComparison[];
   units: Units;
 }) {
+  const { locale, t } = await getI18n();
+  const text = t.place.history.tables;
   const labels = unitLabels(units);
 
   return (
     <div className="space-y-3 fit:grid fit:grid-cols-2 fit:items-start fit:gap-2 fit:space-y-0">
       <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
-          Monthly Rainfall as a Table
+          {text.monthlyView}
         </summary>
-        <div className={wrapper} tabIndex={0} role="region" aria-label="Monthly Rainfall Table">
+        <div className={wrapper} tabIndex={0} role="region" aria-label={text.monthlyRegion}>
           <table className="w-full text-sm">
-            <caption className="sr-only">Monthly rainfall against normal</caption>
+            <caption className="sr-only">{text.monthlyCaption}</caption>
             <thead className="sticky top-0 bg-card">
               <tr className="label-caps text-left">
                 <th scope="col" className="px-4 py-2 font-medium">
-                  Month
+                  {text.month}
                 </th>
                 <th scope="col" className={th}>
-                  Actual ({labels.precipitation})
+                  {text.actual(labels.precipitation)}
                 </th>
                 <th scope="col" className={th}>
-                  Normal ({labels.precipitation})
+                  {text.normal(labels.precipitation)}
                 </th>
                 <th scope="col" className="px-4 py-2 text-right font-medium">
-                  Of Normal
+                  {text.ofNormal}
                 </th>
               </tr>
             </thead>
@@ -62,8 +50,9 @@ export function HistoryTables({
               {months.map((month) => (
                 <tr key={month.month} className="border-t border-border/60">
                   <th scope="row" className="px-4 py-1.5 text-left font-normal">
-                    {MONTHS[Number(month.month.slice(5, 7)) - 1]} {month.month.slice(0, 4)}
-                    {month.coverage < 1 && " (so far)"}
+                    {formatMonthName(Number(month.month.slice(5, 7)), "long", locale)}{" "}
+                    {month.month.slice(0, 4)}
+                    {month.coverage < 1 && text.soFar}
                   </th>
                   <td className="px-2 py-1.5 text-right">
                     {convertPrecipitation(month.actual, units).toFixed(1)}
@@ -83,27 +72,27 @@ export function HistoryTables({
 
       <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
-          Daily Highs as a Table
+          {text.dailyView}
         </summary>
-        <div className={wrapper} tabIndex={0} role="region" aria-label="Daily Highs Table">
+        <div className={wrapper} tabIndex={0} role="region" aria-label={text.dailyRegion}>
           <table className="w-full text-sm">
-            <caption className="sr-only">Daily high temperature against the normal range</caption>
+            <caption className="sr-only">{text.dailyCaption}</caption>
             <thead className="sticky top-0 bg-card">
               <tr className="label-caps text-left">
                 <th scope="col" className="px-4 py-2 font-medium">
-                  Day
+                  {text.day}
                 </th>
                 <th scope="col" className={th}>
-                  High ({labels.temperature})
+                  {text.high(labels.temperature)}
                 </th>
                 <th scope="col" className={th}>
-                  Normal Low ({labels.temperature})
+                  {text.normalLow(labels.temperature)}
                 </th>
                 <th scope="col" className={th}>
-                  Normal Median ({labels.temperature})
+                  {text.normalMedian(labels.temperature)}
                 </th>
                 <th scope="col" className="px-4 py-2 text-right font-medium">
-                  Normal High ({labels.temperature})
+                  {text.normalHigh(labels.temperature)}
                 </th>
               </tr>
             </thead>
@@ -111,7 +100,8 @@ export function HistoryTables({
               {days.map((day) => (
                 <tr key={day.date} className="border-t border-border/60">
                   <th scope="row" className="px-4 py-1.5 text-left font-normal">
-                    {formatWeekday(day.date)} {formatDayMonth(day.date)}, {day.date.slice(0, 4)}
+                    {formatWeekday(day.date, "short", locale)} {formatDayMonth(day.date, locale)},{" "}
+                    {day.date.slice(0, 4)}
                   </th>
                   <td className="px-2 py-1.5 text-right">
                     {day.temperatureMax === null

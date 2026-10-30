@@ -71,6 +71,19 @@ export function homePlace(preferences: Preferences): Place {
   return preferences.places.find((place) => place.key === preferences.homeKey) ?? DEFAULT_PLACE;
 }
 
+/**
+ * The same preferences with the home location first in the list: home is always the top row,
+ * wherever it was saved. Order is otherwise the user's; this only lifts home out of it.
+ */
+export function homeFirst(preferences: Preferences): Preferences {
+  const homeKey = homePlace(preferences).key;
+  const index = preferences.places.findIndex((place) => place.key === homeKey);
+  if (index <= 0) return preferences;
+  const places = [...preferences.places];
+  places.unshift(...places.splice(index, 1));
+  return { ...preferences, places };
+}
+
 /** Adds a place to the end. Returns null when the list is full. Saving twice is a no-op. */
 export function addPlace(preferences: Preferences, place: Place): Preferences | null {
   if (isSaved(preferences, place.key)) return preferences;
@@ -107,7 +120,7 @@ export function insertPlace(
   if (preferences.places.length >= MAX_PLACES) return null;
   const places = [...preferences.places];
   places.splice(Math.min(Math.max(index, 0), places.length), 0, place);
-  return { ...preferences, places, homeKey: makeHome ? place.key : preferences.homeKey };
+  return homeFirst({ ...preferences, places, homeKey: makeHome ? place.key : preferences.homeKey });
 }
 
 export function movePlace(
@@ -115,30 +128,40 @@ export function movePlace(
   key: string,
   direction: "up" | "down",
 ): Preferences {
-  const from = preferences.places.findIndex((place) => place.key === key);
+  // Home stays on top: it cannot move, and nothing moves above it.
+  const base = homeFirst(preferences);
+  const first = base.places[0]?.key === homePlace(base).key ? 1 : 0;
+  const from = base.places.findIndex((place) => place.key === key);
   const to = direction === "up" ? from - 1 : from + 1;
-  if (from === -1 || to < 0 || to >= preferences.places.length) return preferences;
-  const places = [...preferences.places];
+  if (from < first || to < first || to >= base.places.length) return preferences;
+  const places = [...base.places];
   [places[from], places[to]] = [places[to], places[from]];
-  return { ...preferences, places };
+  return { ...base, places };
 }
 
 /**
  * Puts the saved places in the order given (a drag and drop sends the whole new order). Null unless
- * `keys` is exactly the saved places, each once: this is client input, and it may only reorder.
+ * `keys` is exactly the saved places, or exactly the saved places other than home (the list on
+ * screen, where home has its own tab), each once: this is client input, and it may only reorder.
+ * Home goes to the top whatever order was sent.
  */
 export function reorderPlaces(preferences: Preferences, keys: string[]): Preferences | null {
+  const homeKey = homePlace(preferences).key;
   const byKey = new Map(preferences.places.map((place) => [place.key, place]));
-  if (keys.length !== byKey.size || new Set(keys).size !== keys.length) return null;
+  const withoutHome = keys.length === byKey.size - (byKey.has(homeKey) ? 1 : 0);
+  if (new Set(keys).size !== keys.length) return null;
+  if (keys.length !== byKey.size && !(withoutHome && !keys.includes(homeKey))) return null;
   const places = keys.map((key) => byKey.get(key));
   if (places.some((place) => place === undefined)) return null;
-  return { ...preferences, places: places as Place[] };
+  const home = byKey.get(homeKey);
+  const ordered = keys.includes(homeKey) || !home ? places : [home, ...places];
+  return homeFirst({ ...preferences, places: ordered as Place[] });
 }
 
 /** Makes a place the home location, saving it first if needed. Null when the list is full. */
 export function setHome(preferences: Preferences, place: Place): Preferences | null {
   const withPlace = addPlace(preferences, place);
-  return withPlace && { ...withPlace, homeKey: place.key };
+  return withPlace && homeFirst({ ...withPlace, homeKey: place.key });
 }
 
 export function setUnits(preferences: Preferences, units: Units): Preferences {

@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { compareAlerts, describeAlert } from "@/lib/alerts/describe";
 import { alertsSignature } from "@/lib/alerts/dismissed";
+import { getI18n } from "@/lib/i18n/server";
 import { placeHref, type Place } from "@/lib/places";
 import { cn } from "@/lib/utils";
 import type { Units } from "@/lib/weather/types";
@@ -35,19 +36,23 @@ export async function AlertsOverview({
   /** The signature of the alerts last dismissed (from the cookie), if any. */
   dismissed?: string;
 }) {
-  const { entries, failed, sources } = await loadAlerts(places);
+  const [{ entries, failed, sources }, { locale, t }] = await Promise.all([
+    loadAlerts(places),
+    getI18n(),
+  ]);
+  const text = t.dashboard.overview;
 
   const all = entries
     .flatMap(({ place, alerts, now }) => alerts.map((alert) => ({ alert, place, now })))
     .sort((a, b) => compareAlerts(a.alert, b.alert));
   const shown = all.slice(0, SUMMARY_LIMIT);
   const signature = alertsSignature(all.map(({ alert, place }) => `${place.key}:${alert.id}`));
-  const placesLabel = places.length === 1 ? "your location" : `your ${places.length} locations`;
+  const placesLabel = places.length === 1 ? text.yourLocation : text.yourLocations(places.length);
 
   const allAlerts = (
     <Button asChild variant="outline" size="sm" className="shrink-0">
       <Link href="/alerts">
-        All Alerts
+        {text.allAlerts}
         <ArrowRight aria-hidden="true" />
       </Link>
     </Button>
@@ -55,7 +60,7 @@ export async function AlertsOverview({
   const failedNote = failed > 0 && (
     <p className="flex items-center gap-1.5 font-medium">
       <TriangleAlert aria-hidden="true" className="size-3.5 shrink-0 text-warning" />
-      Couldn&apos;t check {failed === 1 ? "one location" : `${failed} locations`} just now.
+      {text.couldntCheck(failed)}
     </p>
   );
   const sourceNote = sources.length > 0 && (
@@ -79,7 +84,7 @@ export async function AlertsOverview({
         className="flex min-h-13 flex-wrap items-center gap-x-3 gap-y-2 rounded-3xl border border-border px-4 py-2"
       >
         <h2 id="alerts-title" className="sr-only">
-          Alerts
+          {t.dashboard.alerts}
         </h2>
         <span
           aria-hidden="true"
@@ -88,8 +93,8 @@ export async function AlertsOverview({
           <ShieldCheck className="size-4" />
         </span>
         <p className="text-sm">
-          <span className="font-medium">All clear.</span>{" "}
-          <span className="text-muted-foreground">No active alerts across {placesLabel}.</span>
+          <span className="font-medium">{text.allClear}</span>{" "}
+          <span className="text-muted-foreground">{text.noActive(placesLabel)}</span>
         </p>
         {info && <div className="ml-auto flex items-center gap-1">{info}</div>}
       </section>
@@ -105,16 +110,16 @@ export async function AlertsOverview({
   const SeverityIcon = hasWarning ? OctagonAlert : TriangleAlert;
   // "1 warning and 2 advisories": what the most serious thing is comes first.
   const headline = [
-    warnings > 0 && `${warnings} ${warnings === 1 ? "warning" : "warnings"}`,
-    advisories > 0 && `${advisories} ${advisories === 1 ? "advisory" : "advisories"}`,
+    warnings > 0 && t.common.warnings(warnings),
+    advisories > 0 && t.common.advisories(advisories),
   ]
     .filter(Boolean)
-    .join(" and ");
+    .join(text.and);
 
   return (
     <section aria-labelledby="alerts-title">
       <h2 id="alerts-title" className="sr-only">
-        Alerts
+        {t.dashboard.alerts}
       </h2>
       <DismissibleAlerts signature={signature}>
         {/* Tinted by the most serious alert, so it is read before the forecast it sits above. */}
@@ -145,7 +150,7 @@ export async function AlertsOverview({
                 <SeverityIcon className="relative size-4" />
               </span>
               <p className="min-w-0">
-                <span className="sr-only">Active alerts: </span>
+                <span className="sr-only">{text.activeAlerts}</span>
                 <span className="font-heading text-lg leading-tight font-medium">{headline}</span>
               </p>
             </div>
@@ -153,7 +158,7 @@ export async function AlertsOverview({
             {/* What and where: each a link to its place. When it ends is in the tooltip. */}
             <ul className="flex flex-wrap items-center gap-2 lg:flex-nowrap">
               {shown.map(({ alert, place, now }) => {
-                const description = describeAlert(alert, units, now);
+                const description = describeAlert(alert, units, now, locale);
                 const isWarning = alert.severity === "warning";
                 const Icon = isWarning ? OctagonAlert : TriangleAlert;
                 return (
@@ -172,7 +177,9 @@ export async function AlertsOverview({
                             : "text-advisory-foreground dark:text-advisory",
                         )}
                       />
-                      <span className="sr-only">{isWarning ? "Warning" : "Advisory"}: </span>
+                      <span className="sr-only">
+                        {isWarning ? t.common.warning : t.common.advisory}:{" "}
+                      </span>
                       <span className="truncate font-medium">{description.title}</span>
                       <Separator
                         orientation="vertical"
@@ -186,7 +193,7 @@ export async function AlertsOverview({
               })}
               {all.length > shown.length && (
                 <li className="text-sm whitespace-nowrap text-muted-foreground">
-                  +{all.length - shown.length} more
+                  {t.common.more(all.length - shown.length)}
                 </li>
               )}
             </ul>

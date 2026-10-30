@@ -33,6 +33,9 @@ export const nav = defineMessages(
     system: "System",
     installApp: "Install App",
     language: "Language",
+    breadcrumb: "Breadcrumb",
+    more: "More",
+    toggleSidebar: "Toggle Sidebar",
   },
   {
     main: "Utama",
@@ -65,5 +68,8 @@ export const nav = defineMessages(
     system: "Sistem",
     installApp: "Pasang Aplikasi",
     language: "Bahasa",
+    breadcrumb: "Jejak halaman",
+    more: "Lagi",
+    toggleSidebar: "Togol Bar Sisi",
   },
 );

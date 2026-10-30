@@ -1,12 +1,16 @@
+"use client"
+
 import * as React from "react"
 import { cn } from "cn"
+import { useMessages } from "@/lib/i18n/client"
 import { Slot } from "radix-ui"
 import { IconChevronRight, IconDots } from "@tabler/icons-react"
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
+  const t = useMessages()
   return (
     <nav
-      aria-label="breadcrumb"
+      aria-label={t.nav.breadcrumb}
       data-slot="breadcrumb"
       className={cn(className)}
       {...props}
@@ -92,6 +96,7 @@ function BreadcrumbEllipsis({
   className,
   ...props
 }: React.ComponentProps<"span">) {
+  const t = useMessages()
   return (
     <span
       data-slot="breadcrumb-ellipsis"
@@ -105,7 +110,7 @@ function BreadcrumbEllipsis({
     >
       <IconDots
       />
-      <span className="sr-only">More</span>
+      <span className="sr-only">{t.nav.more}</span>
     </span>
   )
 }

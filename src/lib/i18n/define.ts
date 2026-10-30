@@ -1,10 +1,10 @@
 /**
- * What a translation must match: every string stays a string, every function keeps its parameters,
+ * What a translation must match: every string stays a string, every function keeps its parameters and result type,
  * and every group keeps its keys. Missing or extra keys in Malay are therefore type errors.
  */
 export type Translated<T> = {
-  [K in keyof T]: T[K] extends (...args: infer Args) => string
-    ? (...args: Args) => string
+  [K in keyof T]: T[K] extends (...args: infer Args) => infer Result
+    ? (...args: Args) => Result
     : T[K] extends string
       ? string
       : Translated<T[K]>;

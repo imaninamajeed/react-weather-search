@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { compareBySeverity } from "@/lib/alerts/describe";
 import { formatPlaceSubtitle } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
 import { placeHref, type Place } from "@/lib/places";
 import { cn } from "@/lib/utils";
 import type { Units } from "@/lib/weather/types";
@@ -34,7 +35,8 @@ export async function AlertsView({
   units: Units;
   officialOnly: boolean;
 }) {
-  const { entries, failed, sources } = await loadAlerts(places);
+  const [{ entries, failed, sources }, { t }] = await Promise.all([loadAlerts(places), getI18n()]);
+  const text = t.alerts.view;
 
   const official = <T extends { source: string }>(alerts: T[]) =>
     alerts.filter((a) => a.source !== "forecast");
@@ -100,14 +102,12 @@ export async function AlertsView({
                 <ShieldCheck className="size-4" />
               </span>
               <p className="text-sm">
-                <span className="font-medium">No official warnings right now.</span>{" "}
-                <span className="text-muted-foreground">
-                  Forecast signals are listed under All alerts.
-                </span>
+                <span className="font-medium">{text.noOfficial}</span>{" "}
+                <span className="text-muted-foreground">{text.noOfficialDetail}</span>
               </p>
               <Button asChild variant="outline" size="sm" className="ml-auto">
                 <Link href="/alerts">
-                  All Alerts
+                  {text.allAlerts}
                   <ArrowRight aria-hidden="true" />
                 </Link>
               </Button>
@@ -148,9 +148,9 @@ export async function AlertsView({
                     <CardDescription className="flex items-center gap-1.5">
                       {place.key === homeKey && <House aria-hidden="true" className="size-3.5" />}
                       {[
-                        place.key === homeKey && "Home",
+                        place.key === homeKey && t.dashboard.hero.home,
                         formatPlaceSubtitle(place),
-                        `${alerts.length} ${alerts.length === 1 ? "alert" : "alerts"}`,
+                        text.count(alerts.length),
                       ]
                         .filter(Boolean)
                         .join(" · ")}
@@ -167,7 +167,7 @@ export async function AlertsView({
       </div>
 
       <aside
-        aria-label="About These Alerts"
+        aria-label={text.about}
         className="rise flex flex-col gap-3 text-sm"
         style={rise(groups.length + 2)}
       >
@@ -176,8 +176,7 @@ export async function AlertsView({
             {failed > 0 && (
               <p className="flex items-center gap-2 font-medium">
                 <TriangleAlert aria-hidden="true" className="size-4 shrink-0 text-warning" />
-                Couldn&apos;t check {failed === 1 ? "one location" : `${failed} locations`} just
-                now.
+                {t.dashboard.overview.couldntCheck(failed)}
               </p>
             )}
             {sources.length > 0 && (

@@ -3,6 +3,7 @@
 import { Info, TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { useMessages } from "@/lib/i18n/client";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 /**
@@ -11,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
  * "no alerts" from a feed that was down is not an all-clear and should not hide in a popover.
  */
 export function AlertsInfo({ warn, children }: { warn: boolean; children: ReactNode }) {
+  const t = useMessages().dashboard.overview;
   const StatusIcon = warn ? TriangleAlert : Info;
   return (
     <Popover>
@@ -19,7 +21,7 @@ export function AlertsInfo({ warn, children }: { warn: boolean; children: ReactN
           type="button"
           variant="ghost"
           size="icon-sm"
-          aria-label={warn ? "What Was Checked (Some Checks Failed)" : "What Was Checked"}
+          aria-label={warn ? t.whatWasCheckedFailed : t.whatWasChecked}
         >
           <StatusIcon
             aria-hidden="true"

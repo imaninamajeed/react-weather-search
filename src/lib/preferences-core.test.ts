@@ -117,6 +117,18 @@ describe("mutations", () => {
     expect(movePlace(prefs, "ghost", "up")).toBe(prefs);
   });
 
+  it("keeps home on top: setting it lifts it, and nothing moves above it", () => {
+    const prefs = setHome(withPlaces(1, 2, 3), place(3))!;
+    expect(prefs.places.map((p) => p.key)).toEqual(["3-p3", "1-p1", "2-p2"]);
+    expect(movePlace(prefs, "3-p3", "down")).toBe(prefs);
+    expect(movePlace(prefs, "1-p1", "up")).toBe(prefs);
+    expect(movePlace(prefs, "2-p2", "up").places.map((p) => p.key)).toEqual([
+      "3-p3",
+      "2-p2",
+      "1-p1",
+    ]);
+  });
+
   it("setHome saves the place first when needed", () => {
     const prefs = setHome(DEFAULT_PREFERENCES, place(5))!;
     expect(prefs.places).toEqual([place(5)]);
@@ -149,8 +161,15 @@ describe("reorderPlaces", () => {
   it("applies a new order and keeps home", () => {
     const prefs = { ...withPlaces(1, 2, 3), homeKey: "2-p2" };
     const next = reorderPlaces(prefs, ["3-p3", "1-p1", "2-p2"])!;
-    expect(next.places.map((p) => p.key)).toEqual(["3-p3", "1-p1", "2-p2"]);
+    expect(next.places.map((p) => p.key)).toEqual(["2-p2", "3-p3", "1-p1"]);
     expect(next.homeKey).toBe("2-p2");
+  });
+
+  it("accepts the order of the places other than home, and keeps home on top", () => {
+    const prefs = { ...withPlaces(1, 2, 3), homeKey: "1-p1" };
+    const next = reorderPlaces(prefs, ["3-p3", "2-p2"])!;
+    expect(next.places.map((p) => p.key)).toEqual(["1-p1", "3-p3", "2-p2"]);
+    expect(reorderPlaces(prefs, ["3-p3"])).toBeNull();
   });
 
   it("refuses anything that is not exactly the saved places, once each", () => {

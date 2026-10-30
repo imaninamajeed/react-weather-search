@@ -1,5 +1,6 @@
 import { IconLeaf } from "@tabler/icons-react";
 import { getAirQuality } from "@/lib/open-meteo/air-quality";
+import { getI18n } from "@/lib/i18n/server";
 import { aqiCategory } from "@/lib/weather/aqi";
 import { Meter, Tile, type MeterTone } from "./tile";
 
@@ -13,41 +14,43 @@ export async function AirQualityTile({
   latitude: number;
   longitude: number;
 }) {
-  const airQuality = await getAirQuality(latitude, longitude);
+  const [airQuality, { locale, t }] = await Promise.all([
+    getAirQuality(latitude, longitude),
+    getI18n(),
+  ]);
+  const text = t.place.airQuality;
 
   if (!airQuality) {
     return (
       <Tile
-        label="Air Quality"
+        label={text.title}
         icon={IconLeaf}
         accent="var(--brand-teal-text)"
         value="—"
-        caption="No air-quality data for this location."
+        caption={text.none}
       />
     );
   }
 
-  const category = aqiCategory(airQuality.usAqi);
+  const category = aqiCategory(airQuality.usAqi, locale);
   const pm25 = airQuality.pm25 === null ? null : Math.round(airQuality.pm25);
 
   return (
     <Tile
-      label="Air Quality"
+      label={text.title}
       icon={IconLeaf}
       accent="var(--brand-teal-text)"
       value={Math.round(airQuality.usAqi)}
       unit={category.label}
       caption={
-        pm25 === null
-          ? `US AQI. ${category.advice}`
-          : `US AQI. ${category.advice} PM2.5 ${pm25} µg/m³.`
+        pm25 === null ? text.caption(category.advice) : text.captionWithPm(category.advice, pm25)
       }
     >
       <Meter
         value={airQuality.usAqi}
         max={300}
         tone={AQI_TONES[category.level]}
-        label={`Air Quality ${category.label}`}
+        label={text.meter(category.label)}
       />
     </Tile>
   );

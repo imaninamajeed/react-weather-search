@@ -6,10 +6,13 @@ import type { WeatherAlert } from "@/lib/alerts/types";
 import { formatPlaceSubtitle, formatTime } from "@/lib/format";
 import { placeHref, type Place } from "@/lib/places";
 import { convertTemperature, formatTemperature } from "@/lib/units";
+import type { Locale } from "@/lib/i18n/locales";
+import type { Messages } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
 import { describeWeather } from "@/lib/weather/codes";
 import { describeRainOutlook } from "@/lib/weather/summary";
 import type { Forecast, Units } from "@/lib/weather/types";
+import { getI18n } from "@/lib/i18n/server";
 import { Sparkline } from "./sparkline";
 
 const caption = "label-caps dark:text-white/75";
@@ -26,7 +29,7 @@ const caption = "label-caps dark:text-white/75";
  * chance. The name, subtitle and link come from what is saved on this device, so they render even
  * when the forecast could not be fetched. The whole tile is one link.
  */
-export function LocationTile({
+export async function LocationTile({
   place,
   units,
   forecast,
@@ -38,6 +41,7 @@ export function LocationTile({
   forecast: Forecast | null;
   alerts: WeatherAlert[];
 }) {
+  const { locale, t } = await getI18n();
   const severity = highestSeverity(alerts);
   const [top, ...rest] = sortAlerts(alerts);
 
@@ -50,8 +54,9 @@ export function LocationTile({
       {severity && top && forecast && (
         <AlertBand
           severity={severity}
-          title={describeAlert(top, units, forecast.current.time).title}
+          title={describeAlert(top, units, forecast.current.time, locale).title}
           more={rest.length}
+          t={t}
         />
       )}
       <div className="flex flex-1 flex-col p-5 sm:p-6">
@@ -59,7 +64,7 @@ export function LocationTile({
           {forecast && (
             <p className={cn(caption, "tnum flex items-center gap-1.5")}>
               <Clock aria-hidden="true" className="size-3.5" />
-              {formatTime(forecast.current.time)}
+              {formatTime(forecast.current.time, locale)}
             </p>
           )}
         </div>
@@ -73,7 +78,11 @@ export function LocationTile({
           {formatPlaceSubtitle(place)}
         </p>
 
-        {forecast ? <TileWeather forecast={forecast} units={units} /> : <Unavailable />}
+        {forecast ? (
+          <TileWeather forecast={forecast} units={units} locale={locale} t={t} />
+        ) : (
+          <Unavailable t={t} />
+        )}
       </div>
     </article>
   );
@@ -89,11 +98,13 @@ function AlertBand({
   severity,
   title,
   more,
+  t,
 }: {
   severity: "warning" | "advisory";
   title: string;
   /** How many further alerts there are for this place. */
   more: number;
+  t: Messages;
 }) {
   const isWarning = severity === "warning";
   const Icon = isWarning ? OctagonAlert : TriangleAlert;
@@ -111,27 +122,39 @@ function AlertBand({
           isWarning ? "text-warning" : "text-advisory-foreground dark:text-advisory",
         )}
       />
-      <span className="sr-only">{isWarning ? "Warning" : "Advisory"}: </span>
+      <span className="sr-only">{isWarning ? t.common.warning : t.common.advisory}: </span>
       <span className="min-w-0 truncate">{title}</span>
       {more > 0 && (
-        <span className="ml-auto shrink-0 whitespace-nowrap text-foreground/80">+{more} more</span>
+        <span className="ml-auto shrink-0 whitespace-nowrap text-foreground/80">
+          {t.common.more(more)}
+        </span>
       )}
     </div>
   );
 }
 
-function Unavailable() {
+function Unavailable({ t }: { t: Messages }) {
   return (
     <p className="mt-5 text-sm text-muted-foreground dark:text-white/80">
-      Conditions are unavailable right now.
+      {t.dashboard.tile.unavailable}
     </p>
   );
 }
 
-function TileWeather({ forecast, units }: { forecast: Forecast; units: Units }) {
+function TileWeather({
+  forecast,
+  units,
+  locale,
+  t,
+}: {
+  forecast: Forecast;
+  units: Units;
+  locale: Locale;
+  t: Messages;
+}) {
   const { current, daily, hourly } = forecast;
   const today = daily[0];
-  const weather = describeWeather(current.weatherCode, current.isDay);
+  const weather = describeWeather(current.weatherCode, current.isDay, locale);
   const temperature = Math.round(convertTemperature(current.temperature, units));
   const next24 = hourly.slice(0, 24).map((hour) => hour.temperature);
   const low = formatTemperature(Math.min(...next24), units);
@@ -144,15 +167,21 @@ function TileWeather({ forecast, units }: { forecast: Forecast; units: Units }) 
         <div className="min-w-0">
           <p className="text-lg">{weather.label}</p>
           <p className="tnum flex gap-3 text-sm text-muted-foreground dark:text-white/75">
-            <span>H {formatTemperature(today.temperatureMax, units)}</span>
-            <span>L {formatTemperature(today.temperatureMin, units)}</span>
+            <span>
+              {t.common.high} {formatTemperature(today.temperatureMax, units)}
+            </span>
+            <span>
+              {t.common.low} {formatTemperature(today.temperatureMin, units)}
+            </span>
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3">
           <WeatherIcon name={weather.icon} className="size-9 shrink-0 text-(--brand-teal-text)" />
           <p className="font-heading text-6xl leading-none font-medium tracking-tight">
             <span className="sr-only">
-              {temperature} degrees {units === "metric" ? "Celsius" : "Fahrenheit"}
+              {units === "metric"
+                ? t.common.degreesCelsius(temperature)
+                : t.common.degreesFahrenheit(temperature)}
             </span>
             <span aria-hidden="true">
               {temperature}
@@ -167,19 +196,19 @@ function TileWeather({ forecast, units }: { forecast: Forecast; units: Units }) 
       {/* Next: the shape of the next day, and what to do about rain. */}
       <div className="mt-auto grid gap-4 border-t border-border pt-4 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] sm:gap-6 dark:border-white/10">
         <div className="mt-5 sm:mt-0">
-          <Sparkline values={next24} label={`${low} to ${high} over the next 24 hours`} />
+          <Sparkline values={next24} label={t.dashboard.tile.overNext24(low, high)} />
           <div className="tnum mt-1.5 flex items-center justify-between text-xs text-muted-foreground dark:text-white/75">
-            <span>Next 24 h</span>
+            <span>{t.dashboard.tile.next24}</span>
             <span>
               {low} – {high}
             </span>
           </div>
         </div>
         <div className="min-w-0 sm:border-l sm:border-border sm:pl-6 sm:dark:border-white/10">
-          <p className={caption}>Rain</p>
+          <p className={caption}>{t.dashboard.tile.rain}</p>
           <p className="mt-1 flex items-center gap-1.5 font-medium">
             <Droplets aria-hidden="true" className="size-4 shrink-0 text-(--brand-teal-text)" />
-            <span className="min-w-0">{describeRainOutlook(hourly)}</span>
+            <span className="min-w-0">{describeRainOutlook(hourly, locale)}</span>
           </p>
         </div>
       </div>

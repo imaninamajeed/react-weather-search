@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AlertsView } from "@/components/alerts/alerts-view";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Text } from "@/lib/i18n/text";
 import { getPreferences } from "@/lib/preferences";
 import { homePlace } from "@/lib/preferences-core";
 
@@ -46,7 +47,9 @@ export default function AlertsPage(props: PageProps<"/alerts">) {
       id="main"
       className="mx-auto w-full max-w-(--page-max) flex-1 px-4 pt-2 pb-6 md:pt-4"
     >
-      <h1 className="sr-only">Alerts</h1>
+      <h1 className="sr-only">
+        <Text id="nav.alerts" />
+      </h1>
       <Suspense fallback={<AlertsSkeleton />}>
         <AlertsContent searchParams={props.searchParams} />
       </Suspense>

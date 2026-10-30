@@ -4,6 +4,7 @@ import { PlacesBanner } from "@/components/dashboard/places-banner";
 import { PlacesView } from "@/components/dashboard/places-view";
 import { RowsSkeleton } from "@/components/shared/skeletons";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Text } from "@/lib/i18n/text";
 
 export const metadata: Metadata = {
   title: "Locations",
@@ -17,7 +18,9 @@ export default function PlacesPage() {
       id="main"
       className="mx-auto w-full max-w-(--page-max) flex-1 px-4 pt-2 pb-6 md:pt-4 fit:pb-3"
     >
-      <h1 className="sr-only">Locations</h1>
+      <h1 className="sr-only">
+        <Text id="nav.locations" />
+      </h1>
       <div className="flex flex-col gap-6 fit:gap-3">
         <Suspense fallback={<Skeleton aria-hidden="true" className="h-56 w-full rounded-4xl" />}>
           <PlacesBanner />

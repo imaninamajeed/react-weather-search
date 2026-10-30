@@ -151,6 +151,28 @@ name, which requires awaiting `params` and the cookie, so those crumbs stream in
 generic trail as the fallback. See [INFORMATION_ARCHITECTURE](INFORMATION_ARCHITECTURE.md) for why the app is
 split into these pages.
 
+## Language
+
+English (the default) and Malay, chosen from the globe button in the header (or the welcome page's
+corner). The text lives in `src/lib/i18n/messages/<area>.ts`: each file holds both languages side by
+side, English as the source and Malay type-checked against its shape, so a missing key fails
+`pnpm typecheck`. Counts and names are functions, because word order and plurals differ.
+
+- **One cookie, `lang`**, set by a Server Action. Unlike `wx` it is not `httpOnly`, so the browser can read it.
+- **Server components** inside a `<Suspense>` boundary call `getI18n()` (or `getTranslations()`), like
+  `getPreferences()`. **Client components** use `useMessages()`, which reads the cookie with
+  `useSyncExternalStore` (English on the server, the cookie in the browser, so hydration never mismatches).
+- **The prerendered shell stays static.** It is written in English and the browser swaps in the saved
+  language once hydrated, so a Malay visitor may see English for a moment on the shell. Server components
+  in the shell use `<Text id="nav.dashboard" />` for plain text; labels that must be strings
+  (`aria-label`, tooltips) live in small client components.
+- **Domain code takes an optional `locale`** (`describeWeather`, `summarizeToday`, `describeAlert`,
+  `formatHour`, …) that defaults to English, so cached fetchers stay language-free and the tests are unchanged.
+- Dates and times use `Intl` with `en-US` or `ms-MY`. Unit symbols (°C, km/h, mm) stay international.
+- **Not translated:** page `<title>`s and descriptions, the web app manifest and the share image
+  (they are static), the place and region names from the geocoder, and the text of official warnings,
+  which is published by MET Malaysia and the NWS in their own language.
+
 ## The map
 
 MapLibre GL with OpenFreeMap tiles (following the theme) and RainViewer radar.

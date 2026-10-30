@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useMessages } from "@/lib/i18n/client"
 import { cn } from "cn"
 import { Dialog as SheetPrimitive } from "radix-ui"
 
@@ -55,6 +56,7 @@ function SheetContent({
   side?: "top" | "right" | "bottom" | "left"
   showCloseButton?: boolean
 }) {
+  const t = useMessages()
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -77,7 +79,7 @@ function SheetContent({
             >
               <IconX
               />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{t.common.close}</span>
             </Button>
           </SheetPrimitive.Close>
         )}

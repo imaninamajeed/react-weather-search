@@ -2,13 +2,14 @@ import { IconDroplets } from "@tabler/icons-react";
 import { Fragment } from "react";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { formatDayMonth, formatWeekday } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
 import { temperatureColor, temperatureGradient } from "@/lib/temperature-color";
 import { formatPrecipitation, formatTemperature } from "@/lib/units";
 import { describeWeather } from "@/lib/weather/codes";
 import type { ConfidenceLevel } from "@/lib/weather/confidence";
 import type { Forecast, Units } from "@/lib/weather/types";
 import { cn } from "@/lib/utils";
-import { CONFIDENCE_LABEL, ConfidenceDots } from "./confidence-dots";
+import { ConfidenceDots } from "./confidence-dots";
 
 /** Beyond this many days the models drift apart too much for day-level detail to be firm. */
 const FIRM_DAYS = 7;
@@ -17,7 +18,7 @@ const FIRM_DAYS = 7;
  * 14 days on one shared temperature scale, so bars are comparable down the whole list.
  * The gradient inside each bar uses the same absolute colour ramp as the rest of the app.
  */
-export function DailyList({
+export async function DailyList({
   forecast,
   units,
   limit,
@@ -30,6 +31,7 @@ export function DailyList({
   /** Model agreement per date; adds a confidence column for the days the models cover. */
   confidence?: Record<string, ConfidenceLevel | null>;
 }) {
+  const { locale, t } = await getI18n();
   const { daily, current } = forecast;
   const scaleMin = Math.floor(Math.min(...daily.map((d) => d.temperatureMin)) - 1);
   const scaleMax = Math.ceil(Math.max(...daily.map((d) => d.temperatureMax)) + 1);
@@ -40,15 +42,14 @@ export function DailyList({
     <div className="@container/daily">
       <ol className="divide-y divide-border/70">
         {daily.slice(0, limit).map((day, index) => {
-          const weather = describeWeather(day.weatherCode);
+          const weather = describeWeather(day.weatherCode, true, locale);
           const left = position(day.temperatureMin);
           const width = Math.max(position(day.temperatureMax) - left, 2);
           return (
             <Fragment key={day.date}>
               {index === FIRM_DAYS && (
                 <li className="label-caps py-3 text-center">
-                  Days {FIRM_DAYS + 1}–{daily.length}: indicative only, see forecast confidence
-                  below
+                  {t.place.daily.indicative(FIRM_DAYS + 1, daily.length)}
                 </li>
               )}
               <li
@@ -62,9 +63,11 @@ export function DailyList({
               >
                 <div>
                   <p className="text-sm font-medium">
-                    {index === 0 ? "Today" : formatWeekday(day.date)}
+                    {index === 0 ? t.common.today : formatWeekday(day.date, "short", locale)}
                   </p>
-                  <p className="label-caps hidden @lg/daily:block">{formatDayMonth(day.date)}</p>
+                  <p className="label-caps hidden @lg/daily:block">
+                    {formatDayMonth(day.date, locale)}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -79,7 +82,7 @@ export function DailyList({
                 >
                   <IconDroplets aria-hidden="true" className="size-3.5" />
                   <span className="tnum">{day.precipitationProbabilityMax}%</span>
-                  <span className="sr-only">chance of rain</span>
+                  <span className="sr-only">{t.place.daily.chanceOfRain}</span>
                 </p>
 
                 <div className="flex items-center gap-3">
@@ -119,10 +122,12 @@ export function DailyList({
                       <>
                         <ConfidenceDots level={confidence[day.date]} />
                         <span className="hidden @lg/daily:inline">
-                          {CONFIDENCE_LABEL[confidence[day.date]!]}
+                          {t.place.confidence.levels[confidence[day.date]!]}
                         </span>
                         <span className="sr-only">
-                          {CONFIDENCE_LABEL[confidence[day.date]!]} confidence
+                          {t.place.daily.confidenceFor(
+                            t.place.confidence.levels[confidence[day.date]!],
+                          )}
                         </span>
                       </>
                     ) : (

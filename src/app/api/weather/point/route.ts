@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
       temperature: current.temperature,
       apparentTemperature: current.apparentTemperature,
       condition: describeWeather(current.weatherCode, current.isDay).label,
+      weatherCode: current.weatherCode,
+      isDay: current.isDay,
       windSpeed: current.windSpeed,
       windGusts: current.windGusts,
       rainChance: hourly[0]?.precipitationProbability ?? 0,

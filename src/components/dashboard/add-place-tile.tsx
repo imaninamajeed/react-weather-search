@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { OPEN_SEARCH_EVENT } from "@/components/search/search-command";
 import { Button } from "@/components/ui/button";
+import { useMessages } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
 /**
@@ -14,12 +15,13 @@ import { cn } from "@/lib/utils";
  * place followed.
  */
 export function AddPlaceTile({
-  description = "Search any city and it joins this dashboard and your sidebar.",
+  description,
   className,
 }: {
   description?: string;
   className?: string;
 }) {
+  const t = useMessages().dashboard.addTile;
   return (
     <div
       className={cn(
@@ -34,8 +36,8 @@ export function AddPlaceTile({
         <Plus className="size-4" />
       </span>
       <p className="min-w-0 flex-1 text-sm">
-        <span className="font-medium">Follow another location.</span>{" "}
-        <span className="text-muted-foreground">{description}</span>
+        <span className="font-medium">{t.followAnother}</span>{" "}
+        <span className="text-muted-foreground">{description ?? t.description}</span>
       </p>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <Button
@@ -43,13 +45,13 @@ export function AddPlaceTile({
           size="sm"
           onClick={() => window.dispatchEvent(new Event(OPEN_SEARCH_EVENT))}
         >
-          Add a Location
+          {t.addLocation}
         </Button>
         <Link
           href="/map"
           className="text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground"
         >
-          or pick it on the map
+          {t.orPickOnMap}
         </Link>
       </div>
     </div>

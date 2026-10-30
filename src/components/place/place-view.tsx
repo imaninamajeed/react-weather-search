@@ -8,6 +8,7 @@ import { SectionBoundary } from "@/components/shared/section-boundary";
 import { RowsSkeleton } from "@/components/shared/skeletons";
 import { Button } from "@/components/ui/button";
 import { StatCards } from "@/components/dashboard/stat-cards";
+import { getI18n } from "@/lib/i18n/server";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { placeHref, type Place } from "@/lib/places";
 import type { Units } from "@/lib/weather/types";
@@ -29,7 +30,11 @@ export async function PlaceView({
   units: Units;
   actions?: ReactNode;
 }) {
-  const forecast = await getForecast(place.latitude, place.longitude);
+  const [forecast, { t }] = await Promise.all([
+    getForecast(place.latitude, place.longitude),
+    getI18n(),
+  ]);
+  const text = t.place.view;
   const hours = forecast.hourly.slice(0, CHART_HOURS);
   // Dropped-pin places learn their timezone from the forecast.
   const resolved: Place = { ...place, timezone: place.timezone ?? forecast.timezone };
@@ -52,11 +57,11 @@ export async function PlaceView({
 
         <SectionCard
           id="alerts"
-          title="Alerts"
-          description={`Warnings and signals for ${resolved.name}`}
+          title={t.dashboard.alerts}
+          description={text.alertsDescription(resolved.name)}
           className=""
         >
-          <SectionBoundary title="Alerts">
+          <SectionBoundary title={t.dashboard.alerts}>
             <Suspense fallback={<RowsSkeleton rows={1} />}>
               <PlaceAlerts place={resolved} forecast={forecast} units={units} />
             </Suspense>
@@ -75,8 +80,8 @@ export async function PlaceView({
 
         <SectionCard
           id="conditions"
-          title="Right Now"
-          description="The sun, the wind and the air at this moment"
+          title={text.rightNow}
+          description={text.rightNowDescription}
           bodyClassName=""
         >
           <ConditionsGrid forecast={forecast} units={units} />
@@ -85,8 +90,8 @@ export async function PlaceView({
         <div className="contents fit:grid fit:grid-cols-8 fit:gap-3">
           <SectionCard
             id="hourly"
-            title="Next 48 Hours"
-            description="Switch between temperature, rain and wind"
+            title={text.next48}
+            description={text.next48Description}
             className="fit:col-span-5"
             bodyClassName="fit:flex fit:flex-col fit:gap-2 fit:space-y-0"
           >
@@ -96,15 +101,15 @@ export async function PlaceView({
 
           <SectionCard
             id="next-days"
-            title="Next 3 Days"
-            description="Each bar spans the day's low to high on one shared scale"
+            title={text.next3}
+            description={text.next3Description}
             className="fit:col-span-3"
             aside={
               <Button asChild variant="outline" size="sm">
                 <Link href={`${placeHref(resolved)}/outlook`}>
-                  <span className="fit:sr-only">14-Day Outlook and Confidence</span>
+                  <span className="fit:sr-only">{text.outlookLong}</span>
                   <span aria-hidden="true" className="hidden fit:inline">
-                    Outlook
+                    {text.outlookShort}
                   </span>
                   <IconArrowRight aria-hidden="true" />
                 </Link>

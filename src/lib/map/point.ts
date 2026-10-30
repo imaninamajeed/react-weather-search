@@ -15,7 +15,10 @@ export function parseCoordinates(
 export interface PointWeather {
   temperature: number;
   apparentTemperature: number;
+  /** English; clients that can should describe `weatherCode` in their own language instead. */
   condition: string;
+  weatherCode: number;
+  isDay: boolean;
   windSpeed: number;
   windGusts: number;
   rainChance: number;

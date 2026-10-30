@@ -21,6 +21,17 @@ function format(iso: string, options: Intl.DateTimeFormatOptions, locale: Locale
   );
 }
 
+/** "Oct" / "October" for a month number, 1–12. */
+export function formatMonthName(
+  month: number,
+  style: "short" | "long" = "short",
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  return new Intl.DateTimeFormat(INTL_TAGS[locale], { month: style, timeZone: "UTC" }).format(
+    new Date(Date.UTC(2000, month - 1, 1)),
+  );
+}
+
 /** "Tue" / "Tuesday" */
 export function formatWeekday(
   iso: string,

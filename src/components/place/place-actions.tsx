@@ -7,6 +7,7 @@ import { removePlace, restorePlace, savePlace, setHome } from "@/app/actions";
 import { useOnlineStatus } from "@/components/pwa/use-online-status";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useMessages } from "@/lib/i18n/client";
 
 interface PlaceActionsProps {
   placeKey: string;
@@ -23,24 +24,25 @@ const onInk =
 export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceActionsProps) {
   const [pending, startTransition] = useTransition();
   const online = useOnlineStatus();
-  const offlineHint = online ? undefined : "Needs a connection";
+  const t = useMessages();
+  const offlineHint = online ? undefined : t.place.actions.needsConnection;
 
   function toggleSaved() {
     startTransition(async () => {
       if (saved) {
         const result = await removePlace(placeKey);
         if (!result.ok) return void toast.error(result.error);
-        toast(`Removed ${placeName}`, {
+        toast(t.dashboard.controls.removed(placeName), {
           action: {
-            label: "Undo",
+            label: t.common.undo,
             onClick: () => void restorePlace(placeKey, result.index, result.wasHome),
           },
         });
       } else {
         const result = await savePlace(placeKey);
         if (!result.ok) return void toast.error(result.error);
-        toast.success(`Saved ${placeName}`, {
-          action: { label: "Undo", onClick: () => void removePlace(placeKey) },
+        toast.success(t.place.actions.saved(placeName), {
+          action: { label: t.common.undo, onClick: () => void removePlace(placeKey) },
         });
       }
     });
@@ -50,7 +52,7 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
     startTransition(async () => {
       const result = await setHome(placeKey);
       if (!result.ok) return void toast.error(result.error);
-      toast.success(`${placeName} is now your home`);
+      toast.success(t.dashboard.controls.nowHome(placeName));
     });
   }
 
@@ -59,10 +61,10 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
       <Button asChild variant="ghost" size="sm" className={onInk}>
         <Link
           href={`/map?place=${encodeURIComponent(placeKey)}`}
-          aria-label={`Radar for ${placeName}`}
+          aria-label={t.dashboard.hero.radarFor(placeName)}
         >
           <IconRadar aria-hidden="true" />
-          Radar
+          {t.dashboard.hero.radar}
         </Link>
       </Button>
       <Button
@@ -75,12 +77,12 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
         onClick={toggleSaved}
       >
         {saved ? <IconBookmarkFilled aria-hidden="true" /> : <IconBookmark aria-hidden="true" />}
-        {saved ? "Saved" : "Save"}
+        {saved ? t.place.actions.savedState : t.place.actions.save}
       </Button>
       {isHome ? (
         <span className="inline-flex h-7 items-center gap-1 px-2 text-[0.8rem] text-muted-foreground dark:text-white/80">
           <IconHome aria-hidden="true" className="size-3.5" />
-          Home
+          {t.dashboard.hero.home}
         </span>
       ) : (
         <Button
@@ -92,7 +94,7 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
           onClick={makeHome}
         >
           <IconHome aria-hidden="true" />
-          Set as Home
+          {t.dashboard.controls.setAsHome}
         </Button>
       )}
     </div>

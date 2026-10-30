@@ -7,7 +7,8 @@ import { PlaceNav } from "@/components/place/place-nav";
 import { SubpageHeader } from "@/components/place/subpage-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { SectionBoundary } from "@/components/shared/section-boundary";
-import { HeroSkeleton, RowsSkeleton } from "@/components/shared/skeletons";
+import { OutlookSkeleton, RowsSkeleton } from "@/components/shared/skeletons";
+import { getI18n } from "@/lib/i18n/server";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { getPreferences } from "@/lib/preferences";
 import { lookupPlace, resolvePlace } from "@/lib/resolve-place";
@@ -22,20 +23,21 @@ export async function generateMetadata({
 
 async function OutlookRoute({ params }: Pick<PageProps<"/place/[key]/outlook">, "params">) {
   const { key } = await params;
-  const [place, preferences] = await Promise.all([resolvePlace(key, "/outlook"), getPreferences()]);
+  const [place, preferences, { t }] = await Promise.all([
+    resolvePlace(key, "/outlook"),
+    getPreferences(),
+    getI18n(),
+  ]);
+  const text = t.place.outlook;
   const { units } = preferences;
   const forecast = await getForecast(place.latitude, place.longitude);
 
   return (
     <div className="flex flex-col gap-6 fit:gap-3">
-      <SubpageHeader
-        label="Plan Ahead"
-        place={place}
-        lead="Two weeks of daily forecasts, and how far each day can be trusted."
-      />
+      <SubpageHeader label={text.label} place={place} lead={text.lead} />
 
       <div className="contents fit:grid fit:grid-cols-12 fit:gap-3">
-        <SectionCard id="daily" title="14-Day Outlook" className="fit:col-span-5">
+        <SectionCard id="daily" title={text.daily} className="fit:col-span-5">
           {/* The list renders immediately; the model-agreement column joins it when that fetch lands. */}
           <Suspense fallback={<DailyList forecast={forecast} units={units} />}>
             <OutlookDaily forecast={forecast} units={units} />
@@ -44,11 +46,11 @@ async function OutlookRoute({ params }: Pick<PageProps<"/place/[key]/outlook">, 
 
         <SectionCard
           id="confidence"
-          title="Forecast Confidence"
+          title={text.confidence}
           className="fit:col-span-7"
           bodyClassName="fit:flex fit:flex-col fit:space-y-0"
         >
-          <SectionBoundary title="Forecast Confidence">
+          <SectionBoundary title={text.confidence}>
             <Suspense fallback={<RowsSkeleton rows={3} />}>
               <ConfidencePanel
                 latitude={forecast.latitude}
@@ -81,14 +83,7 @@ export default function OutlookPage(props: PageProps<"/place/[key]/outlook">) {
         <Suspense fallback={null}>
           <Nav params={props.params} />
         </Suspense>
-        <Suspense
-          fallback={
-            <div role="status" aria-label="Loading Outlook" className="space-y-10">
-              <HeroSkeleton />
-              <RowsSkeleton />
-            </div>
-          }
-        >
+        <Suspense fallback={<OutlookSkeleton />}>
           <OutlookRoute params={props.params} />
         </Suspense>
       </div>

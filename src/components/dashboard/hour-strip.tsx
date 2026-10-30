@@ -1,5 +1,6 @@
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { formatHour } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
 import { formatTemperature } from "@/lib/units";
 import { describeWeather } from "@/lib/weather/codes";
 import type { Forecast, Units } from "@/lib/weather/types";
@@ -24,7 +25,7 @@ function appearsAt(index: number) {
  * The next twelve hours as a horizontally scrolling strip. `glass` is for sitting on the hero:
  * translucent tiles and a teal chance-of-rain, in either theme.
  */
-export function HourStrip({
+export async function HourStrip({
   forecast,
   units,
   tone = "default",
@@ -47,6 +48,7 @@ export function HourStrip({
   /** Replaces the bleed past the parent's padding, for use outside the hero. */
   className?: string;
 }) {
+  const { locale, t } = await getI18n();
   const glass = tone === "glass";
   const list = (
     <ol
@@ -55,12 +57,12 @@ export function HourStrip({
         adaptive && "snap-x @max-sm:[mask-image:linear-gradient(to_right,black_88%,transparent)]",
         className,
       )}
-      aria-label={`Next ${hours} hours`}
+      aria-label={t.dashboard.nextHours(hours)}
       // It scrolls sideways when the hours outrun the width, so a keyboard needs to be able to reach it.
       tabIndex={0}
     >
       {forecast.hourly.slice(0, hours).map((hour, index) => {
-        const weather = describeWeather(hour.weatherCode, hour.isDay);
+        const weather = describeWeather(hour.weatherCode, hour.isDay, locale);
         const now = index === 0;
         return (
           <li
@@ -85,7 +87,7 @@ export function HourStrip({
                 glass && "dark:text-white/80",
               )}
             >
-              {now ? "Now" : formatHour(hour.time)}
+              {now ? t.common.now : formatHour(hour.time, locale)}
             </span>
             <WeatherIcon name={weather.icon} className="size-5" />
             <span className="sr-only">{weather.label}</span>

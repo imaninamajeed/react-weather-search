@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DISMISSED_COOKIE } from "@/lib/alerts/dismissed";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import type { Place } from "@/lib/places";
+import { getI18n } from "@/lib/i18n/server";
 import { getPreferences } from "@/lib/preferences";
 import { homePlace } from "@/lib/preferences-core";
 import type { Units } from "@/lib/weather/types";
@@ -60,7 +61,12 @@ const rise = (index: number) => ({ "--i": index }) as CSSProperties;
  * and comparing places lives on /places.
  */
 export async function Dashboard({ searchParams }: { searchParams: Promise<{ manage?: string }> }) {
-  const [preferences, params] = await Promise.all([getPreferences(), searchParams]);
+  const [preferences, params, { t }] = await Promise.all([
+    getPreferences(),
+    searchParams,
+    getI18n(),
+  ]);
+  const text = t.dashboard;
   // Manage mode used to be a dashboard query; it is a page of its own now.
   if (params.manage) redirect("/places");
 
@@ -74,10 +80,10 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="sr-only">Dashboard</h1>
+      <h1 className="sr-only">{text.title}</h1>
 
       <div className="rise" style={rise(0)}>
-        <SectionBoundary title="Alerts">
+        <SectionBoundary title={text.alerts}>
           <Suspense
             fallback={
               dismissed ? null : <Skeleton aria-hidden="true" className="h-13 w-full rounded-3xl" />
@@ -89,7 +95,7 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
       </div>
 
       <div className="rise" style={rise(1)}>
-        <SectionBoundary title="Your home forecast">
+        <SectionBoundary title={text.homeForecast}>
           <Suspense fallback={<HeroSkeleton />}>
             <Hero place={home} units={units} />
           </Suspense>
@@ -102,13 +108,13 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
           keepPadding
           // Darker than a normal card by night, so the near-black tiles still read as tiles on it.
           cardClassName="dark:bg-[color-mix(in_oklab,var(--card),black_22%)]"
-          title="Your Locations"
-          description="Open any location for its full forecast"
+          title={text.yourLocations}
+          description={text.openAnyLocation}
           aside={
             places.length > 0 ? (
               <Button asChild variant="outline" size="sm">
                 <Link href="/places">
-                  Locations
+                  {text.locations}
                   <ArrowRight aria-hidden="true" />
                 </Link>
               </Button>
@@ -119,7 +125,7 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
             <Onboarding />
           ) : others.length === 0 ? (
             // Nothing to compare yet, so the way to add a place stands alone, full width.
-            <AddPlaceTile description="Your home location is the only one you follow so far. Add another to see its conditions here." />
+            <AddPlaceTile description={text.onlyHome} />
           ) : (
             <Suspense fallback={<TilesSkeleton />}>
               <PlacesGrid places={others} units={units} />

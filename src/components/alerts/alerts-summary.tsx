@@ -2,6 +2,7 @@ import { Check, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { AlertsNextDialog } from "@/components/alerts/alerts-next-dialog";
 import { BannerFigures, PageBanner } from "@/components/shared/page-banner";
+import { getI18n } from "@/lib/i18n/server";
 import { placeHref, type Place } from "@/lib/places";
 
 interface AlertsSummaryProps {
@@ -18,14 +19,12 @@ interface AlertsSummaryProps {
   checked: Place[];
 }
 
-const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
-
 /**
  * The alerts page's banner (see PageBanner). The answer is in words on the left; on the right sit the
  * two counts or, when nothing is active, a shield with a slow ripple, and the places that were checked.
  * It only reports: severity shows only as an icon and a word on each alert.
  */
-export function AlertsSummary({
+export async function AlertsSummary({
   warnings,
   advisories,
   affected,
@@ -34,35 +33,39 @@ export function AlertsSummary({
   incomplete,
   checked,
 }: AlertsSummaryProps) {
+  const { t } = await getI18n();
+  const text = t.alerts.summary;
   const none = warnings + advisories === 0;
   const unchecked = none && failed >= places;
   const clear = none && !incomplete;
 
   const headline = unchecked
-    ? "Couldn't check alerts"
+    ? text.couldntCheck
     : clear
-      ? "All clear"
+      ? text.allClear
       : none
-        ? "No alerts found"
+        ? text.noneFound
         : [
-            warnings > 0 && plural(warnings, "warning", "warnings"),
-            advisories > 0 && plural(advisories, "advisory", "advisories"),
+            warnings > 0 && t.common.warnings(warnings),
+            advisories > 0 && t.common.advisories(advisories),
           ]
             .filter(Boolean)
-            .join(" and ");
-  const placesLabel = places === 1 ? "your location" : `your ${places} locations`;
+            .join(t.dashboard.overview.and);
+  const placesLabel = places === 1 ? text.yourLocation : text.yourLocations(places);
   const lead = unchecked
-    ? "Alerts are unavailable right now. Try again in a moment."
+    ? text.unavailable
     : clear
-      ? `No active alerts across ${placesLabel}.`
+      ? text.noActive(placesLabel)
       : none
-        ? "Nothing active in what we could reach, but some checks didn't finish. Details are below."
-        : `${affected === places ? "Across all of" : `In ${affected} of`} ${placesLabel}.`;
+        ? text.incomplete
+        : affected === places
+          ? text.acrossAll(placesLabel)
+          : text.inSome(affected, placesLabel);
 
   return (
     <PageBanner
       id="alerts-summary"
-      label="Alerts"
+      label={text.label}
       title={headline}
       lead={lead}
       aside={
@@ -78,8 +81,8 @@ export function AlertsSummary({
           !none && (
             <BannerFigures
               figures={[
-                { label: "Warnings", value: warnings },
-                { label: "Advisories", value: advisories },
+                { label: text.warnings, value: warnings },
+                { label: text.advisories, value: advisories },
               ]}
             />
           )
@@ -87,7 +90,7 @@ export function AlertsSummary({
       }
     >
       {clear && checked.length > 0 && (
-        <ul aria-label="Locations checked" className="mt-6 flex flex-wrap gap-2">
+        <ul aria-label={text.locationsChecked} className="mt-6 flex flex-wrap gap-2">
           {checked.map((place) => (
             <li key={place.key}>
               <Link

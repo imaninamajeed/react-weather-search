@@ -1,63 +1,81 @@
 import { Suspense } from "react";
-import { SectionCard } from "@/components/shared/section-card";
-import { SectionBoundary } from "@/components/shared/section-boundary";
-import { RowsSkeleton } from "@/components/shared/skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getI18n } from "@/lib/i18n/server";
 import { getPreferences } from "@/lib/preferences";
 import { homePlace } from "@/lib/preferences-core";
-import { OpenSearchButton } from "./open-search-button";
 import { Onboarding } from "./onboarding";
-import { PlaceCard } from "./place-card";
+import { OpenSearchButton } from "./open-search-button";
+import { HomeCard } from "./home-card";
+import { PlacesTabs } from "./places-tabs";
+import { SavedTile } from "./saved-tile";
 import { SortablePlaces } from "./sortable-places";
-import { WeekAheadTable } from "./week-ahead-table";
 
 /**
- * Everything about the list of places you follow: manage it (reorder, set home, remove) and compare
- * it (a week ahead for all of them at once). Management controls are always on here, so it needs no "manage mode".
+ * The locations you follow, as two tabs in the Alerts page's calm layout: Home, a hero card for the one
+ * location the dashboard leads with, and Saved Locations, the others as square tiles you can reorder and open for their seven days.
+ * Management (reorder, set home, remove) is always on, in each card's menu, so there is no
+ * "manage mode". Home is not in the reorderable list, so nothing can be dropped above it.
  */
 export async function PlacesView() {
-  const { units, places, ...rest } = await getPreferences();
+  const [{ units, places, ...rest }, { t }] = await Promise.all([getPreferences(), getI18n()]);
+  const text = t.dashboard.view;
   const home = homePlace({ units, places, ...rest });
-  // Home leads the comparison even when it is the default city and not saved.
-  const compared = [home, ...places.filter((place) => place.key !== home.key)];
+  const homeSaved = places.some((place) => place.key === home.key);
+  const others = places.filter((place) => place.key !== home.key);
 
   return (
-    <div className="flex flex-col gap-6 fit:grid fit:grid-cols-12 fit:gap-3">
-      <SectionCard
-        id="places"
-        title="Following"
-        className="fit:col-span-6"
-        aside={<OpenSearchButton label="Add a Location" variant="outline" size="sm" />}
-      >
-        {places.length === 0 ? (
-          <Onboarding />
-        ) : (
-          <SortablePlaces
-            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 fit:grid-cols-2"
-            items={places.map((place, index) => ({
-              key: place.key,
-              name: place.name,
-              node: (
-                <PlaceCard
-                  place={place}
-                  units={units}
-                  isHome={place.key === home.key}
-                  manage={{ isFirst: index === 0, isLast: index === places.length - 1 }}
-                />
-              ),
-            }))}
+    <PlacesTabs
+      homeLabel={text.homeTab}
+      savedLabel={text.savedTab}
+      savedCount={others.length}
+      action={<OpenSearchButton label={text.addLocation} variant="outline" size="sm" />}
+      home={
+        // A home that is only the default city is not saved, so it has nothing to reorder or remove.
+        <Suspense
+          fallback={<Skeleton aria-hidden="true" className="h-[30rem] w-full rounded-4xl" />}
+        >
+          <HomeCard
+            place={home}
+            units={units}
+            manage={homeSaved ? { isFirst: true, isLast: true } : undefined}
           />
-        )}
-      </SectionCard>
-
-      {places.length > 0 && (
-        <SectionCard id="week" title="Week Ahead" className="fit:col-span-6">
-          <SectionBoundary title="The week-ahead table">
-            <Suspense fallback={<RowsSkeleton rows={Math.min(compared.length, 5)} />}>
-              <WeekAheadTable places={compared} units={units} />
-            </Suspense>
-          </SectionBoundary>
-        </SectionCard>
-      )}
-    </div>
+        </Suspense>
+      }
+      saved={
+        others.length === 0 ? (
+          places.length === 0 ? (
+            <Onboarding />
+          ) : (
+            <p className="rounded-3xl border border-dashed border-border p-6 text-muted-foreground">
+              {t.dashboard.onlyHome}
+            </p>
+          )
+        ) : (
+          <div className="flex flex-col gap-4 fit:gap-3">
+            <SortablePlaces
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 fit:gap-3"
+              items={others.map((place, index) => ({
+                key: place.key,
+                name: place.name,
+                node: (
+                  <Suspense
+                    fallback={
+                      <Skeleton aria-hidden="true" className="aspect-square w-full rounded-4xl" />
+                    }
+                  >
+                    <SavedTile
+                      place={place}
+                      units={units}
+                      manage={{ isFirst: index === 0, isLast: index === others.length - 1 }}
+                    />
+                  </Suspense>
+                ),
+              }))}
+            />
+            <p className="px-1 text-xs text-muted-foreground">{text.note}</p>
+          </div>
+        )
+      }
+    />
   );
 }

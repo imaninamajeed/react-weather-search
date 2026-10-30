@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatDayMonth, formatWeekday } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
 import { getModelDays } from "@/lib/open-meteo/models";
 import {
   CONFIDENCE_THRESHOLDS,
@@ -9,7 +10,6 @@ import {
 } from "@/lib/weather/confidence";
 import { convertPrecipitation, convertTemperature, unitLabels } from "@/lib/units";
 import type { Units } from "@/lib/weather/types";
-import { CONFIDENCE_LABEL } from "./confidence-dots";
 import { ConfidenceChart } from "./confidence-chart";
 
 /**
@@ -28,46 +28,51 @@ export async function ConfidencePanel({
   units: Units;
   today: string;
 }) {
-  const days = assessConfidence(await getModelDays(latitude, longitude));
+  const [modelDays, { locale, t }] = await Promise.all([
+    getModelDays(latitude, longitude),
+    getI18n(),
+  ]);
+  const days = assessConfidence(modelDays);
+  const text = t.place.confidence;
   const labels = unitLabels(units);
 
   return (
     <div className="space-y-6 fit:flex fit:flex-col fit:gap-3 fit:space-y-0">
       <p className="max-w-prose text-lg text-balance fit:text-base">
-        {summarizeConfidence(days, units, today)}
+        {summarizeConfidence(days, units, today, locale)}
       </p>
 
       <ConfidenceChart days={days} units={units} />
 
       <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium select-none">
-          View as Table
+          {text.viewAsTable}
         </summary>
         <div
           className="relative overflow-x-auto border-t border-border"
           tabIndex={0}
           role="region"
-          aria-label="Model Comparison Table"
+          aria-label={text.tableLabel}
         >
           <table className="w-full min-w-[34rem] text-sm">
-            <caption className="sr-only">Daily high and rainfall by model</caption>
+            <caption className="sr-only">{text.caption}</caption>
             <thead>
               <tr className="label-caps text-left">
                 <th scope="col" className="px-4 py-2 font-medium">
-                  Day
+                  {text.day}
                 </th>
                 {MODELS.map((m) => (
                   <th key={m.id} scope="col" className="px-2 py-2 text-right font-medium">
-                    {m.label} high ({labels.temperature})
+                    {text.modelHigh(m.label, labels.temperature)}
                   </th>
                 ))}
                 {MODELS.map((m) => (
                   <th key={m.id} scope="col" className="px-2 py-2 text-right font-medium">
-                    {m.label} rain ({labels.precipitation})
+                    {text.modelRain(m.label, labels.precipitation)}
                   </th>
                 ))}
                 <th scope="col" className="px-4 py-2 text-right font-medium">
-                  Confidence
+                  {text.confidence}
                 </th>
               </tr>
             </thead>
@@ -75,7 +80,7 @@ export async function ConfidencePanel({
               {days.map((day) => (
                 <tr key={day.date} className="border-t border-border/60">
                   <th scope="row" className="px-4 py-1.5 text-left font-normal">
-                    {formatWeekday(day.date)} {formatDayMonth(day.date)}
+                    {formatWeekday(day.date, "short", locale)} {formatDayMonth(day.date, locale)}
                   </th>
                   {MODELS.map((m) => (
                     <td key={m.id} className="px-2 py-1.5 text-right">
@@ -92,7 +97,7 @@ export async function ConfidencePanel({
                     </td>
                   ))}
                   <td className="px-4 py-1.5 text-right">
-                    {day.level ? CONFIDENCE_LABEL[day.level] : "—"}
+                    {day.level ? text.levels[day.level] : "—"}
                   </td>
                 </tr>
               ))}
@@ -103,19 +108,18 @@ export async function ConfidencePanel({
 
       <details className="text-sm text-muted-foreground">
         <summary className="cursor-pointer font-medium text-foreground select-none">
-          How Is This Calculated?
+          {text.howCalculated}
         </summary>
         <p className="mt-2 max-w-prose">
-          Each day compares the high temperature predicted by ECMWF, GFS and ICON. If they are
-          within {CONFIDENCE_THRESHOLDS.highMaxSpread}°C of each other, confidence is high; within{" "}
-          {CONFIDENCE_THRESHOLDS.mediumMaxSpread}°C, medium; wider, low. It drops one more step when
-          the models split on whether it will rain at all, or when their rainfall totals differ
-          widely. The shaded band on the chart is the range between the lowest and highest model.{" "}
+          {text.explanation(
+            CONFIDENCE_THRESHOLDS.highMaxSpread,
+            CONFIDENCE_THRESHOLDS.mediumMaxSpread,
+          )}{" "}
           <Link
             href="/about#confidence"
             className="underline decoration-border underline-offset-4 hover:decoration-foreground"
           >
-            More on Our Methods
+            {text.moreOnMethods}
           </Link>
           .
         </p>

@@ -1,7 +1,10 @@
+"use client";
+
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMessages } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { smoothPath, type Point } from "./curves";
 
@@ -43,15 +46,12 @@ export const legible = (colour: string) => `color-mix(in oklch, ${colour} 75%, v
  * now, with made-up numbers. One image to assistive tech, described by its label.
  */
 export function HeroPreview({ className }: { className?: string }) {
+  const text = useMessages().welcome.preview;
   return (
-    <div
-      role="img"
-      aria-label="Example cards from Isobar: three weather models that agree for three days and then drift apart, so confidence falls from high to low; a heavy rain advisory until 10 PM; and 26 °C with heavy rain now in Subang Jaya."
-      className={cn("grid w-full max-w-sm gap-3", className)}
-    >
+    <div role="img" aria-label={text.label} className={cn("grid w-full max-w-sm gap-3", className)}>
       <Card size="sm" className={cn(glass, "lg:ml-10")}>
         <CardHeader>
-          <CardTitle className="label-caps">Forecast Confidence</CardTitle>
+          <CardTitle className="label-caps">{text.confidence}</CardTitle>
         </CardHeader>
         <CardContent>
           <svg viewBox="0 0 196 80" className="w-full overflow-visible">
@@ -79,8 +79,8 @@ export function HeroPreview({ className }: { className?: string }) {
             ))}
           </svg>
           <div className="mt-1 flex justify-between font-heading text-[0.625rem] font-semibold tracking-[0.12em] uppercase">
-            <span style={{ color: legible(VERDICT_COLOUR.high) }}>High</span>
-            <span style={{ color: legible(VERDICT_COLOUR.low) }}>Low</span>
+            <span style={{ color: legible(VERDICT_COLOUR.high) }}>{text.high}</span>
+            <span style={{ color: legible(VERDICT_COLOUR.low) }}>{text.low}</span>
           </div>
           <div className="mt-3 flex gap-3 text-xs text-muted-foreground">
             {RUNS.map((run) => (
@@ -105,13 +105,13 @@ export function HeroPreview({ className }: { className?: string }) {
           }}
         >
           <IconAlertTriangle />
-          Heavy Rain Advisory
-          <span className="font-normal">· Until 10 PM</span>
+          {text.advisory}
+          <span className="font-normal">{text.until}</span>
         </Badge>
 
         <Card size="sm" className={cn(glass, "w-full")}>
           <CardContent>
-            <p className="label-caps">Example · Subang Jaya · 15:30</p>
+            <p className="label-caps">{text.example}</p>
             <div className="mt-2 flex items-center gap-3">
               <WeatherIcon name="rain" className="size-10" />
               <p className="tnum font-heading text-5xl leading-none font-semibold tracking-tight">
@@ -119,7 +119,7 @@ export function HeroPreview({ className }: { className?: string }) {
                 <sup className="ml-0.5 text-xl font-medium text-muted-foreground">°C</sup>
               </p>
             </div>
-            <p className="mt-2 text-sm">Heavy rain now, easing around 10 PM.</p>
+            <p className="mt-2 text-sm">{text.summary}</p>
           </CardContent>
         </Card>
       </div>

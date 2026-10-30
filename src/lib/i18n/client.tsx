@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { getMessages, type Messages } from "./messages";
 import { DEFAULT_LOCALE, INTL_TAGS, LOCALE_COOKIE, parseLocale, type Locale } from "./locales";
 
@@ -28,17 +28,8 @@ export function announceLocale() {
   for (const listener of listeners) listener();
 }
 
-/** Set where the server already knows the language, so what it renders matches before hydration. */
-const LocaleContext = createContext<Locale | null>(null);
-
-export function LocaleProvider({ locale, children }: { locale: Locale; children: ReactNode }) {
-  return <LocaleContext value={locale}>{children}</LocaleContext>;
-}
-
 export function useLocale(): Locale {
-  const known = useContext(LocaleContext);
-  const stored = useSyncExternalStore(subscribe, readCookie, () => DEFAULT_LOCALE);
-  return known ?? stored;
+  return useSyncExternalStore(subscribe, readCookie, () => DEFAULT_LOCALE);
 }
 
 /** The interface text in the visitor's language: `const t = useMessages(); t.nav.dashboard`. */

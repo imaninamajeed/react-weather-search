@@ -3,6 +3,7 @@ import { IsobarMark } from "@/components/shared/isobar-mark";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { HourStrip } from "@/components/dashboard/hour-strip";
 import { formatPlaceSubtitle, formatUtcOffset, formatWeekdayClock } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
 import type { Place } from "@/lib/places";
 import { cn } from "@/lib/utils";
 import {
@@ -38,7 +39,7 @@ const caption =
  * uses the mark's own ink; light mode is a white panel with the same colours washed out. The art
  * is faded out well before the text, which always sits on a plain, low-chroma surface.
  */
-export function PlaceHero({
+export async function PlaceHero({
   place,
   forecast,
   units,
@@ -47,12 +48,16 @@ export function PlaceHero({
   fit = false,
   className,
 }: PlaceHeroProps) {
+  const { locale, t } = await getI18n();
   const Heading = headingLevel === 1 ? "h1" : "h2";
   const { current } = forecast;
   const today = forecast.daily[0];
-  const weather = describeWeather(current.weatherCode, current.isDay);
+  const weather = describeWeather(current.weatherCode, current.isDay, locale);
   const temperature = Math.round(convertTemperature(current.temperature, units));
-  const localTimeLine = `${formatWeekdayClock(current.time)} · local time (${formatUtcOffset(forecast.utcOffsetSeconds)})`;
+  const localTimeLine = t.dashboard.hero.localTime(
+    formatWeekdayClock(current.time, locale),
+    formatUtcOffset(forecast.utcOffsetSeconds),
+  );
 
   return (
     <header
@@ -107,7 +112,7 @@ export function PlaceHero({
               fit && "fit:mt-2 fit:line-clamp-2 fit:text-base",
             )}
           >
-            {summarizeToday(forecast, units)}
+            {summarizeToday(forecast, units, locale)}
           </p>
         </div>
 
@@ -124,7 +129,9 @@ export function PlaceHero({
               )}
             >
               <span className="sr-only">
-                {temperature} degrees {units === "metric" ? "Celsius" : "Fahrenheit"}
+                {units === "metric"
+                  ? t.common.degreesCelsius(temperature)
+                  : t.common.degreesFahrenheit(temperature)}
               </span>
               <span aria-hidden="true">
                 {temperature}
@@ -140,20 +147,23 @@ export function PlaceHero({
 
       {fit && (
         <dl className="hidden grid-cols-2 gap-x-4 gap-y-2 border-t border-border px-6 py-4 dark:border-white/10 fit:grid">
-          <Stat label="Feels Like" value={formatTemperature(current.apparentTemperature, units)} />
           <Stat
-            label="High / Low"
+            label={t.place.hero.feelsLike}
+            value={formatTemperature(current.apparentTemperature, units)}
+          />
+          <Stat
+            label={t.place.hero.highLow}
             value={`${formatTemperature(today.temperatureMax, units)} / ${formatTemperature(today.temperatureMin, units)}`}
           />
           <Stat
-            label="Rain Today"
+            label={t.place.hero.rainToday}
             value={`${today.precipitationProbabilityMax}%`}
             detail={formatPrecipitation(today.precipitationSum, units)}
           />
           <Stat
-            label="Wind"
+            label={t.place.hero.wind}
             value={formatSpeed(current.windSpeed, units)}
-            detail={`from ${compassPoint(current.windDirection)}`}
+            detail={t.place.hero.from(compassPoint(current.windDirection, locale))}
           />
         </dl>
       )}

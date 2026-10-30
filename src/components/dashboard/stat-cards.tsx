@@ -26,6 +26,7 @@ import {
   formatTemperature,
   formatTemperatureDelta,
 } from "@/lib/units";
+import { getI18n } from "@/lib/i18n/server";
 import { uvCategory } from "@/lib/weather/uv";
 import type { Forecast, Units } from "@/lib/weather/types";
 
@@ -73,56 +74,62 @@ function StatCard({
 }
 
 /** Today's four numbers worth a glance, as the shadcn dashboard's row of section cards. */
-export function StatCards({ forecast, units }: { forecast: Forecast; units: Units }) {
+export async function StatCards({ forecast, units }: { forecast: Forecast; units: Units }) {
+  const { locale, t } = await getI18n();
+  const text = t.dashboard.stats;
   const { current } = forecast;
   const today = forecast.daily[0];
   const difference = current.apparentTemperature - current.temperature;
   const feelsWarmer = difference > 0.5;
   const feelsColder = difference < -0.5;
-  const uv = uvCategory(current.uvIndex);
+  const uv = uvCategory(current.uvIndex, locale);
 
   return (
     <div className="grid gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card sm:grid-cols-2 xl:grid-cols-4 dark:*:data-[slot=card]:from-primary/10">
       <StatCard
         icon={IconTemperature}
         accent="var(--brand-magenta)"
-        label="Feels Like"
+        label={text.feelsLike}
         value={formatTemperature(current.apparentTemperature, units)}
         badge={
           <Badge variant="outline">
             {feelsWarmer ? <IconTrendingUp /> : feelsColder ? <IconTrendingDown /> : null}
             {feelsWarmer || feelsColder
-              ? `${formatTemperatureDelta(difference, units)} vs Actual`
-              : "Same as Actual"}
+              ? text.vsActual(formatTemperatureDelta(difference, units))
+              : text.sameAsActual}
           </Badge>
         }
-        headline={`Humidity ${Math.round(current.humidity)}%`}
-        detail={`Dew point ${formatTemperature(current.dewPoint, units)}`}
+        headline={text.humidity(Math.round(current.humidity))}
+        detail={text.dewPoint(formatTemperature(current.dewPoint, units))}
       />
       <StatCard
         icon={IconSun}
         accent="var(--brand-violet)"
-        label="Today's Range"
+        label={text.todaysRange}
         value={`${formatTemperature(today.temperatureMax, units)} / ${formatTemperature(today.temperatureMin, units)}`}
-        badge={<Badge variant="outline">{formatDuration(today.daylightSeconds)} Daylight</Badge>}
-        headline={`Sunrise ${formatTime(today.sunrise)}`}
-        detail={`Sunset ${formatTime(today.sunset)}`}
+        badge={
+          <Badge variant="outline">
+            {text.daylight(formatDuration(today.daylightSeconds, locale))}
+          </Badge>
+        }
+        headline={text.sunrise(formatTime(today.sunrise, locale))}
+        detail={text.sunset(formatTime(today.sunset, locale))}
       />
       <StatCard
         icon={IconDroplet}
         accent="var(--brand-indigo)"
-        label="Rain Today"
+        label={text.rainToday}
         value={`${today.precipitationProbabilityMax}%`}
         badge={
           <Badge variant="outline">{formatPrecipitation(today.precipitationSum, units)}</Badge>
         }
-        headline="Chance of Rain"
-        detail={`Cloud cover ${Math.round(current.cloudCover)}% right now`}
+        headline={text.chanceOfRain}
+        detail={text.cloudCover(Math.round(current.cloudCover))}
       />
       <StatCard
         icon={IconWind}
         accent="var(--brand-teal-text)"
-        label="Wind"
+        label={text.wind}
         value={formatSpeed(current.windSpeed, units)}
         badge={
           <Badge variant="outline">
@@ -130,11 +137,11 @@ export function StatCards({ forecast, units }: { forecast: Forecast; units: Unit
               aria-hidden="true"
               style={{ rotate: `${Math.round(current.windDirection + 180)}deg` }}
             />
-            From {compassPoint(current.windDirection)}
+            {text.from(compassPoint(current.windDirection, locale))}
           </Badge>
         }
-        headline={`Gusts up to ${formatSpeed(current.windGusts, units)}`}
-        detail={`UV index ${Math.round(current.uvIndex)} · ${uv.label}`}
+        headline={text.gusts(formatSpeed(current.windGusts, units))}
+        detail={text.uvIndex(Math.round(current.uvIndex), uv.label)}
       />
     </div>
   );

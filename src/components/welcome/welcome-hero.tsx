@@ -1,3 +1,5 @@
+"use client";
+
 import {
   IconAlertTriangle,
   IconArrowRight,
@@ -12,39 +14,22 @@ import { OpenSearchButton } from "@/components/dashboard/open-search-button";
 import { IsobarMark } from "@/components/shared/isobar-mark";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { LanguageToggle } from "@/components/layout/preference-toggles";
+import { useMessages } from "@/lib/i18n/client";
 import { HeroPreview, legible } from "./hero-preview";
 import { SynopticChart } from "./synoptic-chart";
 
 // The four features, in the order and colours of the social image, each linking to where it lives.
-const FEATURES: { label: string; tone: string; icon: Icon; text: string; href: string }[] = [
-  {
-    label: "Alerts",
-    tone: "var(--advisory)",
-    icon: IconAlertTriangle,
-    text: "Official warnings and ours",
-    href: "/alerts",
-  },
-  {
-    label: "Confidence",
-    tone: "var(--brand-violet)",
-    icon: IconChartLine,
-    text: "Do the models agree?",
-    href: "/about#confidence",
-  },
-  {
-    label: "Climate",
-    tone: "var(--brand-teal-text)",
-    icon: IconTemperature,
-    text: "Is this week unusual?",
-    href: "/about#climate",
-  },
-  {
-    label: "Radar",
-    tone: "var(--brand-magenta)",
-    icon: IconRadar,
-    text: "Rain, last two hours",
-    href: "/map",
-  },
+const FEATURES: {
+  id: "alerts" | "confidence" | "climate" | "radar";
+  tone: string;
+  icon: Icon;
+  href: string;
+}[] = [
+  { id: "alerts", tone: "var(--advisory)", icon: IconAlertTriangle, href: "/alerts" },
+  { id: "confidence", tone: "var(--brand-violet)", icon: IconChartLine, href: "/about#confidence" },
+  { id: "climate", tone: "var(--brand-teal-text)", icon: IconTemperature, href: "/about#climate" },
+  { id: "radar", tone: "var(--brand-magenta)", icon: IconRadar, href: "/map" },
 ];
 
 /**
@@ -54,11 +39,16 @@ const FEATURES: { label: string; tone: string; icon: Icon; text: string; href: s
  * surface, which the chart's label gaps and the shade behind the text also use.
  */
 export function WelcomeHero() {
+  const t = useMessages();
+  const text = t.welcome;
   return (
     <section
       aria-labelledby="welcome-title"
       className="relative isolate flex flex-1 flex-col justify-center overflow-hidden bg-(--hero-bg) text-foreground [--hero-bg:var(--background)] dark:[--hero-bg:var(--brand-ink)]"
     >
+      <div className="absolute top-4 right-4 z-10 sm:top-6 sm:right-6">
+        <LanguageToggle />
+      </div>
       {/* Below lg the storm sits behind the cards, which stack under the text. */}
       <SynopticChart className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-136 w-full mask-[linear-gradient(to_bottom,transparent,black_35%)] lg:inset-y-0 lg:h-full lg:mask-none" />
       {/* Keeps the text on a near-plain surface, as the social image does. */}
@@ -86,12 +76,12 @@ export function WelcomeHero() {
               id="welcome-title"
               className="bg-linear-to-b from-foreground from-30% to-foreground/75 bg-clip-text font-heading text-6xl leading-none font-semibold tracking-[-0.035em] text-transparent sm:text-8xl"
             >
-              <span className="sr-only">Welcome to </span>Isobar
+              <span className="sr-only">{text.welcomeTo}</span>Isobar
             </h1>
           </div>
 
           <p className="mt-6 text-2xl leading-tight font-light text-balance text-foreground/85 sm:mt-8 sm:text-4xl">
-            Forecasts, alerts, and <br className="max-sm:hidden" />
+            {text.taglineStart} <br className="max-sm:hidden" />
             <span
               className="bg-linear-to-r from-(--brand-teal-text) via-(--welcome-violet) via-55% to-(--welcome-magenta) bg-clip-text font-medium text-transparent"
               style={
@@ -101,26 +91,23 @@ export function WelcomeHero() {
                 } as CSSProperties
               }
             >
-              how far to trust them.
+              {text.taglineEnd}
             </span>
           </p>
-          <p className="mt-5 max-w-xl text-muted-foreground">
-            Weather for the locations you follow. There&apos;s no account: your locations stay on
-            this device.
-          </p>
+          <p className="mt-5 max-w-xl text-muted-foreground">{text.body}</p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <OpenSearchButton label="Find Your City" />
+            <OpenSearchButton label={text.findYourCity} />
             <Button asChild variant="outline">
               <Link href="/dashboard">
-                Open the Dashboard
+                {text.openDashboard}
                 <IconArrowRight aria-hidden="true" />
               </Link>
             </Button>
           </div>
-          <ul aria-label="Features" className="mt-10 grid max-w-xl gap-3 sm:grid-cols-2">
-            {FEATURES.map(({ label, tone, icon: FeatureIcon, text, href }) => (
-              <li key={label} className="flex">
+          <ul aria-label={text.features} className="mt-10 grid max-w-xl gap-3 sm:grid-cols-2">
+            {FEATURES.map(({ id, tone, icon: FeatureIcon, href }) => (
+              <li key={id} className="flex">
                 <Link
                   href={href}
                   style={{ "--tone": tone } as CSSProperties}
@@ -138,14 +125,14 @@ export function WelcomeHero() {
                     </span>
                     <span className="min-w-0">
                       <span className="flex items-center gap-1 font-heading text-base leading-tight font-medium">
-                        {label}
+                        {text.feature[id].label}
                         <IconArrowRight
                           aria-hidden="true"
                           className="size-3.5 -translate-x-1 text-muted-foreground opacity-0 transition group-hover/feature:translate-x-0 group-hover/feature:opacity-100 group-focus-visible/feature:translate-x-0 group-focus-visible/feature:opacity-100"
                         />
                       </span>
                       <span className="mt-0.5 block text-sm text-balance text-muted-foreground">
-                        {text}
+                        {text.feature[id].text}
                       </span>
                     </span>
                   </Card>

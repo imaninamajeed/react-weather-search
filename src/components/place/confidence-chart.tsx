@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Area, ComposedChart, CartesianGrid, Line, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
+import { useLocale, useMessages } from "@/lib/i18n/client";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { formatDayMonth, formatWeekday } from "@/lib/format";
 import { convertPrecipitation, convertTemperature, unitLabels } from "@/lib/units";
@@ -22,6 +23,8 @@ const COLORS: Record<ModelId, string> = {
 type Row = { date: string; band: [number, number] | null } & Partial<Record<ModelId, number>>;
 
 export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units: Units }) {
+  const locale = useLocale();
+  const text = useMessages().place;
   const [metric, setMetric] = useState<Metric>("temperature");
   const labels = unitLabels(units);
   const convert = (value: number) =>
@@ -65,13 +68,16 @@ export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units:
           onValueChange={(value) => value && setMetric(value as Metric)}
           variant="outline"
           size="sm"
-          aria-label="Chart Metric"
+          aria-label={text.hourly.chartMetric}
         >
-          <ToggleGroupItem value="temperature">High Temperature</ToggleGroupItem>
-          <ToggleGroupItem value="rain">Rainfall</ToggleGroupItem>
+          <ToggleGroupItem value="temperature">{text.confidence.highTemperature}</ToggleGroupItem>
+          <ToggleGroupItem value="rain">{text.confidence.rainfall}</ToggleGroupItem>
         </ToggleGroup>
 
-        <ul className="flex flex-wrap gap-4 text-xs text-muted-foreground" aria-label="Legend">
+        <ul
+          className="flex flex-wrap gap-4 text-xs text-muted-foreground"
+          aria-label={text.hourly.legend}
+        >
           {MODELS.map((model) => (
             <li key={model.id} className="flex items-center gap-2">
               <span
@@ -87,7 +93,7 @@ export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units:
               aria-hidden="true"
               className="inline-block h-2.5 w-5 rounded-sm bg-foreground/10"
             />
-            Spread
+            {text.confidence.spread}
           </li>
         </ul>
       </div>
@@ -95,7 +101,11 @@ export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units:
       <div
         role="group"
         className=""
-        aria-label={`${metric === "temperature" ? "Daily high temperature" : "Daily rainfall"} predicted by ECMWF, GFS and ICON for the next ${rows.length} days. A table with every value follows the chart.`}
+        aria-label={
+          metric === "temperature"
+            ? text.confidence.temperatureAria(rows.length)
+            : text.confidence.rainAria(rows.length)
+        }
       >
         <ChartContainer config={config} className="aspect-auto h-64 w-full">
           <ComposedChart
@@ -106,7 +116,7 @@ export function ConfidenceChart({ days, units }: { days: DayConfidence[]; units:
             <CartesianGrid vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="date"
-              tickFormatter={(date: string) => formatWeekday(date)}
+              tickFormatter={(date: string) => formatWeekday(date, "short", locale)}
               tickLine={false}
               axisLine={{ stroke: "var(--border)" }}
               tickMargin={8}
@@ -165,13 +175,14 @@ interface TooltipProps {
 }
 
 function ModelTooltip({ active, payload, metric, unit }: TooltipProps) {
+  const locale = useLocale();
   const row = payload?.[0]?.payload;
   if (!active || !row) return null;
 
   return (
     <div className="min-w-36 rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
       <p className="mb-1.5 font-medium text-popover-foreground">
-        {formatWeekday(row.date)} {formatDayMonth(row.date)}
+        {formatWeekday(row.date, "short", locale)} {formatDayMonth(row.date, locale)}
       </p>
       <ul className="space-y-1">
         {MODELS.filter((model) => row[model.id] !== undefined).map((model) => (

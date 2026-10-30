@@ -1,20 +1,21 @@
 import { IconWind } from "@tabler/icons-react";
+import { getI18n } from "@/lib/i18n/server";
 import { compassPoint, convertSpeed, formatSpeed, unitLabels } from "@/lib/units";
 import type { Forecast, Units } from "@/lib/weather/types";
 import { IconChip, PANEL } from "./tile";
 
 const POINTS = [
-  { label: "N", x: 60, y: 14 },
-  { label: "E", x: 106, y: 63 },
-  { label: "S", x: 60, y: 112 },
-  { label: "W", x: 14, y: 63 },
+  { x: 60, y: 14 },
+  { x: 106, y: 63 },
+  { x: 60, y: 112 },
+  { x: 14, y: 63 },
 ];
 
 /**
  * Wind as a compass. The needle points where the wind is blowing *to*, opposite of the "from"
  * bearing everyone quotes, and its tail is lit in the app mark's magenta.
  */
-export function WindCompass({
+export async function WindCompass({
   forecast,
   units,
   className,
@@ -23,6 +24,7 @@ export function WindCompass({
   units: Units;
   className?: string;
 }) {
+  const { locale, t } = await getI18n();
   const { current } = forecast;
   const labels = unitLabels(units);
   const blowingTo = (current.windDirection + 180) % 360;
@@ -31,7 +33,7 @@ export function WindCompass({
     <div className={`${PANEL} ${className ?? ""}`}>
       <p className="label-caps flex items-center gap-2">
         <IconChip icon={IconWind} accent="var(--brand-teal-text)" />
-        Wind
+        {t.place.hero.wind}
       </p>
       <p className="mt-3 text-3xl leading-none font-semibold tabular-nums fit:mt-2 fit:text-2xl">
         {Math.round(convertSpeed(current.windSpeed, units))}
@@ -59,16 +61,16 @@ export function WindCompass({
           strokeOpacity="0.12"
           strokeDasharray="1 4"
         />
-        {POINTS.map((point) => (
+        {POINTS.map((point, index) => (
           <text
-            key={point.label}
+            key={index}
             x={point.x}
             y={point.y}
             textAnchor="middle"
             dominantBaseline="central"
             className="fill-muted-foreground font-heading text-[9px]"
           >
-            {point.label}
+            {t.weather.cardinal[index]}
           </text>
         ))}
         <g transform={`rotate(${blowingTo} 60 63)`}>
@@ -86,8 +88,10 @@ export function WindCompass({
       </svg>
 
       <p className="mt-3 text-sm text-muted-foreground fit:mt-1 fit:text-xs">
-        From the {compassPoint(current.windDirection)} · gusts{" "}
-        {formatSpeed(current.windGusts, units)}
+        {t.place.wind.fromThe(
+          compassPoint(current.windDirection, locale),
+          formatSpeed(current.windGusts, units),
+        )}
       </p>
     </div>
   );

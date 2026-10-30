@@ -50,7 +50,7 @@ for (const scheme of ["light", "dark"] as const) {
     await seedPlaces(context, baseURL!);
     await page.emulateMedia({ colorScheme: scheme });
     await page.goto("/places");
-    await page.getByRole("region", { name: "Week Ahead", exact: true }).waitFor();
+    await page.getByRole("tab", { name: /Saved Locations/ }).waitFor();
     await page.waitForLoadState("networkidle");
     await expectNoSeriousViolations(page);
   });

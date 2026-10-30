@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { movePlace, removePlace, restorePlace, setHome } from "@/app/actions";
 import { useOnlineStatus } from "@/components/pwa/use-online-status";
 import { Button } from "@/components/ui/button";
+import { useMessages } from "@/lib/i18n/client";
 
 interface CardControlsProps {
   placeKey: string;
@@ -17,6 +18,7 @@ interface CardControlsProps {
 
 /** Reorder, set-home and remove for one saved location (manage mode). */
 export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: CardControlsProps) {
+  const t = useMessages();
   const [pending, startTransition] = useTransition();
   // Reordering and removing change the saved list on the server, so they need a connection.
   const online = useOnlineStatus();
@@ -25,7 +27,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
   function run(action: () => Promise<{ ok: boolean; error?: string }>, success?: string) {
     startTransition(async () => {
       const result = await action();
-      if (!result.ok) toast.error(result.error ?? "Something went wrong.");
+      if (!result.ok) toast.error(result.error ?? t.common.somethingWentWrong);
       else if (success) toast.success(success);
     });
   }
@@ -34,9 +36,9 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
     startTransition(async () => {
       const result = await removePlace(placeKey);
       if (!result.ok) return void toast.error(result.error);
-      toast(`Removed ${placeName}`, {
+      toast(t.dashboard.controls.removed(placeName), {
         action: {
-          label: "Undo",
+          label: t.common.undo,
           onClick: () => void restorePlace(placeKey, result.index, result.wasHome),
         },
       });
@@ -50,7 +52,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         <span
           data-drag-handle
           aria-hidden="true"
-          title="Drag to Reorder"
+          title={t.dashboard.controls.dragToReorder}
           className="grid size-8 shrink-0 cursor-grab touch-none place-items-center rounded-full text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         >
           <IconGripVertical className="size-4" />
@@ -59,7 +61,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
       <Button
         variant="ghost"
         size="icon-sm"
-        aria-label={`Move ${placeName} up`}
+        aria-label={t.dashboard.controls.moveUp(placeName)}
         disabled={busy || isFirst}
         onClick={() => run(() => movePlace(placeKey, "up"))}
       >
@@ -68,7 +70,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
       <Button
         variant="ghost"
         size="icon-sm"
-        aria-label={`Move ${placeName} down`}
+        aria-label={t.dashboard.controls.moveDown(placeName)}
         disabled={busy || isLast}
         onClick={() => run(() => movePlace(placeKey, "down"))}
       >
@@ -79,10 +81,10 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
           variant="ghost"
           size="sm"
           disabled={busy}
-          onClick={() => run(() => setHome(placeKey), `${placeName} is now your home`)}
+          onClick={() => run(() => setHome(placeKey), t.dashboard.controls.nowHome(placeName))}
         >
           <IconHome aria-hidden="true" />
-          Set as Home
+          {t.dashboard.controls.setAsHome}
         </Button>
       )}
       <Button
@@ -93,7 +95,7 @@ export function CardControls({ placeKey, placeName, isHome, isFirst, isLast }: C
         onClick={remove}
       >
         <IconX aria-hidden="true" />
-        Remove
+        {t.common.remove}
       </Button>
     </div>
   );

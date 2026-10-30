@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 import { reorderPlaces } from "@/app/actions";
 import { useOnlineStatus } from "@/components/pwa/use-online-status";
+import { useMessages } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
 export interface SortableItem {
@@ -19,6 +20,8 @@ export interface SortableItem {
   name: string;
   /** The server-rendered card. */
   node: ReactNode;
+  /** Stays where it is: it cannot be picked up, and nothing can be dropped in its place (home, on top). */
+  pinned?: boolean;
 }
 
 /** A drag starts after this many pixels, so a plain click on a card still opens it. */
@@ -57,6 +60,7 @@ export function SortablePlaces({
   className?: string;
 }) {
   const online = useOnlineStatus();
+  const t = useMessages();
   const [, startTransition] = useTransition();
 
   // The saved order is the server's. Ours leads while you drag and until the save comes back; when
@@ -79,9 +83,9 @@ export function SortablePlaces({
   const pointer = useRef({ x: 0, y: 0 });
   const suppressClick = useRef(false);
   // The window listeners below outlive renders, so they read the latest of these through refs.
-  const live = useRef({ order, items, savedSignature, online });
+  const live = useRef({ order, items, savedSignature, online, t });
   useLayoutEffect(() => {
-    live.current = { order, items, savedSignature, online };
+    live.current = { order, items, savedSignature, online, t };
   });
 
   /** Moves the held card to follow the pointer, measured against its slot in the list. */
@@ -136,12 +140,12 @@ export function SortablePlaces({
       // The click that ends a drag must not open the card it was dropped on.
       setTimeout(() => (suppressClick.current = false), 0);
 
-      const { order, items, savedSignature } = live.current;
+      const { order, items, savedSignature, t } = live.current;
       if (!commit || order.join("|") === savedSignature) {
         if (!commit) setOrder(items.map((item) => item.key));
         return;
       }
-      const name = items.find((item) => item.key === held.key)?.name ?? "Place";
+      const name = items.find((item) => item.key === held.key)?.name ?? t.dashboard.sortable.place;
       startTransition(async () => {
         const result = await reorderPlaces(order);
         if (!result.ok) {
@@ -150,7 +154,7 @@ export function SortablePlaces({
           return;
         }
         setAnnouncement(
-          `Moved ${name} to position ${order.indexOf(held.key) + 1} of ${order.length}.`,
+          t.dashboard.sortable.moved(name, order.indexOf(held.key) + 1, order.length),
         );
       });
     }
@@ -165,7 +169,7 @@ export function SortablePlaces({
         if (!held.viaHandle && far < DRAG_THRESHOLD) return;
         if (!live.current.online) {
           gesture.current = null;
-          toast.error("You're offline. Reconnect to reorder your places.");
+          toast.error(live.current.t.dashboard.sortable.offline);
           return;
         }
         const list = listRef.current;
@@ -188,10 +192,14 @@ export function SortablePlaces({
       const box = list.getBoundingClientRect();
       const x = event.clientX - box.left;
       const y = event.clientY - box.top;
+      const pinned = new Set(
+        live.current.items.filter((item) => item.pinned).map((item) => item.key),
+      );
       const over = live.current.order.find((key) => {
         const element = itemRefs.current.get(key);
         return (
           key !== held.key &&
+          !pinned.has(key) &&
           element &&
           x >= element.offsetLeft &&
           x <= element.offsetLeft + element.offsetWidth &&
@@ -221,9 +229,13 @@ export function SortablePlaces({
     const target = event.target as HTMLElement;
     const slot = target.closest<HTMLElement>("[data-sortable-key]");
     if (!slot) return;
+    if (items.find((item) => item.key === slot.dataset.sortableKey)?.pinned) return;
     const viaHandle = target.closest("[data-drag-handle]") !== null;
     // Buttons keep their own clicks; a finger or pen scrolls and taps, and grabs only by the grip.
-    if (!viaHandle && (event.pointerType !== "mouse" || target.closest("button, input, select"))) {
+    if (
+      !viaHandle &&
+      (event.pointerType !== "mouse" || target.closest("button:not([data-tile]), input, select"))
+    ) {
       return;
     }
     pointer.current = { x: event.clientX, y: event.clientY };
@@ -269,13 +281,13 @@ export function SortablePlaces({
                 else itemRefs.current.delete(key);
               }}
               className={cn(
-                "rounded-3xl",
+                "rounded-4xl",
                 held && "bg-muted/50 outline-2 -outline-offset-2 outline-border outline-dashed",
               )}
             >
               <div
                 className={cn(
-                  "h-full rounded-3xl",
+                  "h-full rounded-4xl",
                   held
                     ? "relative z-30 cursor-grabbing shadow-2xl motion-safe:scale-[1.03] motion-safe:rotate-1"
                     : "transition-[translate,scale,rotate,box-shadow] duration-200 ease-out",

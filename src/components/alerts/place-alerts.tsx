@@ -1,4 +1,5 @@
 import { getPlaceAlerts } from "@/lib/alerts";
+import { getI18n } from "@/lib/i18n/server";
 import type { Place } from "@/lib/places";
 import type { Forecast, Units } from "@/lib/weather/types";
 import { AlertList } from "./alert-list";
@@ -14,13 +15,16 @@ export async function PlaceAlerts({
   forecast: Forecast;
   units: Units;
 }) {
-  const { alerts, sources } = await getPlaceAlerts(place, forecast, { includeAirQuality: true });
+  const [{ alerts, sources }, { t }] = await Promise.all([
+    getPlaceAlerts(place, forecast, { includeAirQuality: true }),
+    getI18n(),
+  ]);
   const now = forecast.current.time;
 
   return (
     <div>
       {alerts.length === 0 ? (
-        <p>No active alerts for {place.name}.</p>
+        <p>{t.alerts.place.none(place.name)}</p>
       ) : (
         <AlertList alerts={alerts} units={units} now={now} />
       )}

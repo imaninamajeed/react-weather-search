@@ -13,6 +13,12 @@ export async function getLocale(): Promise<Locale> {
   return parseLocale((await cookies()).get(LOCALE_COOKIE)?.value);
 }
 
+/** The language and its interface text together, for components that also format dates and conditions. */
+export async function getI18n(): Promise<{ locale: Locale; t: Messages }> {
+  const locale = await getLocale();
+  return { locale, t: getMessages(locale) };
+}
+
 /** The interface text for the visitor's language (see getLocale for where it may be called). */
 export async function getTranslations(): Promise<Messages> {
   return getMessages(await getLocale());

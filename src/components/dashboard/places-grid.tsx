@@ -3,6 +3,7 @@ import { getPlaceAlerts } from "@/lib/alerts";
 import { highestSeverity } from "@/lib/alerts/describe";
 import type { WeatherAlert } from "@/lib/alerts/types";
 import { getForecast } from "@/lib/open-meteo/forecast";
+import { getI18n } from "@/lib/i18n/server";
 import type { Place } from "@/lib/places";
 import type { Forecast, Units } from "@/lib/weather/types";
 import { AddPlaceTile } from "./add-place-tile";
@@ -41,7 +42,7 @@ async function load(place: Place, index: number): Promise<Entry> {
  * Every place's forecast and alerts load together here, because ordering needs all of them.
  */
 export async function PlacesGrid({ places, units }: { places: Place[]; units: Units }) {
-  const entries = await Promise.all(places.map(load));
+  const [entries, { t }] = await Promise.all([Promise.all(places.map(load)), getI18n()]);
   const urgency = (entry: Entry) => {
     const severity = highestSeverity(entry.alerts);
     return severity === "warning" ? 0 : severity === "advisory" ? 1 : 2;
@@ -65,7 +66,7 @@ export async function PlacesGrid({ places, units }: { places: Place[]; units: Un
           className="mt-3"
           shown={shown.length}
           total={places.length}
-          noun="other locations"
+          noun={t.dashboard.view.otherLocations}
         />
       )}
     </>

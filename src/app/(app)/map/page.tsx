@@ -6,6 +6,8 @@ import { WeatherMap, type MapPlace } from "@/components/map/weather-map";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getI18n } from "@/lib/i18n/server";
+import { Text } from "@/lib/i18n/text";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { getRadarFrames } from "@/lib/radar";
 import { getPreferences } from "@/lib/preferences";
@@ -23,13 +25,16 @@ export const metadata: Metadata = {
 /** Radar opened from a place keeps a way back to that place's forecast. */
 async function BackToPlace({ searchParams }: Pick<PageProps<"/map">, "searchParams">) {
   const { place: key } = await searchParams;
-  const place = typeof key === "string" ? await lookupPlace(key) : null;
+  const [place, { t }] = await Promise.all([
+    typeof key === "string" ? lookupPlace(key) : null,
+    getI18n(),
+  ]);
   if (!place) return null;
   return (
     <Button asChild variant="outline" size="sm">
       <Link href={placeHref(place)}>
         <IconArrowLeft aria-hidden="true" />
-        {place.name} forecast
+        {t.map.backToPlace(place.name)}
       </Link>
     </Button>
   );
@@ -95,9 +100,9 @@ export default function MapPage(props: PageProps<"/map">) {
     >
       <div className="mb-6 space-y-6 fit:mb-3 fit:space-y-0">
         <PageHeader
-          label="Live Radar"
-          title="Map"
-          lead="Rain radar for the last two hours, with the locations you follow. Click anywhere for the weather at that spot."
+          label={<Text id="map.label" />}
+          title={<Text id="nav.map" />}
+          lead={<Text id="map.lead" />}
           aside={
             <Suspense fallback={null}>
               <BackToPlace searchParams={props.searchParams} />

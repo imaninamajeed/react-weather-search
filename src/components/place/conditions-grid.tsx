@@ -3,6 +3,8 @@ import { Suspense, type ReactNode } from "react";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { TileSkeleton } from "@/components/shared/skeletons";
 import { formatHourRange } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
+import type { Messages } from "@/lib/i18n/messages";
 import {
   convertDistance,
   convertPressure,
@@ -19,58 +21,62 @@ import { WindCompass } from "./wind-compass";
 
 const UV_TONES: MeterTone[] = ["good", "good", "advisory", "warning", "warning"];
 
-function describeVisibility(metres: number) {
-  if (metres >= 10_000) return "Clear";
-  if (metres >= 4_000) return "Slightly Hazy";
-  if (metres >= 1_000) return "Hazy";
-  return "Poor";
+function describeVisibility(metres: number, t: Messages) {
+  const levels = t.place.conditions.visibilityLevels;
+  if (metres >= 10_000) return levels.clear;
+  if (metres >= 4_000) return levels.slightlyHazy;
+  if (metres >= 1_000) return levels.hazy;
+  return levels.poor;
 }
 
-function describeCloudCover(percent: number) {
-  if (percent < 20) return "Clear Skies";
-  if (percent < 50) return "Mostly Clear";
-  if (percent < 80) return "Mostly Cloudy";
-  return "Overcast";
+function describeCloudCover(percent: number, t: Messages) {
+  const levels = t.place.conditions.cloudLevels;
+  if (percent < 20) return levels.clearSkies;
+  if (percent < 50) return levels.mostlyClear;
+  if (percent < 80) return levels.mostlyCloudy;
+  return levels.overcast;
 }
 
-export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units: Units }) {
+export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; units: Units }) {
+  const { locale, t } = await getI18n();
+  const text = t.place.conditions;
   const { current, hourly } = forecast;
-  const uv = uvCategory(current.uvIndex);
+  const uv = uvCategory(current.uvIndex, locale);
   const protection = uvProtectionWindow(hourly, current.time);
   const labels = unitLabels(units);
 
   const tiles: ReactNode[] = [
     <Tile
       key="humidity"
-      label="Humidity"
+      label={text.humidity}
       icon={IconDroplet}
       accent="var(--brand-indigo)"
       value={Math.round(current.humidity)}
       unit="%"
-      caption={`Dew point ${formatTemperature(current.dewPoint, units)}`}
+      caption={text.dewPoint(formatTemperature(current.dewPoint, units))}
     />,
     <Tile
       key="uv"
-      label="UV Index"
+      label={text.uvIndex}
       icon={IconSun}
       accent="var(--brand-violet)"
       value={Math.round(current.uvIndex)}
       unit={uv.label}
       caption={
         protection
-          ? `Sun protection ${formatHourRange(protection.first, protection.last)}`
-          : "No sun protection needed for the rest of today"
+          ? text.sunProtection(formatHourRange(protection.first, protection.last, locale))
+          : text.noSunProtection
       }
     >
       <Meter
         value={current.uvIndex}
         max={11}
         tone={UV_TONES[uv.level]}
-        label={`UV Index ${uv.label}`}
+        label={text.uvMeter(uv.label)}
       />
     </Tile>,
     <div key="air-quality" className="contents">
-      <SectionBoundary title="Air quality">
+      <SectionBoundary title={t.place.view.airQuality}>
         <Suspense fallback={<TileSkeleton />}>
           <AirQualityTile latitude={forecast.latitude} longitude={forecast.longitude} />
         </Suspense>
@@ -78,7 +84,7 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
     </div>,
     <Tile
       key="pressure"
-      label="Pressure"
+      label={text.pressure}
       icon={IconGauge}
       accent="var(--brand-magenta)"
       value={
@@ -87,25 +93,25 @@ export function ConditionsGrid({ forecast, units }: { forecast: Forecast; units:
           : Math.round(current.pressure)
       }
       unit={labels.pressure}
-      caption="At Sea Level"
+      caption={text.atSeaLevel}
     />,
     <Tile
       key="visibility"
-      label="Visibility"
+      label={text.visibility}
       icon={IconEye}
       accent="var(--brand-teal-text)"
       value={Number(convertDistance(current.visibility, units).toFixed(1))}
       unit={labels.distance}
-      caption={`${describeVisibility(current.visibility)} · ${formatDistance(current.visibility, units)}`}
+      caption={`${describeVisibility(current.visibility, t)} · ${formatDistance(current.visibility, units)}`}
     />,
     <Tile
       key="cloud"
-      label="Cloud Cover"
+      label={text.cloudCover}
       icon={IconCloud}
       accent="var(--brand-indigo)"
       value={Math.round(current.cloudCover)}
       unit="%"
-      caption={describeCloudCover(current.cloudCover)}
+      caption={describeCloudCover(current.cloudCover, t)}
     />,
   ];
 

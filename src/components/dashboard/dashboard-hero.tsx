@@ -5,6 +5,7 @@ import { WeatherIcon } from "@/components/shared/weather-icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPlaceSubtitle, formatUtcOffset, formatWeekdayClock } from "@/lib/format";
+import { getI18n } from "@/lib/i18n/server";
 import { placeHref, type Place } from "@/lib/places";
 import { convertTemperature, formatTemperature } from "@/lib/units";
 import { describeWeather } from "@/lib/weather/codes";
@@ -26,7 +27,7 @@ const caption = `font-heading text-[0.6875rem] font-medium tracking-[0.08em] tex
  * pressure map and never a surface for text. Dark mode uses the mark's ink; light mode is white
  * with the same colours washed out.
  */
-export function DashboardHero({
+export async function DashboardHero({
   place,
   forecast,
   units,
@@ -35,11 +36,15 @@ export function DashboardHero({
   forecast: Forecast;
   units: Units;
 }) {
+  const { locale, t } = await getI18n();
   const { current } = forecast;
   const today = forecast.daily[0];
-  const weather = describeWeather(current.weatherCode, current.isDay);
+  const weather = describeWeather(current.weatherCode, current.isDay, locale);
   const temperature = Math.round(convertTemperature(current.temperature, units));
-  const localTimeLine = `${formatWeekdayClock(current.time)} · local time (${formatUtcOffset(forecast.utcOffsetSeconds)})`;
+  const localTimeLine = t.dashboard.hero.localTime(
+    formatWeekdayClock(current.time, locale),
+    formatUtcOffset(forecast.utcOffsetSeconds),
+  );
   const href = placeHref(place);
 
   return (
@@ -65,7 +70,7 @@ export function DashboardHero({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <Badge variant="secondary" className="dark:bg-white/10 dark:text-white">
               <House aria-hidden="true" />
-              Home
+              {t.dashboard.hero.home}
             </Badge>
             <p className={caption}>{localTimeLine}</p>
           </div>
@@ -85,13 +90,13 @@ export function DashboardHero({
             {formatPlaceSubtitle(place)}
           </p>
           <p className={`mt-5 max-w-prose text-lg text-balance ${halo}`}>
-            {summarizeToday(forecast, units)}
+            {summarizeToday(forecast, units, locale)}
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <Button asChild size="lg">
               <Link href={href}>
-                Full Forecast
+                {t.dashboard.hero.fullForecast}
                 <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
@@ -103,7 +108,7 @@ export function DashboardHero({
             >
               <Link href={`${href}/outlook`}>
                 <CalendarDays aria-hidden="true" />
-                14-Day Outlook
+                {t.dashboard.hero.outlook}
               </Link>
             </Button>
             <Button
@@ -114,10 +119,10 @@ export function DashboardHero({
             >
               <Link
                 href={`/map?place=${encodeURIComponent(place.key)}`}
-                aria-label={`Radar for ${place.name}`}
+                aria-label={t.dashboard.hero.radarFor(place.name)}
               >
                 <Radar aria-hidden="true" />
-                Radar
+                {t.dashboard.hero.radar}
               </Link>
             </Button>
           </div>
@@ -131,7 +136,9 @@ export function DashboardHero({
           <div>
             <p className="font-heading text-8xl leading-none font-medium tracking-tight sm:text-9xl dark:[text-shadow:0_0_36px_color-mix(in_oklch,var(--brand-magenta)_60%,transparent)]">
               <span className="sr-only">
-                {temperature} degrees {units === "metric" ? "Celsius" : "Fahrenheit"}
+                {units === "metric"
+                  ? t.common.degreesCelsius(temperature)
+                  : t.common.degreesFahrenheit(temperature)}
               </span>
               <span aria-hidden="true">
                 {temperature}
@@ -142,7 +149,7 @@ export function DashboardHero({
             </p>
             <p className={`mt-2 text-lg ${halo}`}>{weather.label}</p>
             <p className={`text-sm text-foreground/80 tabular-nums dark:text-white/90 ${halo}`}>
-              H {formatTemperature(today.temperatureMax, units)} · L{" "}
+              {t.common.high} {formatTemperature(today.temperatureMax, units)} · {t.common.low}{" "}
               {formatTemperature(today.temperatureMin, units)}
             </p>
           </div>

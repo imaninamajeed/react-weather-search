@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPlaceSubtitle, formatWeekdayClock } from "@/lib/format";
 import { getPlaceAlerts } from "@/lib/alerts";
+import { getI18n } from "@/lib/i18n/server";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { placeHref, type Place } from "@/lib/places";
 import { formatTemperature } from "@/lib/units";
@@ -15,16 +16,19 @@ import type { Units } from "@/lib/weather/types";
 import { CardControls } from "./card-controls";
 
 async function CardBody({ place, units }: { place: Place; units: Units }) {
-  const forecast = await getForecast(place.latitude, place.longitude);
+  const [forecast, { locale, t }] = await Promise.all([
+    getForecast(place.latitude, place.longitude),
+    getI18n(),
+  ]);
   const { current, daily } = forecast;
   const { alerts } = await getPlaceAlerts(place, forecast);
   const today = daily[0];
-  const weather = describeWeather(current.weatherCode, current.isDay);
+  const weather = describeWeather(current.weatherCode, current.isDay, locale);
 
   return (
     <>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="label-caps">{formatWeekdayClock(current.time)}</p>
+        <p className="label-caps">{formatWeekdayClock(current.time, locale)}</p>
         <HazardBadge alerts={alerts} />
       </div>
       <div className="mt-2 flex items-end justify-between gap-3">
@@ -37,8 +41,9 @@ async function CardBody({ place, units }: { place: Place; units: Units }) {
         </p>
       </div>
       <p className="mt-3 text-sm text-muted-foreground">
-        H {formatTemperature(today.temperatureMax, units)} · L{" "}
-        {formatTemperature(today.temperatureMin, units)} · Rain {today.precipitationProbabilityMax}%
+        {t.common.high} {formatTemperature(today.temperatureMax, units)} · {t.common.low}{" "}
+        {formatTemperature(today.temperatureMin, units)} ·{" "}
+        {t.dashboard.stats.rain(today.precipitationProbabilityMax)}
       </p>
     </>
   );
@@ -56,7 +61,8 @@ interface PlaceCardProps {
  * The name, link and controls come from the saved snapshot, so they always render. Only
  * the conditions need the network, and a failure there never blocks removing the place.
  */
-export function PlaceCard({ place, units, isHome, manage }: PlaceCardProps) {
+export async function PlaceCard({ place, units, isHome, manage }: PlaceCardProps) {
+  const { t } = await getI18n();
   return (
     <article className="relative h-full rounded-3xl bg-linear-to-t from-primary/5 to-card p-5 text-card-foreground shadow-xs ring-1 ring-foreground/5 transition-shadow focus-within:shadow-md hover:shadow-md dark:ring-foreground/10 fit:p-4">
       <div className="flex items-start justify-between gap-2">
@@ -69,7 +75,7 @@ export function PlaceCard({ place, units, isHome, manage }: PlaceCardProps) {
           </h3>
           <p className="truncate text-sm text-muted-foreground">{formatPlaceSubtitle(place)}</p>
         </div>
-        {isHome && <Badge variant="secondary">Home</Badge>}
+        {isHome && <Badge variant="secondary">{t.dashboard.hero.home}</Badge>}
       </div>
 
       <SectionBoundary title={place.name}>

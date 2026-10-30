@@ -1,4 +1,5 @@
 import { IconSunrise } from "@tabler/icons-react";
+import { getI18n } from "@/lib/i18n/server";
 import { formatDuration, formatTime, minutesOfDay } from "@/lib/format";
 import type { Forecast } from "@/lib/weather/types";
 import { IconChip, PANEL } from "./tile";
@@ -20,7 +21,9 @@ function pointAt(progress: number) {
  * as the app mark's core: a white dot in a magenta halo. Everything it shows is also written out
  * beneath it, so the drawing itself is hidden from assistive tech.
  */
-export function SunArc({ forecast, className }: { forecast: Forecast; className?: string }) {
+export async function SunArc({ forecast, className }: { forecast: Forecast; className?: string }) {
+  const { locale, t } = await getI18n();
+  const text = t.place.sun;
   const today = forecast.daily[0];
   const now = minutesOfDay(forecast.current.time);
   const rise = minutesOfDay(today.sunrise);
@@ -31,21 +34,21 @@ export function SunArc({ forecast, className }: { forecast: Forecast; className?
   const sun = pointAt(progress);
 
   const status = up
-    ? `${formatDuration((set - now) * 60)} of daylight left`
+    ? text.left(formatDuration((set - now) * 60, locale))
     : raw >= 1
-      ? "The sun has set"
-      : "The sun is not up yet";
+      ? text.set
+      : text.notUp;
 
   return (
     <div className={`${PANEL} ${className ?? ""}`}>
       <p className="label-caps flex items-center gap-2">
         <IconChip icon={IconSunrise} accent="var(--brand-magenta)" />
-        Sun
+        {text.title}
       </p>
       <p className="mt-3 text-3xl leading-none font-semibold fit:mt-2 fit:text-2xl">
-        {formatDuration(today.daylightSeconds)}
+        {formatDuration(today.daylightSeconds, locale)}
         <span className="ml-2 text-base font-normal text-muted-foreground fit:hidden">
-          of daylight
+          {text.ofDaylight}
         </span>
       </p>
 
@@ -119,12 +122,12 @@ export function SunArc({ forecast, className }: { forecast: Forecast; className?
 
       <dl className="mt-1 grid grid-cols-2 gap-x-4 text-sm fit:text-xs">
         <div>
-          <dt className="label-caps">Sunrise</dt>
-          <dd className="mt-1 font-medium tabular-nums">{formatTime(today.sunrise)}</dd>
+          <dt className="label-caps">{text.sunrise}</dt>
+          <dd className="mt-1 font-medium tabular-nums">{formatTime(today.sunrise, locale)}</dd>
         </div>
         <div className="text-right">
-          <dt className="label-caps">Sunset</dt>
-          <dd className="mt-1 font-medium tabular-nums">{formatTime(today.sunset)}</dd>
+          <dt className="label-caps">{text.sunset}</dt>
+          <dd className="mt-1 font-medium tabular-nums">{formatTime(today.sunset, locale)}</dd>
         </div>
       </dl>
       <p className="mt-3 text-sm text-muted-foreground fit:sr-only">{status}</p>

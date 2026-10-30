@@ -32,6 +32,27 @@ export function TileSkeleton() {
   return <Skeleton aria-hidden="true" className="h-32 w-full rounded-3xl" />;
 }
 
+export function OutlookSkeleton() {
+  const t = useMessages();
+  return (
+    <div role="status" aria-label={t.place.outlook.loading} className="space-y-10">
+      <HeroSkeleton />
+      <RowsSkeleton />
+    </div>
+  );
+}
+
+export function HistorySkeleton() {
+  const t = useMessages();
+  return (
+    <div role="status" aria-label={t.place.history.loading} className="space-y-10">
+      <HeroSkeleton />
+      <ChartSkeleton />
+      <RowsSkeleton rows={3} />
+    </div>
+  );
+}
+
 export function PlaceSkeleton() {
   const t = useMessages();
   return (

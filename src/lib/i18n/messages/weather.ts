@@ -95,6 +95,7 @@ export const weather = defineMessages(
       veryHigh: "Very High",
       extreme: "Extreme",
     },
+    cardinal: ["N", "E", "S", "W"],
     compass: [
       "N",
       "NNE",
@@ -247,6 +248,7 @@ export const weather = defineMessages(
       veryHigh: "Sangat Tinggi",
       extreme: "Melampau",
     },
+    cardinal: ["U", "T", "S", "B"],
     compass: [
       "U",
       "UTL",

@@ -3,13 +3,15 @@
 import { useMemo } from "react";
 import { Area, Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
-import { formatDayMonth, formatWeekday } from "@/lib/format";
+import { formatDayMonth, formatMonthName, formatWeekday } from "@/lib/format";
+import { useLocale, useMessages } from "@/lib/i18n/client";
+import type { Locale } from "@/lib/i18n/locales";
 import { convertPrecipitation, convertTemperature, unitLabels } from "@/lib/units";
 import type { DayComparison, MonthComparison } from "@/lib/weather/climate";
 import type { Units } from "@/lib/weather/types";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const monthName = (month: string) => MONTHS[Number(month.slice(5, 7)) - 1];
+const monthName = (month: string, locale: Locale) =>
+  formatMonthName(Number(month.slice(5, 7)), "short", locale);
 const round1 = (value: number) => Math.round(value * 10) / 10;
 
 interface DayRow {
@@ -29,6 +31,9 @@ function LegendItem({ children, swatch }: { children: string; swatch: React.Reac
 }
 
 export function DailyHighsChart({ days, units }: { days: DayComparison[]; units: Units }) {
+  const locale = useLocale();
+  const t = useMessages();
+  const text = t.place.history.charts;
   const labels = unitLabels(units);
   const rows: DayRow[] = useMemo(
     () =>
@@ -48,13 +53,15 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
   );
   // One tick per month, at its first day.
   const ticks = rows.filter((row) => row.date.endsWith("-01")).map((row) => row.date);
-  const config = { actual: { label: "Daily High", color: "var(--chart-1)" } } satisfies ChartConfig;
+  const config = {
+    actual: { label: text.dailyHigh, color: "var(--chart-1)" },
+  } satisfies ChartConfig;
 
   return (
     <div className="fit:flex fit:flex-col">
       <ul
         className="mb-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground fit:mb-2"
-        aria-label="Legend"
+        aria-label={t.place.hourly.legend}
       >
         <LegendItem
           swatch={
@@ -64,7 +71,7 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
             />
           }
         >
-          Daily High
+          {text.dailyHigh}
         </LegendItem>
         <LegendItem
           swatch={
@@ -74,20 +81,16 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
             />
           }
         >
-          Normal (Median)
+          {text.normalMedian}
         </LegendItem>
         <LegendItem
           swatch={<span className="inline-block h-2.5 w-5 rounded-sm bg-foreground/10" />}
         >
-          Normal Range (Middle 80%)
+          {text.normalRange}
         </LegendItem>
       </ul>
 
-      <div
-        role="group"
-        className=""
-        aria-label={`Daily high temperature for the last ${rows.length} days compared with the normal range. A table with every value follows the charts.`}
-      >
+      <div role="group" className="" aria-label={text.dailyAria(rows.length)}>
         <ChartContainer config={config} className="aspect-auto h-72 w-full">
           <ComposedChart
             data={rows}
@@ -98,7 +101,7 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
             <XAxis
               dataKey="date"
               ticks={ticks}
-              tickFormatter={(date: string) => monthName(date)}
+              tickFormatter={(date: string) => monthName(date, locale)}
               tickLine={false}
               axisLine={{ stroke: "var(--border)" }}
               tickMargin={8}
@@ -145,8 +148,7 @@ export function DailyHighsChart({ days, units }: { days: DayComparison[]; units:
         </ChartContainer>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
-        Temperatures in {labels.temperature}. The band covers the middle 80% of daily highs on the
-        same calendar day in 1991–2020.
+        {text.temperatureNote(labels.temperature)}
       </p>
     </div>
   );
@@ -159,6 +161,8 @@ function DayTooltip({
   active?: boolean;
   payload?: ReadonlyArray<{ payload: DayRow }>;
 }) {
+  const locale = useLocale();
+  const text = useMessages().place.history.charts;
   const row = payload?.[0]?.payload;
   if (!active || !row) return null;
   const delta = row.actual === null ? null : round1(row.actual - row.median);
@@ -166,7 +170,7 @@ function DayTooltip({
   return (
     <div className="min-w-44 rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
       <p className="mb-1.5 font-medium text-popover-foreground">
-        {formatWeekday(row.date)} {formatDayMonth(row.date)}
+        {formatWeekday(row.date, "short", locale)} {formatDayMonth(row.date, locale)}
       </p>
       <ul className="space-y-1">
         <li className="flex items-center gap-2">
@@ -179,9 +183,9 @@ function DayTooltip({
             {row.actual === null ? "—" : `${Math.round(row.actual)}°`}
           </span>
           <span className="text-muted-foreground">
-            High
+            {text.tooltipHigh}
             {delta !== null && delta !== 0
-              ? ` (${delta > 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)}° vs normal)`
+              ? text.tooltipVsNormal(`${delta > 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)}`)
               : ""}
           </span>
         </li>
@@ -195,7 +199,7 @@ function DayTooltip({
             {Math.round(row.median)}°
           </span>
           <span className="text-muted-foreground">
-            Normal ({Math.round(row.band[0])}–{Math.round(row.band[1])}°)
+            {text.tooltipNormal(Math.round(row.band[0]), Math.round(row.band[1]))}
           </span>
         </li>
       </ul>
@@ -212,28 +216,31 @@ interface MonthRow {
 }
 
 export function MonthlyRainChart({ months, units }: { months: MonthComparison[]; units: Units }) {
+  const locale = useLocale();
+  const t = useMessages();
+  const text = t.place.history.charts;
   const labels = unitLabels(units);
   const rows: MonthRow[] = useMemo(
     () =>
       months.map((month) => ({
         month: month.month,
-        label: monthName(month.month),
+        label: monthName(month.month, locale),
         actual: round1(convertPrecipitation(month.actual, units)),
         normal: round1(convertPrecipitation(month.normal, units)),
         partial: month.coverage < 1,
       })),
-    [months, units],
+    [months, units, locale],
   );
   const config = {
-    normal: { label: "Normal", color: "var(--muted-foreground)" },
-    actual: { label: "Actual", color: "var(--chart-3)" },
+    normal: { label: text.normal, color: "var(--muted-foreground)" },
+    actual: { label: text.actual, color: "var(--chart-3)" },
   } satisfies ChartConfig;
 
   return (
     <div className="fit:flex fit:flex-col">
       <ul
         className="mb-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground fit:mb-2"
-        aria-label="Legend"
+        aria-label={t.place.hourly.legend}
       >
         <LegendItem
           swatch={
@@ -243,20 +250,16 @@ export function MonthlyRainChart({ months, units }: { months: MonthComparison[];
             />
           }
         >
-          Rainfall
+          {text.rainfall}
         </LegendItem>
         <LegendItem
           swatch={<span className="inline-block h-2.5 w-5 rounded-sm bg-foreground/25" />}
         >
-          Normal for the Period
+          {text.normalForPeriod}
         </LegendItem>
       </ul>
 
-      <div
-        role="group"
-        className=""
-        aria-label="Monthly rainfall for the last twelve months compared with normal. A table with every value follows."
-      >
+      <div role="group" className="" aria-label={text.monthlyAria}>
         <ChartContainer config={config} className="aspect-auto h-64 w-full">
           <BarChart
             data={rows}
@@ -295,8 +298,7 @@ export function MonthlyRainChart({ months, units }: { months: MonthComparison[];
         </ChartContainer>
       </div>
       <p className="mt-2 text-xs text-muted-foreground fit:hidden">
-        Rainfall in {labels.precipitation} per month. The latest month is still in progress, so its
-        normal covers only the days so far.
+        {text.monthlyNote(labels.precipitation)}
       </p>
     </div>
   );
@@ -311,6 +313,7 @@ function MonthTooltip({
   payload?: ReadonlyArray<{ payload: MonthRow }>;
   unit: string;
 }) {
+  const text = useMessages().place.history.charts;
   const row = payload?.[0]?.payload;
   if (!active || !row) return null;
   const year = row.month.slice(0, 4);
@@ -319,7 +322,7 @@ function MonthTooltip({
     <div className="min-w-40 rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
       <p className="mb-1.5 font-medium text-popover-foreground">
         {row.label} {year}
-        {row.partial && <span className="font-normal text-muted-foreground"> (so far)</span>}
+        {row.partial && <span className="font-normal text-muted-foreground"> ({text.soFar})</span>}
       </p>
       <ul className="space-y-1">
         <li className="flex items-center gap-2">
@@ -331,14 +334,14 @@ function MonthTooltip({
           <span className="text-sm font-semibold text-popover-foreground">
             {row.actual} {unit}
           </span>
-          <span className="text-muted-foreground">Actual</span>
+          <span className="text-muted-foreground">{text.actual}</span>
         </li>
         <li className="flex items-center gap-2">
           <span aria-hidden="true" className="inline-block h-2 w-3 rounded-sm bg-foreground/25" />
           <span className="text-sm font-semibold text-popover-foreground">
             {row.normal} {unit}
           </span>
-          <span className="text-muted-foreground">Normal</span>
+          <span className="text-muted-foreground">{text.normal}</span>
         </li>
       </ul>
     </div>
