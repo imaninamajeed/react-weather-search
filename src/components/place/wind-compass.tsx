@@ -43,7 +43,7 @@ export async function WindCompass({
       <svg
         viewBox="0 0 120 126"
         aria-hidden="true"
-        className="mx-auto mt-3 h-auto w-36 fit:mt-1 fit:w-24"
+        className="mx-auto mt-3 h-auto w-full max-w-36 fit:mt-1 fit:w-24"
       >
         <defs>
           <linearGradient id="wind-needle" x1="0" x2="0" y1="0" y2="1">

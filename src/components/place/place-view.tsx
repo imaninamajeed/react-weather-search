@@ -7,7 +7,6 @@ import { SectionCard } from "@/components/shared/section-card";
 import { SectionBoundary } from "@/components/shared/section-boundary";
 import { RowsSkeleton } from "@/components/shared/skeletons";
 import { Button } from "@/components/ui/button";
-import { StatCards } from "@/components/dashboard/stat-cards";
 import { getI18n } from "@/lib/i18n/server";
 import { getForecast } from "@/lib/open-meteo/forecast";
 import { placeHref, type Place } from "@/lib/places";
@@ -20,7 +19,11 @@ import { HourlyTable } from "./hourly-table";
 
 const CHART_HOURS = 48;
 
-/** Everything about one place. A forecast outage fails the whole view (it's the page's core). */
+/**
+ * Everything about one place, in the order people need it: what it is doing now (the hero, with the
+ * day's four numbers), anything dangerous (alerts), what happens next (48 hours, three days), and
+ * only then the instrument readings. A forecast outage fails the whole view (it's the page's core).
+ */
 export async function PlaceView({
   place,
   units,
@@ -51,10 +54,6 @@ export async function PlaceView({
           className="fit:flex-none"
         />
 
-        <div className="fit:hidden">
-          <StatCards forecast={forecast} units={units} />
-        </div>
-
         <SectionCard
           id="alerts"
           title={t.dashboard.alerts}
@@ -77,15 +76,6 @@ export async function PlaceView({
           compact
           className="mx-0 hidden px-0 md:mx-0 md:px-0 fit:flex fit:shrink-0"
         />
-
-        <SectionCard
-          id="conditions"
-          title={text.rightNow}
-          description={text.rightNowDescription}
-          bodyClassName=""
-        >
-          <ConditionsGrid forecast={forecast} units={units} />
-        </SectionCard>
 
         <div className="contents fit:grid fit:grid-cols-8 fit:gap-3">
           <SectionCard
@@ -119,6 +109,15 @@ export async function PlaceView({
             <DailyList forecast={forecast} units={units} limit={3} />
           </SectionCard>
         </div>
+
+        <SectionCard
+          id="conditions"
+          title={text.rightNow}
+          description={text.rightNowDescription}
+          bodyClassName=""
+        >
+          <ConditionsGrid forecast={forecast} units={units} />
+        </SectionCard>
       </div>
     </div>
   );

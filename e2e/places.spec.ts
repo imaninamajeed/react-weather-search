@@ -27,7 +27,7 @@ test("search explains an empty result and an upstream failure", async ({ page })
   const input = page.getByPlaceholder("Search a city…");
 
   await input.fill("zzzz");
-  await expect(page.getByText("No places match “zzzz”.")).toBeVisible();
+  await expect(page.getByText("No locations match “zzzz”.")).toBeVisible();
 
   await input.fill("boom");
   await expect(page.getByText(/Search is unavailable right now/)).toBeVisible();
@@ -147,7 +147,7 @@ test("the dashboard says how to add a second place when only home is followed", 
 
   await page.goto("/dashboard");
   await expect(page.getByText(/only one you follow so far/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "Add a Place" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add a Location" })).toBeVisible();
 });
 
 test("units switch between metric and imperial and persist", async ({ page }) => {

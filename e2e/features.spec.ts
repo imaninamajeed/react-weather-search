@@ -26,12 +26,16 @@ test.describe("alerts", () => {
     await page.goto("/dashboard");
     const alerts = page.getByRole("region", { name: "Alerts" });
 
-    // Two places, three alerts in all (one official warning and two forecast signals): all fit.
+    // Two places, three alerts in all (one official warning and two forecast signals). The banner
+    // counts them all, shows the two most important as chips and says how many more there are.
+    await expect(alerts.getByText("1 warning and 2 advisories")).toBeVisible();
     await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
-    // Every alert names its place, so a place with two alerts is linked twice.
-    await expect(alerts.getByRole("link", { name: "Subang Jaya" }).first()).toBeVisible();
-    await expect(alerts.getByRole("link", { name: "Tokyo" }).first()).toBeVisible();
-    await expect(alerts.getByRole("link", { name: /View all/ })).toHaveCount(0);
+    // Every chip names its place and links to it; the official warning comes first.
+    const chips = alerts.getByRole("link", { name: /Subang Jaya/ });
+    await expect(chips).toHaveCount(2);
+    await expect(chips.first()).toContainText("Thunderstorms Warning");
+    await expect(chips.first()).toHaveAttribute("href", "/place/8504423-subang-jaya");
+    await expect(alerts.getByText("+1 more")).toBeVisible();
 
     await alerts.getByRole("link", { name: /All Alerts/ }).click();
     await expect(page).toHaveURL(/\/alerts$/);
@@ -67,10 +71,12 @@ test.describe("alerts", () => {
     await page.goto("/dashboard");
     const alerts = page.getByRole("region", { name: "Alerts" });
     await expect(alerts.getByText("Thunderstorms Warning")).toBeVisible();
-    // Three shown, the fourth is behind the header's button, and the official warning is first.
-    await expect(alerts.getByText("Showing 3 of 4")).toBeVisible();
-    // The compact row shows three alerts as pills, each a link to its place.
-    await expect(alerts.getByRole("listitem")).toHaveCount(3);
+    // Two are shown as chips, each a link to its place, and the official warning is first; the
+    // other two are behind "All Alerts".
+    const chips = alerts.getByRole("listitem").filter({ has: page.getByRole("link") });
+    await expect(chips).toHaveCount(2);
+    await expect(chips.first()).toContainText("Thunderstorms Warning");
+    await expect(alerts.getByText("+2 more")).toBeVisible();
 
     await alerts.getByRole("link", { name: "All Alerts" }).click();
     await expect(page).toHaveURL(/\/alerts$/);
@@ -114,7 +120,7 @@ test.describe("outlook", () => {
   test("the forecast page teases three days and links to the full outlook", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
     const teaser = page.getByRole("region", { name: "Next 3 days" });
-    const tabs = page.getByRole("navigation", { name: "Place Sections" });
+    const tabs = page.getByRole("navigation", { name: "Location Sections" });
     await expect(teaser.getByRole("listitem")).toHaveCount(3);
     await expect(page.getByRole("heading", { name: "14-day outlook" })).toHaveCount(0);
 
@@ -142,7 +148,7 @@ test.describe("outlook", () => {
 
   test("moves between a place's three views", async ({ page }) => {
     await page.goto("/place/8504423-subang-jaya");
-    const tabs = page.getByRole("navigation", { name: "Place Sections" });
+    const tabs = page.getByRole("navigation", { name: "Location Sections" });
     await expect(tabs.getByRole("link", { name: "Forecast" })).toHaveAttribute(
       "aria-current",
       "page",
@@ -189,15 +195,25 @@ test("climate history compares the year with normals", async ({ page }) => {
 
   // Navigation between a place's views.
   await page
-    .getByRole("navigation", { name: "Place Sections" })
+    .getByRole("navigation", { name: "Location Sections" })
     .getByRole("link", { name: "Forecast" })
     .click();
   await expect(page).toHaveURL(/\/place\/8504423-subang-jaya$/);
 });
 
-test("current conditions come before the charts on the forecast page", async ({ page }) => {
+test("the forecast page reads now, alerts, what's next, then the detailed readings", async ({
+  page,
+}) => {
   await page.goto("/place/8504423-subang-jaya");
-  const top = async (name: string) =>
-    (await page.getByRole("heading", { level: 2, name }).boundingBox())!.y;
-  expect(await top("Right now")).toBeLessThan(await top("Next 48 hours"));
+  const top = async (name: string, level = 2) =>
+    (await page.getByRole("heading", { level, name }).boundingBox())!.y;
+  // Current conditions open the page: the hero carries the temperature and the day's four numbers.
+  const hero = page.locator("header").filter({
+    has: page.getByRole("heading", { level: 1, name: "Subang Jaya" }),
+  });
+  await expect(hero.getByText("Feels Like")).toBeVisible();
+  await expect(hero.getByText("Rain Today")).toBeVisible();
+  expect(await top("Subang Jaya", 1)).toBeLessThan(await top("Alerts"));
+  expect(await top("Alerts")).toBeLessThan(await top("Next 48 hours"));
+  expect(await top("Next 48 hours")).toBeLessThan(await top("Right now"));
 });

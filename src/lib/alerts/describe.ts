@@ -40,6 +40,8 @@ function dayWindow(start: string, end: string, today: string, locale: Locale): s
 export interface AlertDescription {
   title: string;
   detail?: string;
+  /** For our own forecast signals: what it means for someone outdoors, in a sentence. Official warnings carry their own instructions. */
+  advice?: string;
   when: string;
 }
 
@@ -87,6 +89,7 @@ export function describeHazard(
   return {
     title: text.titles[hazard.kind][hazard.severity],
     detail: hazardDetail(hazard, units, locale),
+    advice: text.advice[hazard.kind],
     when,
   };
 }

@@ -50,20 +50,24 @@ test("methods are one click from where they matter", async ({ page }) => {
 
 test("the sidebar links to the about page", async ({ page }) => {
   await page.goto("/dashboard");
-  await page.getByRole("link", { name: "About", exact: true }).click();
+  // Scoped to the sidebar: the about page's own table of contents also has an "About" link.
+  const sidebar = page.locator('[data-slot="sidebar"]');
+  await sidebar.getByRole("link", { name: "About", exact: true }).click();
   await expect(page).toHaveURL(/\/about$/);
-  await expect(page.getByRole("link", { name: "About", exact: true })).toHaveAttribute(
+  await expect(sidebar.getByRole("link", { name: "About", exact: true })).toHaveAttribute(
     "aria-current",
     "page",
   );
 });
 
-test("on a phone, About is in the drawer, and the page has breadcrumbs", async ({ page }) => {
-  // Breadcrumbs belong to the phone layout; from md up the sidebar replaces them.
+test("on a phone, About is reached from search, and the page has breadcrumbs", async ({ page }) => {
+  // A phone has no sidebar (the tab bar navigates), so search is the way to About. Breadcrumbs
+  // belong to the phone layout; from md up the sidebar replaces them.
   await page.setViewportSize({ width: 700, height: 900 });
   await page.goto("/dashboard");
-  await page.getByRole("button", { name: "Toggle Sidebar" }).click();
-  await page.getByRole("link", { name: "About", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Toggle Sidebar" })).toBeHidden();
+  await page.getByRole("button", { name: "Search Locations" }).click();
+  await page.getByRole("option", { name: "About", exact: true }).click();
   await expect(page).toHaveURL(/\/about$/);
   const crumbs = page.getByRole("navigation", { name: "breadcrumb" });
   await expect(crumbs.getByRole("link", { name: "Dashboard" })).toBeVisible();

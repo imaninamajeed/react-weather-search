@@ -6,7 +6,7 @@ type Icon = ComponentType<{ className?: string }>;
 
 /** The surface every reading sits on: inset in its card, with the card's own hairline ring. */
 export const PANEL =
-  "rounded-3xl bg-muted/50 p-4 fit:p-3 ring-1 ring-foreground/5 dark:bg-white/5 dark:ring-white/10";
+  "rounded-3xl bg-muted/50 p-3.5 sm:p-4 fit:p-3 ring-1 ring-foreground/5 dark:bg-white/5 dark:ring-white/10";
 
 /** A round chip for a reading's icon, tinted by one of the app mark's colours. */
 export function IconChip({ icon: ChipIcon, accent }: { icon: Icon; accent: string }) {
@@ -55,12 +55,16 @@ export function Tile({
         {icon && accent && <IconChip icon={icon} accent={accent} />}
         {label}
       </p>
-      <p className="mt-3 text-3xl leading-none font-semibold tabular-nums fit:mt-2 fit:text-2xl">
+      <p className="mt-3 text-2xl leading-none font-semibold tabular-nums sm:text-3xl fit:mt-2 fit:text-2xl">
         {value}
         {unit && <span className="ml-1 text-base font-normal text-muted-foreground">{unit}</span>}
       </p>
       {children}
-      {caption && <p className="mt-3 text-sm text-muted-foreground fit:sr-only">{caption}</p>}
+      {caption && (
+        <p className="mt-3 text-sm text-muted-foreground fit:mt-2 fit:line-clamp-2 fit:text-xs">
+          {caption}
+        </p>
+      )}
     </div>
   );
 }

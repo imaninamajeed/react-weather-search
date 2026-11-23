@@ -18,11 +18,12 @@ import { HourStrip } from "./hour-strip";
 // crosses the art, without a visible box.
 const halo = "[text-shadow:0_0_14px_var(--halo),0_0_5px_var(--halo)]";
 
-const caption = `font-heading text-[0.6875rem] font-medium tracking-[0.08em] text-foreground/75 uppercase dark:text-white/90 ${halo}`;
+const caption = `font-heading text-xs font-medium tracking-[0.08em] text-foreground/75 uppercase dark:text-white/90 ${halo}`;
 
 /**
  * The dashboard's one focus: home, now. The place and what it is doing sit on the left, the
- * temperature on the right, and the next twelve hours run beneath. The mark's isobars are drawn
+ * temperature on the right, and the next twelve hours run beneath. On a phone they stack as place,
+ * summary, temperature, then the links onward: the weather comes before the navigation. The mark's isobars are drawn
  * behind the temperature and fade out well before the words, so the art is the weather's own
  * pressure map and never a surface for text. Dark mode uses the mark's ink; light mode is white
  * with the same colours washed out.
@@ -65,7 +66,7 @@ export async function DashboardHero({
         className="pointer-events-none absolute -top-28 -right-24 -z-10 size-[30rem] mask-[radial-gradient(closest-side,black_35%,transparent)] opacity-40 motion-safe:animate-[spin_240s_linear_infinite] lg:-top-48 lg:-right-24 lg:size-[38rem] dark:opacity-55"
       />
 
-      <div className="grid gap-8 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-x-8">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <Badge variant="secondary" className="dark:bg-white/10 dark:text-white">
@@ -92,43 +93,10 @@ export async function DashboardHero({
           <p className={`mt-5 max-w-prose text-lg text-balance ${halo}`}>
             {summarizeToday(forecast, units, locale)}
           </p>
-
-          <div className="mt-6 flex flex-wrap items-center gap-2">
-            <Button asChild size="lg">
-              <Link href={href}>
-                {t.dashboard.hero.fullForecast}
-                <ArrowRight aria-hidden="true" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15 dark:hover:text-white"
-            >
-              <Link href={`${href}/outlook`}>
-                <CalendarDays aria-hidden="true" />
-                {t.dashboard.hero.outlook}
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15 dark:hover:text-white"
-            >
-              <Link
-                href={`/map?place=${encodeURIComponent(place.key)}`}
-                aria-label={t.dashboard.hero.radarFor(place.name)}
-              >
-                <Radar aria-hidden="true" />
-                {t.dashboard.hero.radar}
-              </Link>
-            </Button>
-          </div>
         </div>
 
-        <div className="flex items-center gap-4 sm:gap-6">
+        {/* Before the buttons in the source, so a phone shows the temperature without scrolling. */}
+        <div className="flex items-center gap-4 sm:gap-6 lg:col-start-2 lg:row-span-2 lg:row-start-1">
           <WeatherIcon
             name={weather.icon}
             className="size-14 shrink-0 text-(--brand-teal-text) drop-shadow-[0_0_16px_color-mix(in_oklch,var(--brand-teal)_55%,transparent)] motion-safe:animate-[float_7s_ease-in-out_infinite] sm:size-20 lg:size-24"
@@ -153,6 +121,40 @@ export async function DashboardHero({
               {formatTemperature(today.temperatureMin, units)}
             </p>
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 lg:col-start-1 lg:row-start-2">
+          <Button asChild size="lg">
+            <Link href={href}>
+              {t.dashboard.hero.fullForecast}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15 dark:hover:text-white"
+          >
+            <Link href={`${href}/outlook`}>
+              <CalendarDays aria-hidden="true" />
+              {t.dashboard.hero.outlook}
+            </Link>
+          </Button>
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15 dark:hover:text-white"
+          >
+            <Link
+              href={`/map?place=${encodeURIComponent(place.key)}`}
+              aria-label={t.dashboard.hero.radarFor(place.name)}
+            >
+              <Radar aria-hidden="true" />
+              {t.dashboard.hero.radar}
+            </Link>
+          </Button>
         </div>
       </div>
 

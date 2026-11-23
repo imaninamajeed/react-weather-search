@@ -271,7 +271,7 @@ function placeHeader(place: MapPlace): HTMLElement {
   name.textContent = place.name;
   const row = document.createElement("p");
   row.className =
-    "flex items-center gap-2 font-heading text-[0.6875rem] font-medium tracking-[0.1em] uppercase";
+    "flex items-center gap-2 font-heading text-xs font-medium tracking-[0.1em] uppercase";
   row.append(badge, name);
   return row;
 }
@@ -328,7 +328,7 @@ function popupContent(
   if (place) root.append(placeHeader(place));
   else {
     add(
-      "font-heading text-[0.6875rem] uppercase tracking-[0.08em] text-muted-foreground",
+      "font-heading text-xs uppercase tracking-[0.08em] text-muted-foreground",
       coordinateLabel(latitude, longitude),
     );
   }

@@ -7,7 +7,9 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      // A wide table scrolls sideways on a phone, so a keyboard must be able to reach it.
+      tabIndex={0}
+      className="relative w-full overflow-x-auto focus-visible:outline-2 focus-visible:outline-ring"
     >
       <table
         data-slot="table"

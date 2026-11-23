@@ -53,6 +53,7 @@ describe("describeHazard", () => {
     expect(describeHazard(hazard({}), "metric", TODAY)).toEqual({
       title: "Thunderstorms",
       detail: "Up to 70% chance of rain.",
+      advice: "Expect lightning and sudden heavy rain. Go indoors when you hear thunder.",
       when: "Today 3–6 PM",
     });
   });
@@ -79,6 +80,7 @@ describe("describeHazard", () => {
     expect(describeHazard(heat, "metric", TODAY)).toEqual({
       title: "Heat Wave",
       detail: "Highs up to 36° for 3 days.",
+      advice: "Drink water often and keep hard activity out of the afternoon sun.",
       when: "Tomorrow – Fri Oct 30",
     });
   });

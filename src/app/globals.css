@@ -243,7 +243,45 @@
   }
   /* Small uppercase label used for data captions. */
   .label-caps {
-    @apply font-heading text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase;
+    @apply font-heading text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase;
+  }
+}
+
+/*
+ * Touch targets. Controls keep their compact look, but on a touch screen each one answers to at
+ * least 44px of height (and width, for icon-only buttons) through an invisible ::after. Zero
+ * specificity and the components layer, so a control that positions itself (absolute, sticky)
+ * still wins.
+ */
+@layer components {
+  @media (pointer: coarse) {
+    :where(
+      [data-slot="button"],
+      [data-slot="toggle"],
+      [data-slot="toggle-group-item"],
+      [data-touch-target]
+    ) {
+      position: relative;
+    }
+    :where(
+      [data-slot="button"],
+      [data-slot="toggle"],
+      [data-slot="toggle-group-item"],
+      [data-touch-target]
+    )::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: max(100%, 2.75rem);
+      transform: translateY(-50%);
+    }
+    :where([data-slot="button"][data-size^="icon"])::after {
+      left: 50%;
+      width: max(100%, 2.75rem);
+      transform: translate(-50%, -50%);
+    }
   }
 }
 

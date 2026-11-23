@@ -144,6 +144,15 @@ export const weather = defineMessages(
       minTemp: (temperature: string) => `Lows down to ${temperature}.`,
       snowfall: (amount: string) => `Up to ${amount} expected in a day.`,
       aqi: (value: number, label: string) => `US AQI ${value} (${label}).`,
+      advice: {
+        thunderstorm: "Expect lightning and sudden heavy rain. Go indoors when you hear thunder.",
+        rain: "Low-lying roads can flood quickly. Allow extra travel time.",
+        wind: "Secure loose things outdoors and take care near trees.",
+        heat: "Drink water often and keep hard activity out of the afternoon sun.",
+        frost: "Roads and paths may be icy early. Protect plants and pipes.",
+        snow: "Travel may be slow or disrupted. Check before you set out.",
+        "air-quality": "Limit time outdoors, and wear a mask if smoke or haze affects you.",
+      },
       rightNow: "Right now",
       until: (time: string, day: string) => `Until ${time} ${day}`,
       from: (stamp: string) => `From ${stamp}`,
@@ -296,6 +305,17 @@ export const weather = defineMessages(
       minTemp: (temperature) => `Suhu terendah sehingga ${temperature}.`,
       snowfall: (amount) => `Sehingga ${amount} dijangka dalam sehari.`,
       aqi: (value, label) => `AQI AS ${value} (${label}).`,
+      advice: {
+        thunderstorm:
+          "Jangkakan kilat dan hujan lebat secara tiba-tiba. Masuk ke dalam bangunan apabila terdengar guruh.",
+        rain: "Jalan di kawasan rendah boleh banjir dengan cepat. Peruntukkan masa perjalanan tambahan.",
+        wind: "Kemaskan barang yang longgar di luar dan berhati-hati berhampiran pokok.",
+        heat: "Minum air dengan kerap dan elakkan aktiviti berat di bawah terik matahari petang.",
+        frost: "Jalan dan laluan mungkin berais pada awal pagi. Lindungi tanaman dan paip.",
+        snow: "Perjalanan mungkin perlahan atau terganggu. Semak sebelum bertolak.",
+        "air-quality":
+          "Hadkan masa di luar, dan pakai pelitup muka jika asap atau jerebu menjejaskan anda.",
+      },
       rightNow: "Sekarang",
       until: (time, day) => `Sehingga ${time} ${day}`,
       from: (stamp) => `Dari ${stamp}`,

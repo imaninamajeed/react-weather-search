@@ -81,7 +81,7 @@ test.describe("desktop", () => {
 
   test("the sidebar's add button opens search", async ({ page }) => {
     await page.goto("/dashboard");
-    await page.getByRole("button", { name: "Follow Another Place" }).click();
+    await page.getByRole("button", { name: "Follow Another Location" }).click();
     await expect(page.getByPlaceholder("Search a city…")).toBeVisible();
   });
 
@@ -234,20 +234,28 @@ test.describe("preferences", () => {
   test.describe("on a phone", () => {
     test.use({ viewport: { width: 390, height: 844 } });
 
-    test("the menu drawer lists your places and closes once you pick one", async ({
+    test("there is no menu drawer; the tab bar and the dashboard lead to your places", async ({
       page,
       context,
       baseURL,
     }) => {
       await seedPlaces(context, baseURL!);
       await page.goto("/dashboard");
-      await page.getByRole("button", { name: "Toggle Sidebar" }).click();
-      const places = page.getByRole("navigation", { name: "Your Locations" });
-      await expect(places).toBeVisible();
+      // The sidebar and its toggle belong to md and up.
+      await expect(page.getByRole("button", { name: "Toggle Sidebar" })).toBeHidden();
+      await expect(page.getByRole("navigation", { name: "Your Locations" })).toBeHidden();
 
-      await places.getByRole("link", { name: /Tokyo/ }).click();
+      // A saved place is one tap away on the dashboard…
+      const saved = page.getByRole("region", { name: "Saved Locations" });
+      await saved.getByRole("link", { name: /Tokyo/ }).first().click();
       await expect(page).toHaveURL(/\/place\/1850147-tokyo$/);
-      await expect(places).toBeHidden();
+
+      // …and the tab bar's Locations tab lists them all.
+      await page
+        .getByRole("navigation", { name: "Main" })
+        .getByRole("link", { name: "Locations" })
+        .click();
+      await expect(page).toHaveURL(/\/places$/);
     });
 
     test("the toolbar still fits the header without horizontal scroll", async ({ page }) => {

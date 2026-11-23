@@ -8,9 +8,10 @@ export const place = defineMessages(
     view: {
       alertsDescription: (name: string) => `Warnings and signals for ${name}`,
       rightNow: "Right Now",
-      rightNowDescription: "The sun, the wind and the air at this moment",
+      rightNowDescription:
+        "The sun, the wind and the air at this moment, and what each reading means",
       next48: "Next 48 Hours",
-      next48Description: "Switch between temperature, rain and wind",
+      next48Description: "Hour by hour. Switch between temperature, rain and wind",
       next3: "Next 3 Days",
       next3Description: "Each bar spans the day's low to high on one shared scale",
       outlookLong: "14-Day Outlook and Confidence",
@@ -32,13 +33,24 @@ export const place = defineMessages(
     },
     conditions: {
       humidity: "Humidity",
-      dewPoint: (temperature: string) => `Dew point ${temperature}`,
+      dewPoint: (feel: string, temperature: string) => `${feel} · dew point ${temperature}`,
+      comfortLevels: {
+        dry: "Dry Air",
+        comfortable: "Comfortable",
+        sticky: "A Little Sticky",
+        muggy: "Muggy",
+        oppressive: "Oppressive",
+      },
       uvIndex: "UV Index",
       sunProtection: (range: string) => `Sun protection ${range}`,
       noSunProtection: "No sun protection needed for the rest of today",
       uvMeter: (label: string) => `UV Index ${label}`,
       pressure: "Pressure",
-      atSeaLevel: "At Sea Level",
+      pressureLevels: {
+        low: "Low · often unsettled weather",
+        normal: "Normal range",
+        high: "High · often settled weather",
+      },
       visibility: "Visibility",
       visibilityLevels: {
         clear: "Clear",
@@ -78,6 +90,7 @@ export const place = defineMessages(
         `Days ${from}–${to}: indicative only, see forecast confidence below`,
       chanceOfRain: "chance of rain",
       confidenceFor: (level: string) => `${level} confidence`,
+      confidenceLegend: "Confidence",
     },
     hourly: {
       chartMetric: "Chart Metric",
@@ -212,9 +225,9 @@ export const place = defineMessages(
     view: {
       alertsDescription: (name) => `Amaran dan isyarat untuk ${name}`,
       rightNow: "Sekarang",
-      rightNowDescription: "Matahari, angin dan udara pada saat ini",
+      rightNowDescription: "Matahari, angin dan udara pada saat ini, serta maksud setiap bacaan",
       next48: "48 Jam Seterusnya",
-      next48Description: "Tukar antara suhu, hujan dan angin",
+      next48Description: "Jam demi jam. Tukar antara suhu, hujan dan angin",
       next3: "3 Hari Seterusnya",
       next3Description:
         "Setiap bar merangkumi suhu terendah hingga tertinggi hari itu pada satu skala yang sama",
@@ -237,13 +250,24 @@ export const place = defineMessages(
     },
     conditions: {
       humidity: "Kelembapan",
-      dewPoint: (temperature) => `Takat embun ${temperature}`,
+      dewPoint: (feel, temperature) => `${feel} · takat embun ${temperature}`,
+      comfortLevels: {
+        dry: "Udara Kering",
+        comfortable: "Selesa",
+        sticky: "Sedikit Melekit",
+        muggy: "Lembap dan Rimas",
+        oppressive: "Sangat Merimaskan",
+      },
       uvIndex: "Indeks UV",
       sunProtection: (range) => `Perlindungan matahari ${range}`,
       noSunProtection: "Tiada perlindungan matahari diperlukan untuk baki hari ini",
       uvMeter: (label) => `Indeks UV ${label}`,
       pressure: "Tekanan",
-      atSeaLevel: "Pada Aras Laut",
+      pressureLevels: {
+        low: "Rendah · cuaca sering tidak menentu",
+        normal: "Julat biasa",
+        high: "Tinggi · cuaca sering tenang",
+      },
       visibility: "Jarak Penglihatan",
       visibilityLevels: {
         clear: "Jelas",
@@ -283,6 +307,7 @@ export const place = defineMessages(
         `Hari ${from}–${to}: sebagai petunjuk sahaja, lihat keyakinan ramalan di bawah`,
       chanceOfRain: "kemungkinan hujan",
       confidenceFor: (level) => `Keyakinan ${level}`,
+      confidenceLegend: "Keyakinan",
     },
     hourly: {
       chartMetric: "Metrik Carta",

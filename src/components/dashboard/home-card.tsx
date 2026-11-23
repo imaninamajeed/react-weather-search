@@ -160,19 +160,21 @@ export async function HomeCard({
               value: `${today.precipitationProbabilityMax}%`,
             },
           ].map(({ Icon, label, value }) => (
-            <div key={label} className="flex items-center gap-3 sm:px-5 sm:first:pl-0">
-              <span
+            // dt and dd are direct children of the group: a <dl> allows one wrapper div, not two.
+            <div
+              key={label}
+              className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 sm:px-5 sm:first:pl-0"
+            >
+              <dt className="label-caps col-start-2 row-start-1 self-end">{label}</dt>
+              <dd className="tnum col-start-2 row-start-2 mt-1 self-start font-heading text-2xl leading-none font-medium">
+                {value}
+              </dd>
+              <dd
                 aria-hidden="true"
-                className="grid size-10 shrink-0 place-items-center rounded-full bg-(--brand-teal-text)/10 text-(--brand-teal-text)"
+                className="col-start-1 row-span-2 row-start-1 grid size-10 place-items-center rounded-full bg-(--brand-teal-text)/10 text-(--brand-teal-text)"
               >
                 <Icon className="size-5" />
-              </span>
-              <div className="min-w-0">
-                <dt className="label-caps">{label}</dt>
-                <dd className="tnum mt-1 font-heading text-2xl leading-none font-medium">
-                  {value}
-                </dd>
-              </div>
+              </dd>
             </div>
           ))}
         </dl>

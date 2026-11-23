@@ -40,6 +40,18 @@ export async function DailyList({
 
   return (
     <div className="@container/daily">
+      {confidence && (
+        // The dots are only words from @lg up, so a phone needs the key spelled out once.
+        <p className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span className="label-caps">{t.place.daily.confidenceLegend}</span>
+          {(["high", "medium", "low"] as const).map((level) => (
+            <span key={level} className="inline-flex items-center gap-1.5">
+              <ConfidenceDots level={level} />
+              {t.place.confidence.levels[level]}
+            </span>
+          ))}
+        </p>
+      )}
       <ol className="divide-y divide-border/70">
         {daily.slice(0, limit).map((day, index) => {
           const weather = describeWeather(day.weatherCode, true, locale);

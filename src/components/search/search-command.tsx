@@ -8,6 +8,7 @@ import {
   IconClock,
   IconCurrentLocation,
   IconHome,
+  IconInfoCircle,
   IconLayoutDashboard,
   IconListDetails,
   IconMap,
@@ -45,6 +46,8 @@ const DESTINATIONS = [
   { href: "/alerts", label: "alerts", icon: IconAlertTriangle },
   { href: "/places", label: "locations", icon: IconListDetails },
   { href: "/map", label: "radarMap", icon: IconMap },
+  // The sidebar holds the only other link to it, and a phone has no sidebar.
+  { href: "/about", label: "about", icon: IconInfoCircle },
 ] as const;
 
 /**

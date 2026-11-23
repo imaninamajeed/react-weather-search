@@ -12,7 +12,7 @@ to. Otherwise it belongs inside the page where the decision it informs is made.*
 | `/places`              | Manage places: add, reorder, remove, set home; week-ahead comparison                                     | Places                      | Dashboard › Places                      |
 | `/alerts`              | Every alert across every place, filterable to official warnings                                          | Alerts                      | Dashboard › Alerts                      |
 | `/map`                 | Radar and a map of your places                                                                           | Map                         | Dashboard › Radar map                   |
-| `/place/[key]`         | Forecast: now, next 48 hours, a three-day teaser, conditions                                             | Sidebar places              | Dashboard › Places › _Place_ › Forecast |
+| `/place/[key]`         | Forecast: now, alerts, next 48 hours, a three-day teaser, readings                                       | Sidebar places              | Dashboard › Places › _Place_ › Forecast |
 | `/place/[key]/outlook` | 14-day outlook with per-day model confidence                                                             | Place toggles               | … › Outlook                             |
 | `/place/[key]/history` | Climate: the last year against 1991–2020 normals                                                         | Place toggles               | … › Climate                             |
 | `/about`               | Sources, how alerts, confidence and climate are computed, privacy                                        | Sidebar footer              | Dashboard › About                       |
@@ -42,8 +42,8 @@ Search and settings are not pages: they are available from the sidebar (or the p
   the four destinations (Dashboard, Alerts, Places, Map), **your places** (home first, each with its
   current weather and an alert marker, and a "+" that opens search). It is the app's one place switcher: choosing a place keeps the view you are on
   (Forecast, Outlook or Climate). It collapses to an icon rail (⌘B, the header's toggle, or the
-  rail's edge) and remembers that. On a phone it is a drawer behind the header's menu button, next to
-  a bottom tab bar with the four destinations.
+  rail's edge) and remembers that. A phone has no sidebar: a bottom tab bar holds the four
+  destinations, the Locations tab and the dashboard list your places, and About is in search.
 - **The header** is the same at every size: the sidebar toggle, the breadcrumb (where you are; its
   place crumb is a dropdown to switch place), and the app toolbar: search, units (a toggle group),
   theme (a menu of light, dark and system) and install. On a phone the brand joins it and the
@@ -83,3 +83,7 @@ Problems found when walking the app, and what changed.
 3. **State lives in the URL** where it changes what you see (`?show=official`, the place key, the tab),
    so views are linkable and the back button works.
 4. **Say how a number was made** where it appears, and link to `/about` for the detail.
+5. **Most important first, on a phone.** Each page reads now, then anything dangerous, then what
+   happens next, then the instrument readings (see "Content order" in [`DESIGN.md`](../DESIGN.md)).
+   The forecast page used to put four stat cards and eight full-width readings between the hero and
+   the 48-hour chart, which left alerts two screens down and the chart eight.

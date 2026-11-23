@@ -13,6 +13,7 @@ import {
   unitLabels,
 } from "@/lib/units";
 import type { Forecast, Units } from "@/lib/weather/types";
+import { dewPointComfort, pressureLevel } from "@/lib/weather/comfort";
 import { uvCategory, uvProtectionWindow } from "@/lib/weather/uv";
 import { AirQualityTile } from "./air-quality";
 import { SunArc } from "./sun-arc";
@@ -53,7 +54,10 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
       accent="var(--brand-indigo)"
       value={Math.round(current.humidity)}
       unit="%"
-      caption={text.dewPoint(formatTemperature(current.dewPoint, units))}
+      caption={text.dewPoint(
+        text.comfortLevels[dewPointComfort(current.dewPoint)],
+        formatTemperature(current.dewPoint, units),
+      )}
     />,
     <Tile
       key="uv"
@@ -93,7 +97,7 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
           : Math.round(current.pressure)
       }
       unit={labels.pressure}
-      caption={text.atSeaLevel}
+      caption={text.pressureLevels[pressureLevel(current.pressure)]}
     />,
     <Tile
       key="visibility"
@@ -116,9 +120,10 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 fit:grid-cols-5 fit:grid-rows-2">
-      <SunArc forecast={forecast} className="sm:col-span-2 fit:col-span-1 fit:row-span-2" />
-      <WindCompass forecast={forecast} units={units} className="fit:row-span-2" />
+    // Two columns even on a phone: eight full-width tiles made this the longest scroll on the page.
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 fit:grid-cols-5 fit:grid-rows-2">
+      <SunArc forecast={forecast} className="col-span-2 fit:col-span-1 fit:row-span-2" />
+      <WindCompass forecast={forecast} units={units} className="max-lg:row-span-2 fit:row-span-2" />
       {tiles}
     </div>
   );

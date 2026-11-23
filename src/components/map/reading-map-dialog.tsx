@@ -29,7 +29,7 @@ function Pill({ children, home }: { children: string; home?: boolean }) {
   return (
     <span
       className={cn(
-        "flex items-center gap-1 rounded-full border bg-card py-0.5 pr-2 pl-0.5 font-heading text-[0.6875rem] font-medium text-card-foreground shadow-sm",
+        "flex items-center gap-1 rounded-full border bg-card py-0.5 pr-2 pl-0.5 font-heading text-xs font-medium text-card-foreground shadow-sm",
         home ? "border-primary" : "border-border",
       )}
     >

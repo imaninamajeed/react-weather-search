@@ -9,7 +9,9 @@ const halo = "[text-shadow:0_0_14px_var(--halo),0_0_5px_var(--halo)]";
  * The banner that opens a top-level page (Alerts, Places), drawn like the dashboard's hero: the
  * mark's isobars turn slowly behind it and fade out well before the words. A label, a headline and
  * a line of lead on the left, with room under them for the page's own controls (`children`), and
- * something on the right (`aside`: figures, or a mark). The glows are the brand's, never a status
+ * something on the right (`aside`: figures, or a mark). On a phone it is deliberately short (smaller
+ * headline and figures), because the page's content, not its banner, should fill the first screen.
+ * The glows are the brand's, never a status
  * colour, so a banner about warnings is not also a banner full of red.
  */
 export function PageBanner({
@@ -49,17 +51,17 @@ export function PageBanner({
         className="pointer-events-none absolute -top-24 -right-20 -z-10 size-[26rem] mask-[radial-gradient(closest-side,black_35%,transparent)] opacity-40 motion-safe:animate-[spin_240s_linear_infinite] lg:-top-44 lg:-right-16 lg:size-[36rem] dark:opacity-55"
       />
 
-      <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12">
+      <div className="grid gap-5 p-5 sm:gap-8 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12">
         <div className="min-w-0">
           <p className={`label-caps text-foreground/75 dark:text-white/90 ${halo}`}>{label}</p>
           <h2
             id={`${id}-title`}
-            className="mt-3 font-heading text-5xl leading-[0.95] text-balance sm:text-6xl lg:text-7xl"
+            className="mt-2 font-heading text-4xl leading-[0.95] text-balance sm:mt-3 sm:text-6xl lg:text-7xl"
           >
             {title}
           </h2>
           <p
-            className={`mt-4 max-w-prose text-lg text-muted-foreground dark:text-white/80 ${halo}`}
+            className={`mt-3 max-w-prose text-base text-muted-foreground sm:mt-4 sm:text-lg dark:text-white/80 ${halo}`}
           >
             {lead}
           </p>
@@ -75,13 +77,15 @@ export function PageBanner({
 export function BannerFigures({ figures }: { figures: { label: string; value: ReactNode }[] }) {
   return (
     <dl
-      className="grid divide-x divide-border border-t border-border pt-6 lg:border-t-0 lg:pt-0"
+      className="grid divide-x divide-border border-t border-border pt-4 sm:pt-6 lg:border-t-0 lg:pt-0"
       style={{ gridTemplateColumns: `repeat(${figures.length}, auto)` }}
     >
       {figures.map(({ label, value }) => (
         <div key={label} className="px-6 first:pl-0 last:pr-0 lg:px-10 lg:first:pl-0 lg:last:pr-0">
           <dt className={`text-sm text-muted-foreground dark:text-white/80 ${halo}`}>{label}</dt>
-          <dd className="tnum mt-1 font-heading text-6xl leading-none font-medium">{value}</dd>
+          <dd className="tnum mt-1 font-heading text-4xl leading-none font-medium sm:text-6xl">
+            {value}
+          </dd>
         </div>
       ))}
     </dl>

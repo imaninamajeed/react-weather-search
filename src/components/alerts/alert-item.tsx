@@ -60,7 +60,7 @@ export async function AlertItem({ alert, units, now, place }: AlertItemProps) {
         <p className="font-heading text-lg leading-tight font-medium">{description.title}</p>
 
         <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-          <span className="font-heading text-[0.6875rem] font-semibold tracking-[0.08em] text-foreground uppercase">
+          <span className="font-heading text-xs font-semibold tracking-[0.08em] text-foreground uppercase">
             {isWarning ? t.common.warning : t.common.advisory}
           </span>
           {dot}
@@ -87,6 +87,9 @@ export async function AlertItem({ alert, units, now, place }: AlertItemProps) {
         </p>
 
         {description.detail && <p className="mt-2.5">{description.detail}</p>}
+        {description.advice && (
+          <p className="mt-1 text-sm text-muted-foreground">{description.advice}</p>
+        )}
 
         {alert.source !== "forecast" && (
           <details className="group mt-3 text-sm">

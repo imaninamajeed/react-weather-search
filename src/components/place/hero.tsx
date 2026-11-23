@@ -25,13 +25,13 @@ interface PlaceHeroProps {
   actions?: ReactNode;
   /** The dashboard owns the page's h1, so its hero heading is an h2. */
   headingLevel?: 1 | 2;
-  /** On screens that fit a page to the viewport, stand tall in a side column and show the day's numbers beneath. */
+  /** Show the day's four numbers beneath (feels like, high / low, rain, wind); on screens that fit a page to the viewport, also stand tall in a side column. */
   fit?: boolean;
   className?: string;
 }
 
 const caption =
-  "font-heading text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase dark:text-white/75";
+  "font-heading text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase dark:text-white/75";
 
 /**
  * The opening panel of the dashboard and of a place's forecast: the place lit by the app mark's
@@ -146,7 +146,7 @@ export async function PlaceHero({
       </div>
 
       {fit && (
-        <dl className="hidden grid-cols-2 gap-x-4 gap-y-2 border-t border-border px-6 py-4 dark:border-white/10 fit:grid">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border px-6 py-4 md:px-10 dark:border-white/10 fit:gap-y-2 fit:px-6">
           <Stat
             label={t.place.hero.feelsLike}
             value={formatTemperature(current.apparentTemperature, units)}
@@ -187,7 +187,7 @@ function Stat({ label, value, detail }: { label: string; value: string; detail?:
       <dd className="mt-1 text-xl font-medium">
         {value}
         {detail && (
-          <span className="ml-2 block text-sm font-normal text-muted-foreground xl:inline dark:text-white/75">
+          <span className="block text-sm font-normal text-muted-foreground xl:ml-2 xl:inline dark:text-white/75">
             {detail}
           </span>
         )}

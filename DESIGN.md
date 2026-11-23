@@ -51,6 +51,48 @@ destructive | link` and `default | xs | sm | lg | icon | icon-xs | icon-sm | ico
    around whole pages. Providers (`TooltipProvider`, `SidebarProvider`, `Toaster`) are already in
    `layout.tsx`; don't add them again.
 
+## Content order
+
+Every page answers its question in the first screen of a phone (390 × 844), in this order. A new
+section goes where its kind belongs, not at the end.
+
+1. **What is it doing now**: temperature, condition, the one-sentence summary and the day's four
+   numbers (feels like, high / low, rain, wind). On a place page this is the hero.
+2. **Anything dangerous**: alerts, directly under the hero. Never below a chart or a grid of readings.
+3. **What happens next**: the next hours, then the next days.
+4. **Instrument readings**: sun, wind, humidity, UV, air quality, pressure, visibility, cloud.
+5. **How it was made**: sources, methods, links to `/about`.
+
+- The weather comes before navigation. Buttons that lead elsewhere ("Full Forecast", "Radar") sit
+  under the number they belong to, not above it.
+- A page banner (`PageBanner`) is short on a phone: the list, map or table it introduces must start
+  within the first screen.
+- Say a thing once per page. If the hero shows feels-like and wind, don't repeat them in a second
+  row of cards under it.
+- An e2e test (`features.spec.ts`, "the forecast page reads now, alerts, what's next…") pins the
+  place page's order. Change it only with the order above in mind.
+
+## Plain language
+
+Isobar is read by people deciding whether to take an umbrella, not by forecasters.
+
+- **Every number gets its meaning beside it.** A reading is a value, a unit and a short verdict:
+  "96 % · Oppressive · dew point 25°", "1015 hPa · Normal range", "6.5 km · Slightly Hazy". The
+  verdict comes from a pure, tested function in `src/lib/weather/` (`comfort.ts`, `uv.ts`, `aqi.ts`),
+  never from a threshold written inline in a component.
+- **Every alert says what to do.** Forecast signals carry one sentence of advice
+  (`weather.hazard.advice`); official warnings show the issuer's own instructions.
+- **Label every percentage.** A bare "60%" could be humidity, cloud or rain. Chance of rain always
+  has the droplet icon and a screen-reader label.
+- **Be honest about certainty.** Use "often", "likely", "up to"; never promise weather. Where a
+  number is weak evidence on its own (a single pressure reading, days 8–14), say so.
+- **No jargon without a gloss.** Model names (ECMWF, GFS, ICON), "dew point", "AQI" and "hPa" may
+  appear, but only next to words that carry the meaning for someone who doesn't know them.
+- **A symbol needs a key.** Dots, bars and colour ramps get a legend on the screen sizes where their
+  words are hidden (see the confidence legend in `DailyList`).
+- New copy goes in `src/lib/i18n/messages/` in **both** English and Malay; a missing key fails
+  `pnpm typecheck`.
+
 ## Copy
 
 **Labels are Title Case; sentences are not.** Headings, section and card titles, buttons, links, tabs,
@@ -88,6 +130,27 @@ Colour, radius and font come from CSS variables in `globals.css`, exposed to Tai
   `font-heading`. Use `.tnum` for temperatures, times and table columns so digits align.
 - **Spacing in cards** goes through `--card-spacing`, set by `Card size`. Pages marked `data-fit`
   shrink it at the `fit:` breakpoint. Don't hard-code padding that fights it.
+
+## Phone layout
+
+Design at 390 px first; `md` adds the sidebar and `fit` (xl wide and 740 px tall) the dense
+multi-column pages.
+
+- **Source order is reading order.** Stack sections in the DOM in the content order above and let
+  the grid rearrange them into columns on wide screens. Don't use `order-*` to move a section
+  visually: keyboard and screen-reader order would no longer match.
+- **Small readings sit two to a row** (`grid-cols-2`) from the narrowest phone. One full-width card
+  per reading turns eight numbers into five screens of scrolling.
+- **Text is never smaller than 12 px** (`text-xs`). `.label-caps` is 12 px; don't write
+  `text-[11px]` or smaller. The only exceptions are letters inside an SVG (compass points, chart
+  ticks).
+- **Touch targets are 44 px.** `Button`, `Toggle` and `ToggleGroupItem` get an invisible 44 px hit
+  area on touch screens from `globals.css` (`@media (pointer: coarse)`); add `data-touch-target` to
+  a hand-made link or control to give it the same. Keep 8 px between neighbouring targets.
+- **Sideways scrolling is only for strips and tables**, never the page. A strip that swipes is
+  focusable (`tabIndex={0}`) and fades at the edge; a `Table` container is focusable for the same
+  reason.
+- Leave room for the bottom tab bar: nothing important in the last 5 rem of the viewport.
 
 ## Choosing a component
 
@@ -134,6 +197,12 @@ The Playwright suite runs axe-core on every page in light and dark, so these fai
   use `outline-none` without a replacement.
 - Motion respects `prefers-reduced-motion` (handled globally).
 - Information is never colour-only: severity also gets an icon and text.
+- Lists of term and value use a real `<dl>`: `dt` and `dd` are direct children of the `dl` or of
+  **one** wrapper `div`. An icon beside them is a sibling inside that wrapper, not a second level
+  of nesting (axe: `definition-list`, `dlitem`).
+- Anything that scrolls on its own (hour strip, wide table, a card body on a one-screen page) is
+  reachable by keyboard.
+- Text is at least 12 px and touch targets at least 44 px (see Phone layout).
 
 ## Checklist for a UI change
 
@@ -141,5 +210,8 @@ The Playwright suite runs axe-core on every page in light and dark, so these fai
 - [ ] Only semantic tokens, correct in both themes
 - [ ] Tabler icons, decorative ones `aria-hidden`
 - [ ] Icon-only buttons labelled
-- [ ] Checked at phone width (bottom tab bar below `md`, sidebar from `lg`)
+- [ ] Checked at phone width (bottom tab bar below `md`, sidebar from `lg`): the page's answer is
+      on the first screen, in the content order above
+- [ ] Every number has a unit and a plain-language meaning; every percentage says what it measures
+- [ ] New copy added in English and Malay
 - [ ] `pnpm typecheck && pnpm lint && pnpm test`; `pnpm test:e2e` for anything visible

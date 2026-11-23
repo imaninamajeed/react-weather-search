@@ -1,3 +1,4 @@
+import { IconDroplet } from "@tabler/icons-react";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { formatHour } from "@/lib/format";
 import { getI18n } from "@/lib/i18n/server";
@@ -82,7 +83,7 @@ export async function HourStrip({
           >
             <span
               className={cn(
-                "font-heading text-[0.6875rem] font-medium tracking-[0.08em] uppercase",
+                "font-heading text-xs font-medium tracking-[0.08em] uppercase",
                 "text-muted-foreground",
                 glass && "dark:text-white/80",
               )}
@@ -94,13 +95,20 @@ export async function HourStrip({
             <span className={cn("text-base font-medium", compact && "text-sm")}>
               {formatTemperature(hour.temperature, units)}
             </span>
+            {/* A bare percentage reads as humidity or cloud; the drop and the hidden words say rain. */}
             <span
               className={cn(
-                "tnum text-xs",
+                "tnum inline-flex min-h-4 items-center gap-0.5 text-xs",
                 glass ? "text-(--brand-teal-text)" : "text-muted-foreground",
               )}
             >
-              {hour.precipitationProbability >= 20 ? `${hour.precipitationProbability}%` : " "}
+              {hour.precipitationProbability >= 20 && (
+                <>
+                  <IconDroplet aria-hidden="true" className="size-3" />
+                  {hour.precipitationProbability}%
+                  <span className="sr-only"> {t.place.daily.chanceOfRain}</span>
+                </>
+              )}
             </span>
           </li>
         );
