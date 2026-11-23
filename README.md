@@ -1,70 +1,145 @@
-# Getting Started with Create React App
+![Isobar: forecasts, alerts, and how far to trust them](src/app/opengraph-image.jpg)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Isobar
 
-## Available Scripts
+Weather that tells you what's happening, what's coming, and **how far to trust it**.
 
-In the project directory, you can run:
+Isobar began as a Create React App bootcamp project (search a city, see the weather). It is now a
+Next.js App Router application: a personal dashboard, severe-weather alerts from official feeds,
+a three-model forecast-confidence check, 30-year climate comparison, a live radar map, and an
+installable offline-capable PWA.
 
-### `npm start`
+![Dashboard](public/screenshots/dashboard-wide.jpg)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## What it does
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+| Feature                 | The question it answers                                                                                                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Search** (`/` or ⌘K)  | "Where?": debounced autocomplete that aborts stale requests, recent searches, "use my location".                                                                                                              |
+| **Place page**          | "What's it doing now, and today?": local time in _that city's_ timezone, a plain-language summary, 48-hour chart, 14-day outlook, conditions grid, air quality.                                               |
+| **Alerts**              | "Is anything dangerous coming?": official warnings (MET Malaysia, US NWS) first, then clearly labelled signals derived from the forecast. States when a feed was unreachable instead of implying "all clear". |
+| **Forecast confidence** | "Can I trust day 5?": compares ECMWF, GFS and ICON and rates each day high / medium / low, calling out when one model disagrees sharply.                                                                      |
+| **Climate history**     | "Is this normal?": the last 12 months of daily highs and rainfall against 1991–2020 normals.                                                                                                                  |
+| **Dashboard**           | "How are my places?": home forecast, saved places (up to 10, reorderable), alerts across all of them, and a week-ahead comparison for trip planning. No account: saved in a cookie.                           |
+| **Radar map**           | "Is it about to rain on me?": two hours of live radar, your places on the map, click anywhere for the weather there.                                                                                          |
+| **About**               | "Why should I believe this?": every source, the exact alert and confidence thresholds (generated from the code), how climate normals are computed, privacy and limitations.                                   |
+| **PWA**                 | "Does it work on a train?": installable; places you've opened keep working offline.                                                                                                                           |
 
-### `npm test`
+## Quick start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Requires **Node ≥ 20.9** and **pnpm 11** (`corepack enable` picks the right version from `package.json`).
 
-### `npm run build`
+```bash
+pnpm install
+pnpm dev          # http://localhost:3000
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+No API keys or environment variables are needed: every data source is keyless.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Scripts
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Script                                         | Does                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| `pnpm dev` / `pnpm build` / `pnpm start`       | Develop, production build, serve the build.                                    |
+| `pnpm lint` / `pnpm typecheck` / `pnpm format` | ESLint, TypeScript (app **and** service worker), Prettier.                     |
+| `pnpm test`                                    | Unit and component tests (Vitest).                                             |
+| `pnpm test:e2e`                                | End-to-end tests (Playwright). **Build first**: `pnpm build && pnpm test:e2e`. |
+| `node scripts/screenshots.mjs <url>`           | Regenerates the PWA install screenshots from a running build.                  |
+| `node scripts/og-image.mjs`                    | Re-renders the link-preview image from `design/og-image.html`.                 |
+| `node scripts/brand-icons.mjs`                 | Re-renders the favicon, apple and PWA icons from the `IsobarMark` component.   |
 
-### `npm run eject`
+`dev` and `build` also copy MapLibre's web worker into `public/` and (for `build`) bundle the
+service worker into `public/sw.js`; both are generated and git-ignored.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Configuration
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Everything is optional; see [`.env.example`](.env.example).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+| Variable             | Purpose                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
+| `OPEN_METEO_API_KEY` | Switches to Open-Meteo's commercial hosts. Open-Meteo's free tier is for **non-commercial** use. |
+| `NWS_USER_AGENT`     | Identifies your deployment to the US National Weather Service, which asks every client to.       |
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Deploying to Vercel
 
-## Learn More
+1. Import the repository in Vercel. The framework (Next.js) and package manager (pnpm, from the
+   lockfile and the `packageManager` field) are detected automatically.
+2. No environment variables are required. Deploy.
+3. [vercel.json](vercel.json) pins the framework to Next.js and clears any Output Directory override.
+   If a project was first created from an older Create React App setup, its dashboard still says
+   `build`, which fails with `STATIC_BUILD_NO_OUT_DIR`; in Project Settings → Build & Development,
+   set the Framework Preset to Next.js and leave Output Directory empty.
+4. If Vercel's default pnpm differs from `pnpm@11.25.0` and the install step complains, add the
+   environment variable `ENABLE_EXPERIMENTAL_COREPACK=1` so Vercel honours `packageManager`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+> **Not verified:** I could not deploy from the environment this was built in, so the Vercel
+> steps above follow Vercel's documentation but have not been exercised. The production build
+> (`pnpm build`) and the full test suite pass locally.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Afterwards, **revoke the OpenWeather key that was committed to the original repository**
+(`5f472b7a…`, in the early commits of this repo's history). It is no longer used, but it is
+public. The history was not rewritten.
 
-### Code Splitting
+## Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Unit and component tests** (213): the domain logic is deliberately pure and heavily tested:
+  hazard thresholds, confidence rating, climate normals, unit conversion, timezone-correct
+  formatting, preference parsing, official-feed matching, the search dialog's race handling. They use
+  real API responses captured as fixtures (`src/test/fixtures`).
+- **End-to-end tests** (38, Chromium): journeys, resilience, every feature, the map, offline PWA
+  behaviour, and **axe-core accessibility checks on every page in light and dark**. Every upstream
+  API is answered from fixtures by a small `fetch`-patching preload (`e2e/mock-upstream.mjs`), so
+  the suite is deterministic, needs no network, and the production code contains no test hooks.
+- **CI** (`.github/workflows/ci.yml`): format check, lint, typecheck, unit tests, then build and
+  e2e.
 
-### Analyzing the Bundle Size
+Only Chromium is covered by the automated tests; Firefox and Safari have not been tested.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Data sources and attribution
 
-### Making a Progressive Web App
+| Source                                                                                | Used for                                                                | Notes                                                                |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [Open-Meteo](https://open-meteo.com/) (CC BY 4.0)                                     | Forecasts, three-model comparison, air quality, geocoding, ERA5 archive | Free for non-commercial use.                                         |
+| [MET Malaysia](https://www.met.gov.my/) via [data.gov.my](https://data.gov.my/)       | Official warnings for Malaysia                                          | Matching is by place name; see limitations.                          |
+| [US National Weather Service](https://www.weather.gov/documentation/services-web-api) | Official alerts for US places                                           |                                                                      |
+| [RainViewer](https://www.rainviewer.com/)                                             | Radar tiles                                                             | Free tier: zoom ≤ 7 and a request rate limit; the app respects both. |
+| [OpenFreeMap](https://openfreemap.org/)                                               | Basemap                                                                 | © OpenMapTiles, data © OpenStreetMap contributors.                   |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Known limitations
 
-### Advanced Configuration
+- **Forecast-derived alerts are heuristics**, not official warnings. Their thresholds are
+  documented in [`src/lib/alerts/hazards.ts`](src/lib/alerts/hazards.ts) and they are always
+  labelled "forecast signal".
+- **Official-warning matching is name-based.** MET Malaysia publishes free text listing states and
+  districts; the matcher errs toward missing a district-level warning rather than raising a false
+  one. The alert links to the issuer for the authoritative text.
+- A `notFound()` or redirect that happens inside a streamed page returns HTTP 200 with a
+  `noindex` tag rather than 404/308 (a characteristic of streaming; see
+  [ARCHITECTURE](docs/ARCHITECTURE.md#decisions-and-trade-offs)).
+- Saved places live in a cookie on one browser, so they don't sync across devices.
+- `/api/places/search` has no rate limiting of its own; it relies on upstream caching.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## More
 
-### Deployment
+- [`docs/AUDIT.md`](docs/AUDIT.md): what was wrong with the original app and how each issue was resolved.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): how it's built and why.
+- [`docs/INFORMATION_ARCHITECTURE.md`](docs/INFORMATION_ARCHITECTURE.md): the site map and why each module is (or isn't) its own page.
+- [`DESIGN.md`](DESIGN.md): how to build UI with the shadcn components and theme tokens.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Project layout
 
-### `npm run build` fails to minify
+```
+src/
+  app/            routes: / (welcome), /dashboard, /places, /alerts, /place/[key] (+ /outlook, /history), /map, /about, /offline, API routes
+                  · @crumbs/ is the parallel slot that renders each page's breadcrumb in the header
+  components/     ui (shadcn, re-themed) · place · dashboard · alerts · history · map · search · layout · pwa
+  lib/            open-meteo (server-only fetchers) · alerts · weather (pure domain logic) · map · units, format, places, preferences
+  sw/             the service worker and its routing rules
+  test/           shared fixtures and setup
+e2e/              Playwright specs and the upstream mock
+scripts/          build-time helpers (service worker, MapLibre worker, screenshots)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## License
+
+MIT. Originally created by Nur Imanina as a React bootcamp project.

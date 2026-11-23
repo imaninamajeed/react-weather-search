@@ -1,0 +1,363 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+/*
+ * Wide and tall enough for the denser, multi-column page layouts. Pages still scroll as usual. The
+ * sidebar takes 15rem of the width from lg up, so this starts at xl.
+ */
+@custom-variant fit (@media (min-width: 1280px) and (min-height: 740px));
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-advisory: var(--advisory);
+  --color-advisory-foreground: var(--advisory-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+}
+
+/*
+ * Chart series colours are categorical and assigned by entity in a fixed order. The shadcn preset
+ * ships a single-hue ramp for --chart-*, which would make multi-series charts (temperature vs
+ * feels-like, the three weather models) indistinguishable, so these keep distinct hues. They were
+ * checked with the dataviz palette validator against this theme's card surfaces in both modes
+ * (lightness band, chroma floor, CVD separation, contrast; all-pairs for the three model lines):
+ *   1 temperature (magenta) · 2 feels-like (amber) · 3 rain (blue) · 4 wind (green) · 5 gusts (violet)
+ * Everything else (surfaces, primary, radius, fonts) comes from the preset.
+ */
+:root {
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.148 0.004 228.8);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.148 0.004 228.8);
+  --primary: oklch(0.514 0.222 16.935);
+  --primary-foreground: oklch(0.969 0.015 12.422);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.963 0.002 197.1);
+  /* The preset's 0.56 reaches only ~4.2:1 on tinted surfaces (alert cards, muted fills); 0.52 clears 4.5:1 on all. */
+  --muted-foreground: oklch(0.52 0.021 213.5);
+  --accent: oklch(0.963 0.002 197.1);
+  --accent-foreground: oklch(0.218 0.008 223.9);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.925 0.005 214.3);
+  --input: oklch(0.925 0.005 214.3);
+  --ring: oklch(0.723 0.014 214.4);
+
+  /* Categorical series colours, kept distinct from the preset's single-hue ramp (see note above). */
+  --chart-1: oklch(0.55 0.23 352);
+  --chart-2: oklch(0.66 0.15 70);
+  --chart-3: oklch(0.5 0.15 255);
+  --chart-4: oklch(0.6 0.13 168);
+  --chart-5: oklch(0.5 0.18 300);
+
+  --advisory: oklch(0.82 0.15 85);
+  --advisory-foreground: oklch(0.3 0.06 80);
+  --warning: oklch(0.52 0.21 27);
+  --warning-foreground: oklch(0.98 0.01 27);
+
+  --radius: 0.625rem;
+
+  /* How wide the page chrome and content may grow; data-heavy pages ask for more (see below). */
+  --page-max: 72rem;
+
+  /* The app mark's palette (see components/shared/isobar-mark.tsx), for hero art and accents. */
+  --brand-ink: #06090c;
+  --brand-magenta: #ff2d95;
+  --brand-violet: #a77bff;
+  --brand-indigo: #7884ff;
+  --brand-teal: #2de2c8;
+  /* The teal as *text* or a thin icon: the bright logo teal is far too pale on white, so light mode uses a deep one. */
+  --brand-teal-text: oklch(0.42 0.09 185);
+
+  --background: oklch(1 0 0);
+
+  --foreground: oklch(0.148 0.004 228.8);
+
+  --sidebar: oklch(0.987 0.002 197.1);
+
+  --sidebar-foreground: oklch(0.148 0.004 228.8);
+
+  --sidebar-primary: oklch(0.586 0.253 17.585);
+
+  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
+
+  --sidebar-accent: oklch(0.963 0.002 197.1);
+
+  --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
+
+  --sidebar-border: oklch(0.925 0.005 214.3);
+
+  --sidebar-ring: oklch(0.723 0.014 214.4);
+}
+
+.dark {
+  --brand-teal-text: var(--brand-teal);
+  --background: oklch(0.148 0.004 228.8);
+  --foreground: oklch(0.987 0.002 197.1);
+  --card: oklch(0.218 0.008 223.9);
+  --card-foreground: oklch(0.987 0.002 197.1);
+  --popover: oklch(0.218 0.008 223.9);
+  --popover-foreground: oklch(0.987 0.002 197.1);
+  --primary: oklch(0.455 0.188 13.697);
+  --primary-foreground: oklch(0.969 0.015 12.422);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.275 0.011 216.9);
+  --muted-foreground: oklch(0.723 0.014 214.4);
+  --accent: oklch(0.275 0.011 216.9);
+  --accent-foreground: oklch(0.987 0.002 197.1);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.56 0.021 213.5);
+
+  --chart-1: oklch(0.66 0.22 352);
+  --chart-2: oklch(0.65 0.15 75);
+  --chart-3: oklch(0.64 0.15 255);
+  --chart-4: oklch(0.65 0.13 168);
+  --chart-5: oklch(0.64 0.17 300);
+
+  --advisory: oklch(0.82 0.15 85);
+  --advisory-foreground: oklch(0.25 0.05 80);
+  /* 0.56: white text on the warning badge reaches 4.9:1 (0.65 was only 3.4:1); still 3.3:1 against the card as a border. */
+  --warning: oklch(0.56 0.22 27);
+  --warning-foreground: oklch(0.98 0.01 27);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.987 0.002 197.1);
+  --sidebar-primary: oklch(0.645 0.246 16.439);
+  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
+  --sidebar-accent: oklch(0.275 0.011 216.9);
+  --sidebar-accent-foreground: oklch(0.987 0.002 197.1);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.56 0.021 213.5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* A short slide-in on each new page. Position only, so text contrast never changes mid-motion. */
+@keyframes page-enter {
+  from {
+    transform: translateY(0.5rem);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: page-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/* Dashboard sections arrive one after another; position only, so contrast never changes mid-motion. */
+@keyframes rise {
+  from {
+    transform: translateY(0.75rem);
+  }
+}
+/* The weather icon drifts a few pixels, slowly enough to read as air rather than animation. */
+@keyframes float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+}
+
+@layer utilities {
+  /* Aligned digits for temperatures, times and table columns. */
+  .tnum {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  /* Small uppercase label used for data captions. */
+  .label-caps {
+    @apply font-heading text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase;
+  }
+}
+
+/*
+ * Touch targets. Controls keep their compact look, but on a touch screen each one answers to at
+ * least 44px of height (and width, for icon-only buttons) through an invisible ::after. Zero
+ * specificity and the components layer, so a control that positions itself (absolute, sticky)
+ * still wins.
+ */
+@layer components {
+  @media (pointer: coarse) {
+    :where(
+      [data-slot="button"],
+      [data-slot="toggle"],
+      [data-slot="toggle-group-item"],
+      [data-touch-target]
+    ) {
+      position: relative;
+    }
+    :where(
+      [data-slot="button"],
+      [data-slot="toggle"],
+      [data-slot="toggle-group-item"],
+      [data-touch-target]
+    )::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: max(100%, 2.75rem);
+      transform: translateY(-50%);
+    }
+    :where([data-slot="button"][data-size^="icon"])::after {
+      left: 50%;
+      width: max(100%, 2.75rem);
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+/* Dashboards, charts and the map use the extra width of large screens; the header follows. */
+body:has([data-wide]) {
+  --page-max: 100rem;
+}
+
+/*
+ * MapLibre ships light-only chrome; theme its popup, controls and attribution with our tokens.
+ * Scoped under .maplibregl-map because its stylesheet is injected after ours and would otherwise
+ * win on equal specificity.
+ */
+.maplibregl-map .maplibregl-popup-content {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.875rem;
+  box-shadow: 0 8px 24px oklch(0 0 0 / 25%);
+}
+.maplibregl-map .maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: var(--popover);
+}
+.maplibregl-map .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.maplibregl-map .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: var(--popover);
+}
+.maplibregl-map .maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--popover);
+}
+.maplibregl-map .maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--popover);
+}
+/* MapLibre's own stylesheet sets Helvetica/Arial on the map, which becomes Liberation Sans on Linux.
+   The map and everything inside it (pop-ups, controls, credits) use the app's text face instead. */
+div.maplibregl-map,
+div.maplibregl-map .maplibregl-ctrl-attrib,
+div.maplibregl-map .maplibregl-ctrl-attrib * {
+  font-family: var(--font-sans), sans-serif;
+}
+/* A saved place's pop-up is dressed like its pin: rounder, with a softer shadow. */
+.maplibregl-map .place-popup .maplibregl-popup-content {
+  border-radius: 1.25rem;
+  padding: 0.75rem 0.875rem;
+  box-shadow: 0 12px 32px oklch(0 0 0 / 22%);
+}
+.maplibregl-map .maplibregl-popup-close-button {
+  color: var(--muted-foreground);
+}
+.maplibregl-map .maplibregl-ctrl-group {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+.maplibregl-map .maplibregl-ctrl-group button + button {
+  border-top-color: var(--border);
+}
+.dark .maplibregl-map .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.maplibregl-map .maplibregl-ctrl.maplibregl-ctrl-attrib {
+  background: color-mix(in oklch, var(--card) 80%, transparent);
+  color: var(--muted-foreground);
+}
+.maplibregl-map .maplibregl-ctrl-attrib a {
+  color: inherit;
+}
+
+/* Toasts (with their Undo) sit above the bottom tab bar, which is shown below md. */
+@media (max-width: 767px) {
+  [data-sonner-toaster] {
+    --offset-bottom: 5rem !important;
+    --mobile-offset-bottom: 5rem !important;
+  }
+}

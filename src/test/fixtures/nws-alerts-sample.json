@@ -1,0 +1,90 @@
+{
+  "@context": [
+    "https://geojson.org/geojson-ld/geojson-context.jsonld",
+    {
+      "@version": "1.1",
+      "wx": "https://api.weather.gov/ontology#",
+      "@vocab": "https://api.weather.gov/ontology#"
+    }
+  ],
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b99297cc2388d6141793435aa90ef9ab90c66409.002.1",
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "urn:oid:2.49.0.1.840.0.b99297cc2388d6141793435aa90ef9ab90c66409.002.1",
+        "areaDesc": "Coastal Volusia; Coastal Indian River; Coastal St. Lucie; Coastal Martin; Mainland Northern Brevard; Northern Brevard Barrier Islands; Mainland Southern Brevard; Southern Brevard Barrier Islands",
+        "effective": "2026-10-26T12:36:00-04:00",
+        "onset": "2026-10-26T12:36:00-04:00",
+        "expires": "2026-10-27T08:00:00-04:00",
+        "ends": "2026-10-27T08:00:00-04:00",
+        "status": "Actual",
+        "messageType": "Update",
+        "severity": "Moderate",
+        "certainty": "Likely",
+        "urgency": "Expected",
+        "event": "Wind Advisory",
+        "sender": "w-nws.webmaster@noaa.gov",
+        "senderName": "NWS Melbourne FL",
+        "headline": "Wind Advisory issued October 26 at 12:36PM EDT until October 27 at 8:00AM EDT by NWS Melbourne FL",
+        "description": "* WHAT...Northeast winds 20 to 25 mph with gusts up to 35 to 40 mph.\n\n* WHERE...Coastal Indian River, Coastal Martin, Coastal Saint Lucie,\nCoastal Volusia, Mainland Northern Brevard, Mainland Southern\nBrevard, Northern Brevard Barrier Islands, and Southern Brevard\nBarrier Islands Counties.\n\n* WHEN...Until 8 AM EDT Tuesday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.",
+        "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution.\n\nSecure outdoor objects.",
+        "response": "Execute"
+      }
+    },
+    {
+      "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.6395ac22474085b0afc80efae484acd913f69a78.001.1",
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "urn:oid:2.49.0.1.840.0.6395ac22474085b0afc80efae484acd913f69a78.001.1",
+        "areaDesc": "Lake, FL; Volusia, FL",
+        "effective": "2026-10-26T09:55:00-04:00",
+        "onset": "2026-10-26T09:55:00-04:00",
+        "expires": "2026-10-26T23:30:00-04:00",
+        "ends": null,
+        "status": "Actual",
+        "messageType": "Update",
+        "severity": "Severe",
+        "certainty": "Observed",
+        "urgency": "Immediate",
+        "event": "Flood Warning",
+        "sender": "w-nws.webmaster@noaa.gov",
+        "senderName": "NWS Melbourne FL",
+        "headline": "Flood Warning issued October 26 at 9:55AM EDT by NWS Melbourne FL",
+        "description": "...The Flood Warning continues for the following rivers in Florida...\n\nSt Johns River Near Astor affecting Lake and Volusia Counties.\n\n.Persistent gusty northeast winds are causing river levels to rise on\nthe St Johns at Astor, currently in Moderate Flood Stage. The river\nis forecast to continue to climb slowly through Moderate Flood Stage\nearly this week.\n\nFor the St. Johns River...including Astor...Moderate flooding is\nforecast.\n\n* WHAT...Moderate flooding is occurring and is forecast.\n\n* WHERE...St Johns River near Astor.\n\n* WHEN...Until further notice.\n\n* IMPACTS...At 3.5 feet, Canals have overflowed into yards. Homes on\nor near Wildhog and Bonnet roads become inaccessible with several\ninches of water inside homes along the river and canals. Docks at\nAstor Bridge marina and throughout Astor are completely submerged.\nBartram Rd and Holiday Circle are inaccessible with yards\ncompletely submerged. Clair Street is inaccessible. Roads flooded\nin South Moon Fish Camp, docks and yards at condominiums on Juno\nTrail and water breaches the sea wall at Blair's Jungle Den.\n\n* ADDITIONAL DETAILS...\n- At 9:30 AM EDT Monday the stage was 3.6 feet.\n- Bankfull stage is 2.0 feet.\n- Recent Activity...The maximum river stage in the 24 hours ending\nat 9:30 AM EDT Monday was 3.6 feet.\n- Forecast...The river is expected to rise to a crest of 3.8 feet\nthis evening.\n- Flood stage is 2.3 feet.\n- http://www.weather.gov/safety/flood",
+        "instruction": "Motorists should not attempt to drive around barricades or drive cars\nthrough flooded areas.\n\nCaution is urged when walking near riverbanks.\n\nAdditional information is available at www.weather.gov.\n\nThe next statement will be issued this evening at 1130 PM EDT.",
+        "response": "Avoid"
+      }
+    },
+    {
+      "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1050978e2d273b4d94dd1b595a523975c30c7f00.001.1",
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "urn:oid:2.49.0.1.840.0.1050978e2d273b4d94dd1b595a523975c30c7f00.001.1",
+        "areaDesc": "Mobile Coastal; Baldwin Coastal; Escambia Coastal; Santa Rosa Coastal; Okaloosa Coastal",
+        "effective": "2026-10-26T06:16:00-05:00",
+        "onset": "2026-10-26T06:16:00-05:00",
+        "expires": "2026-10-26T18:00:00-05:00",
+        "ends": "2026-10-26T18:00:00-05:00",
+        "status": "Actual",
+        "messageType": "Update",
+        "severity": "Moderate",
+        "certainty": "Likely",
+        "urgency": "Expected",
+        "event": "Rip Current Statement",
+        "sender": "w-nws.webmaster@noaa.gov",
+        "senderName": "NWS Mobile AL",
+        "headline": "Rip Current Statement issued October 26 at 6:16AM CDT until October 26 at 6:00PM CDT by NWS Mobile AL",
+        "description": "* WHAT...Dangerous rip currents.\n\n* WHERE...In Alabama, Mobile Coastal and Baldwin Coastal\nCounties. In Florida, Escambia Coastal, Santa Rosa Coastal and\nOkaloosa Coastal Counties.\n\n* WHEN...Until 6 PM CDT this evening.\n\n* IMPACTS...Rip currents can sweep even the best swimmers away\nfrom shore into deeper water.",
+        "instruction": "Swim near a lifeguard. If caught in a rip current, relax and\nfloat. Don't swim against the current. If able, swim in a\ndirection following the shoreline. If unable to escape, face the\nshore and call or wave for help.",
+        "response": "Avoid"
+      }
+    }
+  ],
+  "title": "Current watches, warnings, and advisories for Florida",
+  "updated": "2026-10-26T17:27:20+00:00"
+}

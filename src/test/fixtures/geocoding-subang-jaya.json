@@ -1,0 +1,17 @@
+{
+  "id": 8504423,
+  "name": "Subang Jaya",
+  "latitude": 3.04384,
+  "longitude": 101.58062,
+  "elevation": 41.0,
+  "feature_code": "PPLX",
+  "country_code": "MY",
+  "admin1_id": 1733037,
+  "admin2_id": 1735156,
+  "timezone": "Asia/Kuala_Lumpur",
+  "population": 708296,
+  "country_id": 1733045,
+  "country": "Malaysia",
+  "admin1": "Selangor",
+  "admin2": "Petaling"
+}
