@@ -13,7 +13,7 @@ describe("weather codes", () => {
   });
 
   it("degrades gracefully for unknown codes", () => {
-    expect(describeWeather(1234)).toEqual({ label: "Unknown conditions", icon: "cloudy" });
+    expect(describeWeather(1234)).toEqual({ label: "Unknown Conditions", icon: "cloudy" });
   });
 
   it("classifies storms and precipitation", () => {
