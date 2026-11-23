@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   reactCompiler: true,
   poweredByHeader: false,
+  experimental: {
+    agentUpgrade: "security",
+  },
   // Cache lifetimes per upstream. `expire` stays above 5 min so these entries are
   // still included in prerenders (see cacheLife "Prerendering behavior").
   cacheLife: {
