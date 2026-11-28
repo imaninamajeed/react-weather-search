@@ -1,4 +1,4 @@
-import { Droplets, OctagonAlert, TriangleAlert } from "lucide-react";
+import { IconAlertOctagon, IconAlertTriangle, IconDroplets } from "@tabler/icons-react";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { severityOnDay } from "@/lib/alerts/on-day";
 import type { WeatherAlert } from "@/lib/alerts/types";
@@ -39,7 +39,7 @@ export async function WeekDetails({
         const weather = describeWeather(day.weatherCode, true, locale);
         const severity = severityOnDay(alerts, day.date, today);
         const isToday = day.date === today;
-        const AlertIcon = severity === "warning" ? OctagonAlert : TriangleAlert;
+        const AlertIcon = severity === "warning" ? IconAlertOctagon : IconAlertTriangle;
         const likely = day.precipitationProbabilityMax >= 50;
         const amount =
           day.precipitationSum >= MEASURABLE_MM
@@ -77,7 +77,7 @@ export async function WeekDetails({
             >
               {isToday ? t.common.today : formatWeekday(day.date, "short", locale)}
             </span>
-            <WeatherIcon name={weather.icon} className="size-4 shrink-0 @min-[18rem]:size-5" />
+            <WeatherIcon name={weather.icon} className="size-5 shrink-0 @min-[18rem]:size-6" />
             <span
               aria-hidden="true"
               className="tnum flex min-w-0 flex-1 items-center justify-center gap-1.5 @min-[18rem]:gap-2"
@@ -105,7 +105,7 @@ export async function WeekDetails({
                 likely ? "font-medium text-foreground" : "text-muted-foreground",
               )}
             >
-              <Droplets className="size-3" />
+              <IconDroplets className="size-3" />
               {day.precipitationProbabilityMax}%
             </span>
             <span className="grid size-3.5 shrink-0 place-items-center @min-[18rem]:size-4">

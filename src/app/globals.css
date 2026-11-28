@@ -40,6 +40,16 @@
   --color-advisory-foreground: var(--advisory-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-sky-ink: var(--sky-ink);
+  --color-sky-ink-muted: var(--sky-ink-muted);
+  --color-sky-accent: var(--sky-accent);
+  --color-icon-sun: var(--icon-sun);
+  --color-icon-rain: var(--icon-rain);
+  --color-icon-snow: var(--icon-snow);
+  --color-icon-bolt: var(--icon-bolt);
+  --color-icon-fog: var(--icon-fog);
+  --color-icon-cloud: var(--icon-cloud);
+  --color-icon-cloud-shade: var(--icon-cloud-shade);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -65,26 +75,31 @@
  * checked with the dataviz palette validator against this theme's card surfaces in both modes
  * (lightness band, chroma floor, CVD separation, contrast; all-pairs for the three model lines):
  *   1 temperature (magenta) · 2 feels-like (amber) · 3 rain (blue) · 4 wind (green) · 5 gusts (violet)
- * Everything else (surfaces, primary, radius, fonts) comes from the preset.
+ *
+ * Surfaces carry a faint cool sky tint (light: off-white, dark: deep navy) and the primary action is
+ * a calm sky blue. Every text pair was checked at 4.5:1 or better: primary-foreground on primary is
+ * 5.0:1 light and 8.4:1 dark; muted-foreground on muted is 5.4:1 light and 6.6:1 dark.
  */
 :root {
+  --background: oklch(0.985 0.006 230);
+  --foreground: oklch(0.19 0.025 252);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.148 0.004 228.8);
+  --card-foreground: oklch(0.19 0.025 252);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.148 0.004 228.8);
-  --primary: oklch(0.514 0.222 16.935);
-  --primary-foreground: oklch(0.969 0.015 12.422);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.963 0.002 197.1);
-  /* The preset's 0.56 reaches only ~4.2:1 on tinted surfaces (alert cards, muted fills); 0.52 clears 4.5:1 on all. */
-  --muted-foreground: oklch(0.52 0.021 213.5);
-  --accent: oklch(0.963 0.002 197.1);
-  --accent-foreground: oklch(0.218 0.008 223.9);
+  --popover-foreground: oklch(0.19 0.025 252);
+  --primary: oklch(0.52 0.13 235);
+  --primary-foreground: oklch(0.985 0.01 230);
+  --secondary: oklch(0.962 0.012 230);
+  --secondary-foreground: oklch(0.25 0.03 250);
+  --muted: oklch(0.962 0.012 230);
+  /* 0.50 clears 4.5:1 on every tinted surface (alert cards, muted fills, the sidebar's accent). */
+  --muted-foreground: oklch(0.5 0.025 240);
+  --accent: oklch(0.952 0.018 230);
+  --accent-foreground: oklch(0.25 0.03 250);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.925 0.005 214.3);
-  --input: oklch(0.925 0.005 214.3);
-  --ring: oklch(0.723 0.014 214.4);
+  --border: oklch(0.92 0.012 230);
+  --input: oklch(0.9 0.014 230);
+  --ring: oklch(0.55 0.13 235);
 
   /* Categorical series colours, kept distinct from the preset's single-hue ramp (see note above). */
   --chart-1: oklch(0.55 0.23 352);
@@ -103,7 +118,7 @@
   /* How wide the page chrome and content may grow; data-heavy pages ask for more (see below). */
   --page-max: 72rem;
 
-  /* The app mark's palette (see components/shared/isobar-mark.tsx), for hero art and accents. */
+  /* The app mark's palette (see components/shared/isobar-mark.tsx), for the mark, the welcome page and highlights. */
   --brand-ink: #06090c;
   --brand-magenta: #ff2d95;
   --brand-violet: #a77bff;
@@ -112,47 +127,53 @@
   /* The teal as *text* or a thin icon: the bright logo teal is far too pale on white, so light mode uses a deep one. */
   --brand-teal-text: oklch(0.42 0.09 185);
 
-  --background: oklch(1 0 0);
+  /*
+   * The illustrated weather glyphs (components/shared/weather-glyphs.tsx). Each shape has a body and
+   * a shade for its underside; the shapes are decorative, the condition is always written beside them.
+   */
+  --icon-sun: oklch(0.84 0.16 82);
+  --icon-sun-shade: oklch(0.74 0.17 58);
+  --icon-moon: oklch(0.88 0.1 95);
+  --icon-moon-shade: oklch(0.74 0.11 78);
+  --icon-cloud: oklch(0.89 0.02 245);
+  --icon-cloud-shade: oklch(0.68 0.035 250);
+  --icon-cloud-dark: oklch(0.64 0.035 262);
+  --icon-cloud-dark-shade: oklch(0.5 0.04 265);
+  --icon-rain: oklch(0.6 0.16 248);
+  --icon-snow: oklch(0.72 0.09 228);
+  --icon-bolt: oklch(0.82 0.17 80);
+  --icon-fog: oklch(0.68 0.02 245);
 
-  --foreground: oklch(0.148 0.004 228.8);
-
-  --sidebar: oklch(0.987 0.002 197.1);
-
-  --sidebar-foreground: oklch(0.148 0.004 228.8);
-
-  --sidebar-primary: oklch(0.586 0.253 17.585);
-
-  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
-
-  --sidebar-accent: oklch(0.963 0.002 197.1);
-
-  --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
-
-  --sidebar-border: oklch(0.925 0.005 214.3);
-
-  --sidebar-ring: oklch(0.723 0.014 214.4);
+  --sidebar: oklch(0.975 0.01 230);
+  --sidebar-foreground: oklch(0.19 0.025 252);
+  --sidebar-primary: oklch(0.52 0.13 235);
+  --sidebar-primary-foreground: oklch(0.985 0.01 230);
+  --sidebar-accent: oklch(0.945 0.02 230);
+  --sidebar-accent-foreground: oklch(0.22 0.03 250);
+  --sidebar-border: oklch(0.92 0.012 230);
+  --sidebar-ring: oklch(0.55 0.13 235);
 }
 
 .dark {
   --brand-teal-text: var(--brand-teal);
-  --background: oklch(0.148 0.004 228.8);
-  --foreground: oklch(0.987 0.002 197.1);
-  --card: oklch(0.218 0.008 223.9);
-  --card-foreground: oklch(0.987 0.002 197.1);
-  --popover: oklch(0.218 0.008 223.9);
-  --popover-foreground: oklch(0.987 0.002 197.1);
-  --primary: oklch(0.455 0.188 13.697);
-  --primary-foreground: oklch(0.969 0.015 12.422);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.275 0.011 216.9);
-  --muted-foreground: oklch(0.723 0.014 214.4);
-  --accent: oklch(0.275 0.011 216.9);
-  --accent-foreground: oklch(0.987 0.002 197.1);
+  --background: oklch(0.16 0.02 255);
+  --foreground: oklch(0.975 0.006 230);
+  --card: oklch(0.21 0.024 255);
+  --card-foreground: oklch(0.975 0.006 230);
+  --popover: oklch(0.21 0.024 255);
+  --popover-foreground: oklch(0.975 0.006 230);
+  --primary: oklch(0.74 0.12 225);
+  --primary-foreground: oklch(0.18 0.04 250);
+  --secondary: oklch(0.27 0.026 255);
+  --secondary-foreground: oklch(0.975 0.006 230);
+  --muted: oklch(0.27 0.026 255);
+  --muted-foreground: oklch(0.74 0.02 240);
+  --accent: oklch(0.29 0.03 255);
+  --accent-foreground: oklch(0.975 0.006 230);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.56 0.021 213.5);
+  --ring: oklch(0.66 0.11 228);
 
   --chart-1: oklch(0.66 0.22 352);
   --chart-2: oklch(0.65 0.15 75);
@@ -165,14 +186,190 @@
   /* 0.56: white text on the warning badge reaches 4.9:1 (0.65 was only 3.4:1); still 3.3:1 against the card as a border. */
   --warning: oklch(0.56 0.22 27);
   --warning-foreground: oklch(0.98 0.01 27);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.987 0.002 197.1);
-  --sidebar-primary: oklch(0.645 0.246 16.439);
-  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
-  --sidebar-accent: oklch(0.275 0.011 216.9);
-  --sidebar-accent-foreground: oklch(0.987 0.002 197.1);
+
+  --icon-sun: oklch(0.86 0.16 85);
+  --icon-sun-shade: oklch(0.76 0.17 62);
+  --icon-moon: oklch(0.92 0.06 95);
+  --icon-moon-shade: oklch(0.78 0.07 85);
+  --icon-cloud: oklch(0.92 0.012 245);
+  --icon-cloud-shade: oklch(0.74 0.025 250);
+  --icon-cloud-dark: oklch(0.72 0.03 262);
+  --icon-cloud-dark-shade: oklch(0.58 0.035 265);
+  --icon-rain: oklch(0.74 0.13 240);
+  --icon-snow: oklch(0.9 0.04 225);
+  --icon-bolt: oklch(0.86 0.17 85);
+  --icon-fog: oklch(0.78 0.02 245);
+
+  --sidebar: oklch(0.18 0.022 255);
+  --sidebar-foreground: oklch(0.975 0.006 230);
+  --sidebar-primary: oklch(0.74 0.12 225);
+  --sidebar-primary-foreground: oklch(0.18 0.04 250);
+  --sidebar-accent: oklch(0.26 0.03 255);
+  --sidebar-accent-foreground: oklch(0.975 0.006 230);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.56 0.021 213.5);
+  --sidebar-ring: oklch(0.66 0.11 228);
+}
+
+/*
+ * Skies (components/shared/sky-scene.tsx, lib/weather/sky.ts). A hero or banner sets
+ * data-sky="<palette>"; these blocks give it a gradient, a glow and its own ink. A sky's brightness
+ * doesn't follow the page theme (a light page can show a night sky), so every sky also re-scopes the
+ * base tokens below: shadcn buttons, badges and the hour strip inside it use the sky's ink and
+ * translucent surfaces with no per-component overrides.
+ *
+ * Contrast is built in. Pale skies (daytime, light theme) carry dark ink, and every layer drawn on them
+ * (clouds, rain, fog, glow) stays at oklch L 0.73 or above; deep skies (night and storm in either
+ * theme, everything in the dark theme) carry white ink, and every layer stays at L 0.5 or below. So
+ * text keeps 4.5:1 wherever a cloud drifts behind it. The vivid sun, moon and bolt are the hero's own
+ * icon, which the layout keeps clear of the words. e2e/sky.spec.ts measures it from pixels.
+ */
+[data-sky] {
+  --sky-ink: oklch(0.22 0.035 250);
+  --sky-ink-muted: oklch(0.36 0.035 245);
+  --sky-accent: oklch(0.42 0.13 250);
+  --sky-surface: oklch(1 0 0 / 50%);
+  --sky-surface-strong: oklch(1 0 0 / 80%);
+  --sky-line: oklch(0.22 0.035 250 / 14%);
+  --sky-glow: oklch(1 0.04 95 / 80%);
+  --sky-cloud: oklch(0.995 0.003 240);
+  --sky-cloud-shade: oklch(0.93 0.012 240);
+  --sky-fall: oklch(0.7 0.06 245 / 45%);
+  --sky-fog: oklch(0.99 0.003 240 / 75%);
+  --sky-star: transparent;
+  --sky-flash: oklch(1 0 0 / 30%);
+  /* The hero's icon: white clouds read against a pale sky where the page's grey ones would vanish. */
+  --icon-cloud: oklch(1 0 0);
+  --icon-cloud-shade: oklch(0.8 0.03 250);
+}
+[data-sky="clear-night"],
+[data-sky="overcast-night"],
+[data-sky="rain-night"],
+[data-sky="storm"],
+.dark [data-sky] {
+  --sky-ink: oklch(0.99 0.004 230);
+  --sky-ink-muted: oklch(0.93 0.015 240);
+  --sky-accent: oklch(0.86 0.09 222);
+  /* Dark glass: on a deep sky a translucent white would lift the background towards the white ink. */
+  --sky-surface: oklch(0.1 0.02 260 / 22%);
+  --sky-surface-strong: oklch(0.1 0.02 260 / 38%);
+  --sky-line: oklch(1 0 0 / 16%);
+  --sky-glow: oklch(0.45 0.05 255 / 70%);
+  --sky-cloud: oklch(0.46 0.022 258);
+  --sky-cloud-shade: oklch(0.38 0.026 260);
+  --sky-fall: oklch(0.8 0.04 240 / 22%);
+  --sky-fog: oklch(0.5 0.01 245 / 55%);
+  --sky-star: oklch(0.5 0.03 262);
+  --sky-flash: oklch(0.48 0.06 290 / 45%);
+  --icon-cloud: oklch(0.93 0.012 245);
+  --icon-cloud-shade: oklch(0.74 0.025 250);
+}
+
+/* Pale skies: the light theme's daytime palettes. */
+[data-sky="clear-day"] {
+  --sky-top: oklch(0.86 0.075 232);
+  --sky-bottom: oklch(0.95 0.035 205);
+}
+[data-sky="golden"] {
+  --sky-top: oklch(0.87 0.05 310);
+  --sky-bottom: oklch(0.91 0.08 62);
+  --sky-glow: oklch(0.97 0.09 80 / 85%);
+}
+[data-sky="overcast-day"] {
+  --sky-top: oklch(0.86 0.015 240);
+  --sky-bottom: oklch(0.93 0.01 230);
+  --sky-glow: transparent;
+}
+[data-sky="rain-day"] {
+  --sky-top: oklch(0.81 0.035 245);
+  --sky-bottom: oklch(0.89 0.025 235);
+  --sky-glow: transparent;
+}
+[data-sky="snow"] {
+  --sky-top: oklch(0.9 0.02 240);
+  --sky-bottom: oklch(0.97 0.01 230);
+  --sky-glow: transparent;
+  --sky-fall: oklch(1 0 0 / 90%);
+}
+[data-sky="fog"] {
+  --sky-top: oklch(0.88 0.01 240);
+  --sky-bottom: oklch(0.95 0.005 240);
+  --sky-glow: transparent;
+}
+
+/* Deep skies in either theme. */
+[data-sky="clear-night"] {
+  --sky-top: oklch(0.26 0.08 275);
+  --sky-bottom: oklch(0.36 0.09 265);
+}
+[data-sky="overcast-night"] {
+  --sky-top: oklch(0.27 0.03 260);
+  --sky-bottom: oklch(0.35 0.03 255);
+}
+[data-sky="rain-night"] {
+  --sky-top: oklch(0.27 0.04 255);
+  --sky-bottom: oklch(0.36 0.045 250);
+}
+[data-sky="storm"] {
+  --sky-top: oklch(0.28 0.08 295);
+  --sky-bottom: oklch(0.38 0.07 285);
+}
+/* After the deep group on purpose: :root raises these to beat `.dark [data-sky]` in both themes. */
+:root [data-sky="storm"] {
+  --sky-cloud: oklch(0.24 0.04 290);
+  --sky-cloud-shade: oklch(0.19 0.04 290);
+}
+:root [data-sky="clear-night"] {
+  --sky-glow: oklch(0.44 0.07 265 / 80%);
+}
+
+/* The dark theme deepens the daytime skies so a hero doesn't glare; they take white ink. */
+.dark [data-sky="clear-day"] {
+  --sky-top: oklch(0.32 0.1 252);
+  --sky-bottom: oklch(0.4 0.09 232);
+  --sky-glow: oklch(0.5 0.08 220 / 70%);
+}
+.dark [data-sky="golden"] {
+  --sky-top: oklch(0.3 0.08 320);
+  --sky-bottom: oklch(0.4 0.1 45);
+  --sky-glow: oklch(0.46 0.12 55 / 70%);
+}
+.dark [data-sky="overcast-day"] {
+  --sky-top: oklch(0.31 0.02 245);
+  --sky-bottom: oklch(0.39 0.02 240);
+}
+.dark [data-sky="rain-day"] {
+  --sky-top: oklch(0.29 0.035 248);
+  --sky-bottom: oklch(0.38 0.035 240);
+}
+.dark [data-sky="snow"] {
+  --sky-top: oklch(0.31 0.03 245);
+  --sky-bottom: oklch(0.39 0.025 235);
+  --sky-fall: oklch(0.85 0.02 240 / 22%);
+}
+.dark [data-sky="fog"] {
+  --sky-top: oklch(0.31 0.01 245);
+  --sky-bottom: oklch(0.39 0.01 240);
+}
+
+/*
+ * Everything inside a sky reads its ink and sits on its translucent surfaces. The gradient itself is
+ * painted by SkyScene, so a small element (a menu button over a sky) can take the ink without a sky.
+ */
+[data-sky] {
+  --foreground: var(--sky-ink);
+  --card-foreground: var(--sky-ink);
+  --muted-foreground: var(--sky-ink-muted);
+  --background: var(--sky-surface);
+  --card: var(--sky-surface-strong);
+  --secondary: var(--sky-surface-strong);
+  --secondary-foreground: var(--sky-ink);
+  --muted: var(--sky-surface);
+  --accent: var(--sky-surface-strong);
+  --accent-foreground: var(--sky-ink);
+  --border: var(--sky-line);
+  --input: var(--sky-line);
+  --ring: var(--sky-ink);
+  color: var(--sky-ink);
 }
 
 @layer base {
@@ -227,6 +424,73 @@
 @keyframes float {
   50% {
     transform: translateY(-4px);
+  }
+}
+/*
+ * Sky layers (sky-scene.tsx). Each is applied with motion-safe:, so under reduced motion the scene is
+ * a still picture. The flash is two soft pulses every nine seconds: far below WCAG's three flashes
+ * per second, and dim enough that the sky's ink keeps its contrast through it.
+ */
+@keyframes sky-drift {
+  from {
+    translate: -4% 0;
+  }
+  to {
+    translate: 4% 0;
+  }
+}
+/* Rain and snow are a tiled mask; moving it by exactly one tile loops without a seam. */
+@keyframes sky-fall-tile {
+  from {
+    mask-position: 0 0;
+    -webkit-mask-position: 0 0;
+  }
+  to {
+    mask-position: 0 var(--tile-h);
+    -webkit-mask-position: 0 var(--tile-h);
+  }
+}
+@keyframes sky-twinkle {
+  50% {
+    opacity: 0.3;
+  }
+}
+@keyframes sky-flash {
+  0%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+  91.5% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.15;
+  }
+  94.5% {
+    opacity: 0.7;
+  }
+  96.5% {
+    opacity: 0;
+  }
+}
+/* A drop or flake in a hero icon: appears under the cloud, falls a few units, fades. */
+@keyframes icon-fall {
+  0% {
+    translate: 0 -3px;
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    translate: -1.5px 6px;
+    opacity: 0;
+  }
+}
+@keyframes sky-spin {
+  to {
+    rotate: 360deg;
   }
 }
 @media (prefers-reduced-motion: no-preference) {

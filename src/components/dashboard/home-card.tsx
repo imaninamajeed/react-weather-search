@@ -1,7 +1,15 @@
-import { IconCloudRain, IconDroplet, IconTemperature, IconWind } from "@tabler/icons-react";
-import { ArrowRight, House } from "lucide-react";
+import {
+  IconArrowRight,
+  IconCloudRain,
+  IconDroplet,
+  IconHome,
+  IconTemperature,
+  IconWind,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { HazardBadge } from "@/components/alerts/hazard-badge";
+import { sceneFor } from "@/components/shared/sky-panel";
+import { SkyScene } from "@/components/shared/sky-scene";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,12 +26,12 @@ import { RowMenu } from "./place-row-controls";
 import { WeekStrip } from "./week-strip";
 
 /**
- * The home location, the focus of the page: full width, with the large temperature, the day in a
- * sentence and the week beneath, on the dashboard's Saved Locations tile surface (the page background, lifted by a shadow; near-black by night). The isobars and glows
- * belong to the page banner above it, so this card stays calm; the saved locations are plain
- * squares by comparison. The name, link and menu come from the saved snapshot, so they render even
- * when the forecast could not be fetched. `manage` is absent when home is only the default city
- * and not saved, so there is nothing to remove.
+ * The home location, the focus of the page: full width, its top painted with the sky over it (see
+ * SkyPanel) and carrying the large temperature and the day in a sentence; the next hours, the day's
+ * numbers and the week sit beneath on the card's own surface. The saved locations are plain squares
+ * by comparison. The name, link and menu come from the saved snapshot, so they render even when the
+ * forecast could not be fetched (the top is then plain). `manage` is absent when home is only the
+ * default city and not saved, so there is nothing to remove.
  */
 export async function HomeCard({
   place,
@@ -40,14 +48,19 @@ export async function HomeCard({
   const today = forecast?.daily[0];
   const weather = current && describeWeather(current.weatherCode, current.isDay, locale);
   const degrees = current && Math.round(convertTemperature(current.temperature, units));
+  const scene = forecast && sceneFor(forecast);
 
   return (
     <article className="group/row relative flex min-h-[30rem] flex-col overflow-hidden rounded-4xl bg-card text-card-foreground shadow-md ring-1 ring-foreground/5 dark:ring-foreground/10">
-      <div className="grid flex-1 gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div
+        data-sky={scene?.palette}
+        className="relative isolate grid flex-1 gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-end"
+      >
+        {scene && <SkyScene scene={scene} />}
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <Badge variant="secondary">
-              <House aria-hidden="true" />
+              <IconHome aria-hidden="true" />
               {t.dashboard.hero.home}
             </Badge>
             {current && forecast && (
@@ -63,7 +76,7 @@ export async function HomeCard({
           <h3 className="mt-5 font-heading text-5xl leading-[0.95] sm:text-6xl">
             <Link
               href={href}
-              className="underline decoration-transparent decoration-2 underline-offset-8 transition-colors hover:decoration-(--brand-teal-text)"
+              className="underline decoration-transparent decoration-2 underline-offset-8 transition-colors hover:decoration-primary"
             >
               {place.name}
             </Link>
@@ -83,15 +96,7 @@ export async function HomeCard({
         <div className="flex flex-col items-end gap-6 justify-self-end">
           {current && today && weather && (
             <div className="flex items-center gap-4 sm:gap-6">
-              <span
-                aria-hidden="true"
-                className="grid size-24 shrink-0 place-items-center rounded-full bg-(--brand-teal-text)/10 sm:size-32"
-              >
-                <WeatherIcon
-                  name={weather.icon}
-                  className="size-12 text-(--brand-teal-text) sm:size-16"
-                />
-              </span>
+              <WeatherIcon name={weather.icon} className="size-20 drop-shadow-lg sm:size-28" />
               <div>
                 <p className="font-heading text-7xl leading-none font-medium tracking-tight sm:text-8xl">
                   <span className="sr-only">
@@ -101,7 +106,7 @@ export async function HomeCard({
                   </span>
                   <span aria-hidden="true">
                     {degrees}
-                    <span className="align-top text-2xl font-normal text-(--brand-teal-text) sm:text-4xl">
+                    <span className="align-top text-2xl font-normal text-muted-foreground sm:text-4xl">
                       {units === "metric" ? "°C" : "°F"}
                     </span>
                   </span>
@@ -117,7 +122,7 @@ export async function HomeCard({
           <Button asChild size="lg">
             <Link href={href}>
               {t.dashboard.hero.fullForecast}
-              <ArrowRight aria-hidden="true" />
+              <IconArrowRight aria-hidden="true" />
             </Link>
           </Button>
         </div>
@@ -138,7 +143,7 @@ export async function HomeCard({
               value: (
                 <>
                   {Math.round(convertTemperature(current.apparentTemperature, units))}
-                  <span className="align-top text-sm font-normal text-(--brand-teal-text)">
+                  <span className="align-top text-sm font-normal text-muted-foreground">
                     {units === "metric" ? "°C" : "°F"}
                   </span>
                 </>
@@ -171,7 +176,7 @@ export async function HomeCard({
               </dd>
               <dd
                 aria-hidden="true"
-                className="col-start-1 row-span-2 row-start-1 grid size-10 place-items-center rounded-full bg-(--brand-teal-text)/10 text-(--brand-teal-text)"
+                className="col-start-1 row-span-2 row-start-1 grid size-10 place-items-center rounded-full bg-primary/10 text-primary"
               >
                 <Icon className="size-5" />
               </dd>
@@ -187,7 +192,7 @@ export async function HomeCard({
       )}
 
       {manage && (
-        <div className="absolute top-4 right-4 z-10">
+        <div data-sky={scene?.palette} className="absolute top-4 right-4 z-10">
           <RowMenu
             placeKey={place.key}
             placeName={place.name}

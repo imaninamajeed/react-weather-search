@@ -66,13 +66,21 @@ export function MainNavView({
                 href={destination.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-1 flex-col items-center justify-center gap-1 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden [&_svg]:size-5 [&_svg]:shrink-0",
+                  "flex flex-1 flex-col items-center justify-center gap-0.5 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-hidden [&_svg]:size-5 [&_svg]:shrink-0",
                   active
                     ? "font-medium text-foreground"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                {destination.icon}
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "grid h-7 w-12 place-items-center rounded-full transition-colors",
+                    active && "bg-primary/15 text-primary",
+                  )}
+                >
+                  {destination.icon}
+                </span>
                 <span>{destinationLabel(destination, t)}</span>
               </Link>
             </li>

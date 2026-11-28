@@ -10,7 +10,7 @@ tokens, and only add what is missing. For why the design system is shaped this w
 | ---------- | --------------------------------------------------------------------------------------- |
 | Style      | `radix-luma`, base colour `mist`, CSS variables, RSC on (`components.json`)             |
 | Primitives | `radix-ui` (single package), `class-variance-authority`, `cmdk`, `sonner`, `recharts`   |
-| Icons      | Tabler (`@tabler/icons-react`); Lucide only for weather-condition glyphs                |
+| Icons      | Tabler (`@tabler/icons-react`) for UI; weather conditions are the app's own SVG set     |
 | Fonts      | Outfit (`font-sans`, body) and Oxanium (`font-heading`), loaded in `src/app/layout.tsx` |
 | Tailwind   | v4, tokens in `src/app/globals.css` (no `tailwind.config`)                              |
 | Dark mode  | `.dark` class via `next-themes`; every colour must work in both themes                  |
@@ -109,17 +109,19 @@ the visible label, so an icon button's `aria-label` is Title Case too.
 Colour, radius and font come from CSS variables in `globals.css`, exposed to Tailwind through
 `@theme inline`. Use the semantic utility, never a raw colour.
 
-| Need                       | Use                                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------- |
-| Page / card / popover      | `bg-background`, `bg-card`, `bg-popover` with the matching `text-*-foreground`              |
-| Secondary text             | `text-muted-foreground`; fills `bg-muted`, hover `bg-accent`                                |
-| Brand action               | `bg-primary text-primary-foreground`                                                        |
-| Borders, inputs, focus     | `border-border`, `border-input`, `ring-ring`                                                |
-| Destructive                | `text-destructive` / `bg-destructive`                                                       |
-| Weather advisory / warning | `bg-advisory text-advisory-foreground`, `bg-warning text-warning-foreground` (app-specific) |
-| Chart series               | `var(--chart-1…5)`, assigned per entity in a fixed order (see the note in `globals.css`)    |
-| Sidebar                    | `bg-sidebar`, `text-sidebar-foreground`, `sidebar-accent`, `sidebar-border`                 |
-| Brand art / accents        | `--brand-*` only for hero art and the mark, never for body UI                               |
+| Need                       | Use                                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Page / card / popover      | `bg-background`, `bg-card`, `bg-popover` with the matching `text-*-foreground`                         |
+| Secondary text             | `text-muted-foreground`; fills `bg-muted`, hover `bg-accent`                                           |
+| Brand action               | `bg-primary text-primary-foreground`                                                                   |
+| Borders, inputs, focus     | `border-border`, `border-input`, `ring-ring`                                                           |
+| Destructive                | `text-destructive` / `bg-destructive`                                                                  |
+| Weather advisory / warning | `bg-advisory text-advisory-foreground`, `bg-warning text-warning-foreground` (app-specific)            |
+| Chart series               | `var(--chart-1…5)`, assigned per entity in a fixed order (see the note in `globals.css`)               |
+| Sidebar                    | `bg-sidebar`, `text-sidebar-foreground`, `sidebar-accent`, `sidebar-border`                            |
+| Weather glyph colours      | `--icon-sun`, `-moon`, `-cloud`, `-rain`, `-snow`, `-bolt`, `-fog` (+ `-shade`), e.g. `text-icon-rain` |
+| Text on a sky              | `text-sky-ink`, `text-sky-ink-muted`, `text-sky-accent`; usually automatic (see below)                 |
+| Brand art / accents        | `--brand-*` only for the mark, the welcome page and the "Now" dot, never for body UI                   |
 
 - **Don't** use hex, `rgb()`, `oklch()` literals or Tailwind palette colours (`text-red-500`) in
   components. If a new colour is needed, define a token in both `:root` and `.dark`, map it in
@@ -152,6 +154,40 @@ multi-column pages.
   reason.
 - Leave room for the bottom tab bar: nothing important in the last 5 rem of the viewport.
 
+## Sky and illustration
+
+Isobar draws the weather, not just its numbers. Three pieces, all in `src/components/shared/`:
+
+| Piece                        | Use it for                                                                        |
+| ---------------------------- | --------------------------------------------------------------------------------- |
+| `SkyPanel` (`sky-panel.tsx`) | A hero or banner painted with a sky: `sceneFor(forecast)` or `skyPreset(palette)` |
+| `SkyChip` (`sky-chip.tsx`)   | A place's weather as a small square of its sky with the icon, in tiles and cards  |
+| `WeatherIcon`                | The illustrated condition glyph; `animated` only for the one large hero icon      |
+| `illustrations.tsx`          | Spot art for empty, offline, not-found and error states (`StateScreen art=`)      |
+
+- **The sky comes from the forecast**, never the viewer's clock: `skyScene(current, today)` in
+  `src/lib/weather/sky.ts` picks one of ten palettes (clear day, golden hour, clear night, overcast
+  day/night, rain day/night, storm, snow, fog) and the layers on it. It is pure and tested, so the
+  server and the browser always draw the same sky.
+- **Text goes straight on a sky** in its ink. A sky's brightness doesn't follow the theme (a light
+  page can show a night sky), so `[data-sky]` re-scopes `--foreground`, `--muted-foreground`,
+  `--background`, `--card`, `--border` and friends to the sky's own ink and translucent surfaces.
+  Buttons, badges and the hour strip inside need no overrides: don't add `dark:text-white`.
+- **Sky layers stay tonal.** On a pale sky everything drawn (clouds, rain, fog, glow) stays light;
+  on a deep sky it stays dark. That keeps text contrast wherever a cloud drifts behind it. A new
+  palette or layer colour must keep that rule; `e2e/sky.spec.ts` measures every palette from pixels
+  in both themes at three widths (axe can't judge text on a gradient).
+- **Vivid art stays clear of words.** The sun, moon and bolt are the hero's `WeatherIcon`, placed by
+  the layout beside the temperature, never behind text.
+- **Motion is ambient and optional**: clouds drift, rain falls, stars twinkle, a storm flashes softly
+  twice every nine seconds. Every animation is `motion-safe:`, so reduced motion gets a still sky.
+- **Art is decoration.** Skies, chips, icons and illustrations are `aria-hidden`; the condition, the
+  alert and the count are always written beside them. A banner's sky sets the mood (a storm for
+  warnings), it never replaces the words.
+- **Weather glyphs are drawn in-repo** (`weather-glyphs.tsx`) on a 64-unit grid: two tones per shape
+  (body and shade), bold enough to read at 16 px, colours from `--icon-*`. Add a condition by
+  composing the existing parts (`Sun`, `Moon`, `Cloud`, drops, flakes, bolt, fog).
+
 ## Choosing a component
 
 | UI                               | Component                                                                              |
@@ -160,7 +196,8 @@ multi-column pages.
 | Stat, tag, severity chip         | `Badge` (set colour with the advisory/warning tokens)                                  |
 | Inline message                   | `Alert`                                                                                |
 | Transient feedback, with Undo    | `toast` from `sonner` (already styled by `ui/sonner.tsx`)                              |
-| Empty / error / offline page     | `StateScreen` (`shared/`)                                                              |
+| Empty / error / offline page     | `StateScreen` (`shared/`) with an `art` from `shared/illustrations.tsx`                |
+| Hero or banner                   | `SkyPanel` (`shared/`); `PageBanner` for a top-level page                              |
 | Loading                          | `Skeleton` inside a `<Suspense>` fallback, sized like the content                      |
 | Search                           | `Command` in `CommandDialog` (`search/`)                                               |
 | Overlay needing a decision       | `Dialog`; a panel sliding in from an edge (mobile sidebar) `Sheet`                     |
@@ -180,7 +217,7 @@ multi-column pages.
 - Generated files import `cn` from `"cn"`; app code imports it from `"@/lib/utils"` (a re-export).
   Keep each as is, and use `@/lib/utils` in anything you write.
 - Icons inside `ui/` are Tabler. If `shadcn add` emits `lucide-react` imports, swap them for the
-  Tabler equivalent (`components.json` has `iconLibrary: "tabler"`).
+  Tabler equivalent (`components.json` has `iconLibrary: "tabler"`); the app has no Lucide.
 - Double quotes without semicolons in generated files are the CLI's output; Prettier normalises
   them on `pnpm format`. Don't reformat a `ui/` file by hand to "match".
 
@@ -208,7 +245,8 @@ The Playwright suite runs axe-core on every page in light and dark, so these fai
 
 - [ ] Used an existing `ui/` component, or added one with `shadcn add`
 - [ ] Only semantic tokens, correct in both themes
-- [ ] Tabler icons, decorative ones `aria-hidden`
+- [ ] Tabler icons (weather conditions: `WeatherIcon`), decorative ones `aria-hidden`
+- [ ] Text on a sky uses the sky's ink (no `dark:` overrides inside `SkyPanel`); `e2e/sky.spec.ts` passes
 - [ ] Icon-only buttons labelled
 - [ ] Checked at phone width (bottom tab bar below `md`, sidebar from `lg`): the page's answer is
       on the first screen, in the content order above

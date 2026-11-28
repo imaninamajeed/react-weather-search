@@ -1,6 +1,12 @@
 "use client";
 
-import { ChartLine, CircleHelp, OctagonAlert, ShieldCheck, TriangleAlert } from "lucide-react";
+import {
+  IconAlertOctagon,
+  IconAlertTriangle,
+  IconChartLine,
+  IconHelpCircle,
+  IconShieldCheck,
+} from "@tabler/icons-react";
 import { LegendRow } from "@/components/shared/legend-row";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +28,7 @@ export function ReadingAlertsDialog({ className }: { className?: string }) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className={cn("rounded-full", className)}>
-          <CircleHelp aria-hidden="true" />
+          <IconHelpCircle aria-hidden="true" />
           {text.title}
         </Button>
       </DialogTrigger>
@@ -36,7 +42,7 @@ export function ReadingAlertsDialog({ className }: { className?: string }) {
             term={t.common.warning}
             icon={
               <span className="grid size-6 place-items-center rounded-full bg-warning text-warning-foreground">
-                <OctagonAlert className="size-3.5" />
+                <IconAlertOctagon className="size-3.5" />
               </span>
             }
           >
@@ -46,7 +52,7 @@ export function ReadingAlertsDialog({ className }: { className?: string }) {
             term={t.common.advisory}
             icon={
               <span className="grid size-6 place-items-center rounded-full bg-advisory text-advisory-foreground">
-                <TriangleAlert className="size-3.5" />
+                <IconAlertTriangle className="size-3.5" />
               </span>
             }
           >
@@ -54,13 +60,13 @@ export function ReadingAlertsDialog({ className }: { className?: string }) {
           </LegendRow>
           <LegendRow
             term={text.officialTerm}
-            icon={<ShieldCheck className="size-6 p-1 text-(--brand-teal-text)" />}
+            icon={<IconShieldCheck className="size-6 p-1 text-primary" />}
           >
             {text.official}
           </LegendRow>
           <LegendRow
             term={t.alerts.item.forecastSignal}
-            icon={<ChartLine className="size-6 p-1 text-muted-foreground" />}
+            icon={<IconChartLine className="size-6 p-1 text-muted-foreground" />}
           >
             {text.forecastSignal}
           </LegendRow>

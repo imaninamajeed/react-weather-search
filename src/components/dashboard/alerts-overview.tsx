@@ -1,4 +1,9 @@
-import { ArrowRight, OctagonAlert, ShieldCheck, TriangleAlert } from "lucide-react";
+import {
+  IconAlertOctagon,
+  IconAlertTriangle,
+  IconArrowRight,
+  IconShieldCheck,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { loadAlerts } from "@/components/alerts/load-alerts";
 import { SourceNote } from "@/components/alerts/source-note";
@@ -53,13 +58,13 @@ export async function AlertsOverview({
     <Button asChild variant="outline" size="sm" className="shrink-0">
       <Link href="/alerts">
         {text.allAlerts}
-        <ArrowRight aria-hidden="true" />
+        <IconArrowRight aria-hidden="true" />
       </Link>
     </Button>
   );
   const failedNote = failed > 0 && (
     <p className="flex items-center gap-1.5 font-medium">
-      <TriangleAlert aria-hidden="true" className="size-3.5 shrink-0 text-warning" />
+      <IconAlertTriangle aria-hidden="true" className="size-3.5 shrink-0 text-warning" />
       {text.couldntCheck(failed)}
     </p>
   );
@@ -88,9 +93,9 @@ export async function AlertsOverview({
         </h2>
         <span
           aria-hidden="true"
-          className="grid size-8 shrink-0 place-items-center rounded-full bg-[color-mix(in_oklch,var(--brand-teal-text)_14%,transparent)] text-(--brand-teal-text)"
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"
         >
-          <ShieldCheck className="size-4" />
+          <IconShieldCheck className="size-4" />
         </span>
         <p className="text-sm">
           <span className="font-medium">{text.allClear}</span>{" "}
@@ -107,7 +112,7 @@ export async function AlertsOverview({
   const warnings = all.filter(({ alert }) => alert.severity === "warning").length;
   const advisories = all.length - warnings;
   const hasWarning = warnings > 0;
-  const SeverityIcon = hasWarning ? OctagonAlert : TriangleAlert;
+  const SeverityIcon = hasWarning ? IconAlertOctagon : IconAlertTriangle;
   // "1 warning and 2 advisories": what the most serious thing is comes first.
   const headline = [
     warnings > 0 && t.common.warnings(warnings),
@@ -160,7 +165,7 @@ export async function AlertsOverview({
               {shown.map(({ alert, place, now }) => {
                 const description = describeAlert(alert, units, now, locale);
                 const isWarning = alert.severity === "warning";
-                const Icon = isWarning ? OctagonAlert : TriangleAlert;
+                const Icon = isWarning ? IconAlertOctagon : IconAlertTriangle;
                 return (
                   <li key={`${place.key}:${alert.id}`} className="min-w-0">
                     <Link

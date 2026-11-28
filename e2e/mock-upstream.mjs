@@ -6,6 +6,7 @@
 // internet. Special coordinates trigger failures (see `FAIL_LATITUDE`).
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { SKY_LATITUDE, SKY_SCENES } from "./sky-scenes.mjs";
 
 const fixture = (name) =>
   JSON.parse(
@@ -41,6 +42,12 @@ function forecast(url) {
   if (Math.abs(lat - TOKYO.latitude) < 2) {
     body.timezone = TOKYO.timezone;
     body.utc_offset_seconds = TOKYO.offset;
+  }
+  const scene = Math.abs(lat - SKY_LATITUDE) < 0.001 ? SKY_SCENES[Math.round(lon) - 1] : undefined;
+  if (scene && body.current) {
+    const { weather_code, is_day, cloud_cover, time } = scene;
+    Object.assign(body.current, { weather_code, is_day, cloud_cover });
+    body.current.time = `${body.current.time.slice(0, 10)}T${time}`;
   }
   return json(body);
 }

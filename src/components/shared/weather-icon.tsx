@@ -1,38 +1,31 @@
-import {
-  Cloud,
-  CloudDrizzle,
-  CloudFog,
-  CloudHail,
-  CloudLightning,
-  CloudMoon,
-  CloudRain,
-  CloudSnow,
-  CloudSun,
-  Moon,
-  Snowflake,
-  Sun,
-  type LucideIcon,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { WeatherIconName } from "@/lib/weather/codes";
+import { WeatherGlyph } from "./weather-glyphs";
 
-const ICONS: Record<WeatherIconName, LucideIcon> = {
-  "clear-day": Sun,
-  "clear-night": Moon,
-  "partly-cloudy-day": CloudSun,
-  "partly-cloudy-night": CloudMoon,
-  cloudy: Cloud,
-  fog: CloudFog,
-  drizzle: CloudDrizzle,
-  rain: CloudRain,
-  "freezing-rain": Snowflake,
-  snow: CloudSnow,
-  thunderstorm: CloudLightning,
-  hail: CloudHail,
-};
-
-/** Decorative: the condition is always also written out next to it. */
-export function WeatherIcon({ name, className }: { name: WeatherIconName; className?: string }) {
-  const Icon = ICONS[name];
-  return <Icon aria-hidden="true" strokeWidth={1.5} className={cn("size-5 shrink-0", className)} />;
+/**
+ * Decorative: the condition is always also written out next to it. `animated` is for the one large
+ * icon in a hero (a slowly turning sun, a drifting cloud, falling rain); it only moves when the
+ * visitor hasn't asked for reduced motion.
+ */
+export function WeatherIcon({
+  name,
+  className,
+  animated = false,
+}: {
+  name: WeatherIconName;
+  className?: string;
+  animated?: boolean;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 64 64"
+      aria-hidden="true"
+      focusable="false"
+      data-weather-icon={name}
+      className={cn("size-5 shrink-0 overflow-visible", className)}
+    >
+      <WeatherGlyph name={name} animated={animated} />
+    </svg>
+  );
 }

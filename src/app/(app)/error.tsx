@@ -1,8 +1,8 @@
 "use client";
 
-import { IconCloudOff } from "@tabler/icons-react";
 import Link from "next/link";
 import { useEffect } from "react";
+import { ErrorArt } from "@/components/shared/illustrations";
 import { StateScreen } from "@/components/shared/state-screen";
 import { Button } from "@/components/ui/button";
 import { useMessages } from "@/lib/i18n/client";
@@ -22,7 +22,7 @@ export default function Error({
 
   return (
     <StateScreen
-      icon={IconCloudOff}
+      art={<ErrorArt />}
       label={t.states.error.label}
       title={t.states.error.title}
       actions={

@@ -42,7 +42,7 @@ export async function SunArc({ forecast, className }: { forecast: Forecast; clas
   return (
     <div className={`${PANEL} ${className ?? ""}`}>
       <p className="label-caps flex items-center gap-2">
-        <IconChip icon={IconSunrise} accent="var(--brand-magenta)" />
+        <IconChip icon={IconSunrise} accent="var(--icon-sun-shade)" />
         {text.title}
       </p>
       <p className="mt-3 text-3xl leading-none font-semibold fit:mt-2 fit:text-2xl">
@@ -66,13 +66,14 @@ export async function SunArc({ forecast, className }: { forecast: Forecast; clas
             y2="0"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0" style={{ stopColor: "var(--brand-teal-text)" }} />
-            <stop offset="0.55" style={{ stopColor: "var(--brand-violet)" }} />
-            <stop offset="1" style={{ stopColor: "var(--brand-magenta)" }} />
+            {/* Dawn gold, through the day's blue, to an orange dusk. */}
+            <stop offset="0" style={{ stopColor: "var(--icon-sun)" }} />
+            <stop offset="0.5" style={{ stopColor: "var(--primary)" }} />
+            <stop offset="1" style={{ stopColor: "var(--icon-sun-shade)" }} />
           </linearGradient>
           <radialGradient id="sun-arc-halo">
-            <stop offset="0" style={{ stopColor: "var(--brand-magenta)", stopOpacity: 0.7 }} />
-            <stop offset="1" style={{ stopColor: "var(--brand-magenta)", stopOpacity: 0 }} />
+            <stop offset="0" style={{ stopColor: "var(--icon-sun)", stopOpacity: 0.8 }} />
+            <stop offset="1" style={{ stopColor: "var(--icon-sun)", stopOpacity: 0 }} />
           </radialGradient>
         </defs>
         <line
@@ -112,8 +113,8 @@ export async function SunArc({ forecast, className }: { forecast: Forecast; clas
               cx={sun.x}
               cy={sun.y}
               r="8"
-              fill="#fff"
-              stroke="var(--brand-magenta)"
+              fill="var(--icon-sun)"
+              stroke="var(--icon-sun-shade)"
               strokeWidth="2"
             />
           </>

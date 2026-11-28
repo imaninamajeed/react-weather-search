@@ -1,11 +1,11 @@
 import {
-  ChartLine,
-  ChevronDown,
-  Clock,
-  OctagonAlert,
-  ShieldCheck,
-  TriangleAlert,
-} from "lucide-react";
+  IconAlertOctagon,
+  IconAlertTriangle,
+  IconChartLine,
+  IconChevronDown,
+  IconClock,
+  IconShieldCheck,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { describeAlert } from "@/lib/alerts/describe";
 import type { WeatherAlert } from "@/lib/alerts/types";
@@ -40,9 +40,9 @@ export async function AlertItem({ alert, units, now, place }: AlertItemProps) {
   const { locale, t } = await getI18n();
   const description = describeAlert(alert, units, now, locale);
   const isWarning = alert.severity === "warning";
-  const Icon = isWarning ? OctagonAlert : TriangleAlert;
+  const Icon = isWarning ? IconAlertOctagon : IconAlertTriangle;
   const official = alert.source !== "forecast";
-  const SourceIcon = official ? ShieldCheck : ChartLine;
+  const SourceIcon = official ? IconShieldCheck : IconChartLine;
 
   return (
     <li className="flex gap-4 py-5">
@@ -70,7 +70,7 @@ export async function AlertItem({ alert, units, now, place }: AlertItemProps) {
           </span>
           {dot}
           <span className="inline-flex items-center gap-1">
-            <Clock aria-hidden="true" className="size-3.5 shrink-0" />
+            <IconClock aria-hidden="true" className="size-3.5 shrink-0" />
             {description.when}
           </span>
           {place && (
@@ -95,7 +95,7 @@ export async function AlertItem({ alert, units, now, place }: AlertItemProps) {
           <details className="group mt-3 text-sm">
             <summary className="inline-flex cursor-pointer items-center gap-1 rounded-full font-medium select-none">
               {t.alerts.item.fullNotice}
-              <ChevronDown
+              <IconChevronDown
                 aria-hidden="true"
                 className="size-4 transition-transform group-open:rotate-180"
               />

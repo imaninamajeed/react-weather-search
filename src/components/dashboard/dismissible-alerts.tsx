@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { IconX } from "@tabler/icons-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ export function DismissibleAlerts({
           });
         }}
       >
-        <X aria-hidden="true" />
+        <IconX aria-hidden="true" />
       </Button>
     </div>
   );

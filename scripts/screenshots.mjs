@@ -43,7 +43,7 @@ for (const [file, width, height] of [
   const context = await browser.newContext({ viewport: { width, height }, colorScheme: "dark" });
   await context.addCookies([{ name: "wx", value: JSON.stringify(preferences), url: base }]);
   const page = await context.newPage();
-  await page.goto(base, { waitUntil: "networkidle" });
+  await page.goto(`${base}/dashboard`, { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   await page.screenshot({ path: `public/screenshots/${file}.jpg`, type: "jpeg", quality: 85 });
   console.log("wrote", file);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, TriangleAlert } from "lucide-react";
+import { IconAlertTriangle, IconInfoCircle } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useMessages } from "@/lib/i18n/client";
@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
  */
 export function AlertsInfo({ warn, children }: { warn: boolean; children: ReactNode }) {
   const t = useMessages().dashboard.overview;
-  const StatusIcon = warn ? TriangleAlert : Info;
+  const StatusIcon = warn ? IconAlertTriangle : IconInfoCircle;
   return (
     <Popover>
       <PopoverTrigger asChild>

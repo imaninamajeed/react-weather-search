@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { IconChevronDown } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import type { WeatherAlert } from "@/lib/alerts/types";
 import { getI18n } from "@/lib/i18n/server";
@@ -32,7 +32,7 @@ export async function AlertList({ alerts, units, now, limit = 4 }: AlertListProp
           <Button asChild variant="outline" size="sm">
             <summary>
               {t.alerts.list.showMore(rest.length)}
-              <ChevronDown
+              <IconChevronDown
                 aria-hidden="true"
                 className="transition-transform group-open:rotate-180"
               />
