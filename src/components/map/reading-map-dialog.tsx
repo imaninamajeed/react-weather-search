@@ -1,15 +1,15 @@
 "use client";
 
 import {
-  CircleDashed,
-  CircleHelp,
-  Crosshair,
-  House,
-  MapPin,
-  MousePointerClick,
-  Play,
-  ZoomIn,
-} from "lucide-react";
+  IconCircleDashed,
+  IconClick,
+  IconCrosshair,
+  IconHelpCircle,
+  IconHome,
+  IconMapPin,
+  IconPlayerPlay,
+  IconZoomIn,
+} from "@tabler/icons-react";
 import { LegendRow } from "@/components/shared/legend-row";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 
 /** A pin as the map draws it, small enough to sit beside a legend entry. */
 function Pill({ children, home }: { children: string; home?: boolean }) {
-  const Icon = home ? House : MapPin;
+  const Icon = home ? IconHome : IconMapPin;
   return (
     <span
       className={cn(
@@ -54,7 +54,7 @@ export function ReadingMapDialog({ className }: { className?: string }) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className={cn("rounded-full", className)}>
-          <CircleHelp aria-hidden="true" />
+          <IconHelpCircle aria-hidden="true" />
           {text.title}
         </Button>
       </DialogTrigger>
@@ -82,31 +82,31 @@ export function ReadingMapDialog({ className }: { className?: string }) {
           </LegendRow>
           <LegendRow
             term={text.areaTerm}
-            icon={<CircleDashed className="size-6 p-1 text-(--brand-magenta)" />}
+            icon={<IconCircleDashed className="size-6 p-1 text-icon-rain" />}
           >
             {text.area}
           </LegendRow>
           <LegendRow
             term={text.timelineTerm}
-            icon={<Play className="size-6 p-1 text-(--brand-teal-text)" />}
+            icon={<IconPlayerPlay className="size-6 p-1 text-primary" />}
           >
             {text.timeline}
           </LegendRow>
           <LegendRow
             term={text.centerTerm}
-            icon={<Crosshair className="size-6 p-1 text-muted-foreground" />}
+            icon={<IconCrosshair className="size-6 p-1 text-muted-foreground" />}
           >
             {text.center}
           </LegendRow>
           <LegendRow
             term={text.clickTerm}
-            icon={<MousePointerClick className="size-6 p-1 text-muted-foreground" />}
+            icon={<IconClick className="size-6 p-1 text-muted-foreground" />}
           >
             {text.click}
           </LegendRow>
           <LegendRow
             term={text.zoomTerm}
-            icon={<ZoomIn className="size-6 p-1 text-muted-foreground" />}
+            icon={<IconZoomIn className="size-6 p-1 text-muted-foreground" />}
           >
             {text.zoom}
           </LegendRow>

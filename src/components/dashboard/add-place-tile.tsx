@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { OPEN_SEARCH_EVENT } from "@/components/search/search-command";
 import { Button } from "@/components/ui/button";
@@ -25,15 +25,15 @@ export function AddPlaceTile({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-x-4 gap-y-2 rounded-3xl border border-dashed border-border px-4 py-3",
+        "flex flex-wrap items-center gap-x-4 gap-y-2 rounded-3xl border border-dashed border-primary/30 bg-primary/5 px-4 py-3",
         className,
       )}
     >
       <span
         aria-hidden="true"
-        className="grid size-8 shrink-0 place-items-center rounded-full border border-border text-muted-foreground"
+        className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"
       >
-        <Plus className="size-4" />
+        <IconPlus className="size-4" />
       </span>
       <p className="min-w-0 flex-1 text-sm">
         <span className="font-medium">{t.followAnother}</span>{" "}

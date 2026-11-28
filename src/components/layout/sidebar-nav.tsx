@@ -12,9 +12,9 @@ import {
 import { useMessages } from "@/lib/i18n/client";
 import { DESTINATIONS, destinationLabel, isActive } from "./main-nav-client";
 
-/** The mark's own magenta-to-teal, running down the edge of whatever you are on. */
+/** A bar of the primary sky blue down the edge of whatever you are on. */
 export const CURRENT_EDGE =
-  "relative data-active:before:absolute data-active:before:inset-y-2 data-active:before:left-0 data-active:before:w-0.5 data-active:before:rounded-full data-active:before:bg-linear-to-b data-active:before:from-(--brand-magenta) data-active:before:to-(--brand-teal)";
+  "relative data-active:before:absolute data-active:before:inset-y-2 data-active:before:left-0 data-active:before:w-[3px] data-active:before:rounded-full data-active:before:bg-primary";
 
 /** The four destinations. A null pathname renders no highlight, for the prerendered shell. */
 export function SidebarNavView({ pathname }: { pathname: string | null }) {

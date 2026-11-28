@@ -1,4 +1,4 @@
-import { Droplets, OctagonAlert, TriangleAlert } from "lucide-react";
+import { IconAlertOctagon, IconAlertTriangle, IconDroplets } from "@tabler/icons-react";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { severityOnDay } from "@/lib/alerts/on-day";
 import type { WeatherAlert } from "@/lib/alerts/types";
@@ -47,7 +47,7 @@ export async function WeekStrip({
             ? formatPrecipitation(day.precipitationSum, units)
             : null;
         const label = `${isToday ? t.common.today : formatWeekday(day.date, "long", locale)} ${formatDayMonth(day.date, locale)}`;
-        const AlertIcon = severity === "warning" ? OctagonAlert : TriangleAlert;
+        const AlertIcon = severity === "warning" ? IconAlertOctagon : IconAlertTriangle;
 
         return (
           <li
@@ -76,7 +76,7 @@ export async function WeekStrip({
               >
                 {isToday ? t.common.today : formatWeekday(day.date, "short", locale)}
               </p>
-              <WeatherIcon name={weather.icon} className="mx-auto mt-2 size-5" />
+              <WeatherIcon name={weather.icon} className="mx-auto mt-2 size-7" />
               <p className="mt-2 text-sm font-medium sm:text-base">
                 {formatTemperature(day.temperatureMax, units)}
               </p>
@@ -85,7 +85,7 @@ export async function WeekStrip({
               </p>
               <div className="mx-auto mt-2 h-1 w-full max-w-10 rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-(--brand-teal-text)/70"
+                  className="h-full rounded-full bg-primary/70"
                   style={{
                     marginLeft: `${((day.temperatureMin - weekLow) / weekSpan) * 100}%`,
                     width: `${Math.max(((day.temperatureMax - day.temperatureMin) / weekSpan) * 100, 12)}%`,
@@ -93,7 +93,7 @@ export async function WeekStrip({
                 />
               </div>
               <p className="mt-1.5 flex items-center justify-center gap-1 text-xs text-muted-foreground">
-                <Droplets className="size-3" />
+                <IconDroplets className="size-3" />
                 {day.precipitationProbabilityMax}%
               </p>
             </div>

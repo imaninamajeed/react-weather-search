@@ -102,7 +102,7 @@ export async function WeekAheadTable({
                             backgroundColor: `color-mix(in oklch, ${temperatureColor(day.temperatureMax)} 30%, transparent)`,
                           }}
                         >
-                          <WeatherIcon name={weather.icon} className="mx-auto size-4" />
+                          <WeatherIcon name={weather.icon} className="mx-auto size-6" />
                           <span className="sr-only">
                             {weather.label}
                             {text.high}

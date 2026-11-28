@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { IconArrowRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -115,7 +115,7 @@ export async function Dashboard({ searchParams }: { searchParams: Promise<{ mana
               <Button asChild variant="outline" size="sm">
                 <Link href="/places">
                   {text.locations}
-                  <ArrowRight aria-hidden="true" />
+                  <IconArrowRight aria-hidden="true" />
                 </Link>
               </Button>
             ) : undefined

@@ -102,7 +102,7 @@ export function SidebarPlacesView({
                       aria-current={current ? "page" : undefined}
                     >
                       {place.icon ? (
-                        <WeatherIcon name={place.icon} className="text-muted-foreground" />
+                        <WeatherIcon name={place.icon} />
                       ) : (
                         <IconMapPin aria-hidden="true" className="text-muted-foreground" />
                       )}

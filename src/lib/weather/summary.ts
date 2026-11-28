@@ -2,7 +2,7 @@ import { formatHour, formatHourRange } from "@/lib/format";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { getMessages } from "@/lib/i18n/messages";
 import { formatSpeed } from "@/lib/units";
-import { isThunderstorm } from "./codes";
+import { isSnowCode, isThunderstorm } from "./codes";
 import type { Forecast, HourlyPoint, Units } from "./types";
 
 const HORIZON_HOURS = 24;
@@ -37,8 +37,6 @@ const isWet = (hour: HourlyPoint) =>
   hour.precipitationProbability >= 50 ||
   hour.precipitation >= 0.5 ||
   isThunderstorm(hour.weatherCode);
-
-const isSnowCode = (code: number) => (code >= 71 && code <= 77) || code === 85 || code === 86;
 
 function precipitationKind(run: HourlyPoint[], locale: Locale): string {
   const { kind } = getMessages(locale).weather;

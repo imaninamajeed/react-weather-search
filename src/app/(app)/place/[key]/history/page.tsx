@@ -46,7 +46,7 @@ async function HistoryRoute({ params }: Pick<PageProps<"/place/[key]/history">, 
 
   return (
     <div className="flex flex-col gap-6 fit:gap-3">
-      <SubpageHeader label={text.label} place={place} lead={text.lead} />
+      <SubpageHeader label={text.label} place={place} lead={text.lead} forecast={forecast} />
 
       <SectionCard id="summary" title={text.summary} quietTitleAtFit>
         <HistoryStats summary={summary} units={units} />

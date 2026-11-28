@@ -1,7 +1,8 @@
-import { ArrowRight } from "lucide-react";
+import { IconArrowRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { HazardBadge } from "@/components/alerts/hazard-badge";
-import { WeatherIcon } from "@/components/shared/weather-icon";
+import { sceneFor } from "@/components/shared/sky-panel";
+import { SkyChip } from "@/components/shared/sky-chip";
 import { Button } from "@/components/ui/button";
 import { formatPlaceSubtitle } from "@/lib/format";
 import { getI18n } from "@/lib/i18n/server";
@@ -54,7 +55,7 @@ export async function SavedTile({
             {current && today && weather ? (
               <>
                 <div>
-                  <WeatherIcon name={weather.icon} className="size-7" />
+                  <SkyChip scene={sceneFor(forecast!)} icon={weather.icon} className="size-11" />
                   <p className="mt-1 font-heading text-5xl leading-none font-medium tracking-tight">
                     <span className="sr-only">
                       {units === "metric"
@@ -63,7 +64,7 @@ export async function SavedTile({
                     </span>
                     <span aria-hidden="true">
                       {degrees}
-                      <span className="align-top text-lg font-normal text-(--brand-teal-text)">
+                      <span className="align-top text-lg font-normal text-muted-foreground">
                         {units === "metric" ? "°C" : "°F"}
                       </span>
                     </span>
@@ -98,7 +99,7 @@ export async function SavedTile({
           <Button asChild variant="ghost" size="sm" className="ml-auto flex w-fit">
             <Link href={placeHref(place)}>
               {t.dashboard.hero.fullForecast}
-              <ArrowRight aria-hidden="true" />
+              <IconArrowRight aria-hidden="true" />
             </Link>
           </Button>
         }

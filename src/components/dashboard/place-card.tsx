@@ -36,7 +36,7 @@ async function CardBody({ place, units }: { place: Place; units: Units }) {
           {formatTemperature(current.temperature, units)}
         </p>
         <p className="flex items-center gap-2 text-right text-sm">
-          <WeatherIcon name={weather.icon} className="size-5" />
+          <WeatherIcon name={weather.icon} className="size-6" />
           {weather.label}
         </p>
       </div>

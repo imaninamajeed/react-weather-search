@@ -50,6 +50,7 @@ export async function MapBanner({
       label={text.label}
       title={text.banner.title}
       lead={text.lead}
+      palette="clear-night"
       aside={<BannerFigures figures={[{ label: text.banner.locations, value: locations }]} />}
     >
       <BackToPlace placeKey={params.place} />

@@ -1,4 +1,4 @@
-import { ArrowRight, House, ShieldCheck, TriangleAlert } from "lucide-react";
+import { IconAlertTriangle, IconArrowRight, IconHome, IconShieldCheck } from "@tabler/icons-react";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { AlertList } from "@/components/alerts/alert-list";
@@ -97,9 +97,9 @@ export async function AlertsView({
             >
               <span
                 aria-hidden="true"
-                className="grid size-8 shrink-0 place-items-center rounded-full bg-[color-mix(in_oklch,var(--brand-teal-text)_14%,transparent)] text-(--brand-teal-text)"
+                className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"
               >
-                <ShieldCheck className="size-4" />
+                <IconShieldCheck className="size-4" />
               </span>
               <p className="text-sm">
                 <span className="font-medium">{text.noOfficial}</span>{" "}
@@ -108,7 +108,7 @@ export async function AlertsView({
               <Button asChild variant="outline" size="sm" className="ml-auto">
                 <Link href="/alerts">
                   {text.allAlerts}
-                  <ArrowRight aria-hidden="true" />
+                  <IconArrowRight aria-hidden="true" />
                 </Link>
               </Button>
             </div>
@@ -140,13 +140,15 @@ export async function AlertsView({
                     >
                       <Link
                         href={placeHref(place)}
-                        className="underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:decoration-(--brand-teal-text)"
+                        className="underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:decoration-primary"
                       >
                         {place.name}
                       </Link>
                     </CardTitle>
                     <CardDescription className="flex items-center gap-1.5">
-                      {place.key === homeKey && <House aria-hidden="true" className="size-3.5" />}
+                      {place.key === homeKey && (
+                        <IconHome aria-hidden="true" className="size-3.5" />
+                      )}
                       {[
                         place.key === homeKey && t.dashboard.hero.home,
                         formatPlaceSubtitle(place),
@@ -175,7 +177,7 @@ export async function AlertsView({
           <div className="flex flex-wrap items-center gap-x-6 gap-y-1 px-1">
             {failed > 0 && (
               <p className="flex items-center gap-2 font-medium">
-                <TriangleAlert aria-hidden="true" className="size-4 shrink-0 text-warning" />
+                <IconAlertTriangle aria-hidden="true" className="size-4 shrink-0 text-warning" />
                 {t.dashboard.overview.couldntCheck(failed)}
               </p>
             )}

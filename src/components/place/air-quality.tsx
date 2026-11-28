@@ -25,7 +25,7 @@ export async function AirQualityTile({
       <Tile
         label={text.title}
         icon={IconLeaf}
-        accent="var(--brand-teal-text)"
+        accent="var(--chart-4)"
         value="—"
         caption={text.none}
       />
@@ -39,7 +39,7 @@ export async function AirQualityTile({
     <Tile
       label={text.title}
       icon={IconLeaf}
-      accent="var(--brand-teal-text)"
+      accent="var(--chart-4)"
       value={Math.round(airQuality.usAqi)}
       unit={category.label}
       caption={

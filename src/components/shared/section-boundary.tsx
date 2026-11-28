@@ -1,7 +1,7 @@
 "use client";
 
 import { catchError, type ErrorInfo } from "next/error";
-import { IconAlertTriangle } from "@tabler/icons-react";
+import { ErrorArt } from "@/components/shared/illustrations";
 import { Button } from "@/components/ui/button";
 import { useMessages } from "@/lib/i18n/client";
 
@@ -10,16 +10,16 @@ function Fallback({ title }: { title: string }, { retry }: ErrorInfo) {
   return (
     <div
       role="alert"
-      className="flex h-full min-h-28 flex-col items-start justify-center gap-3 rounded-lg border border-dashed border-border p-4"
+      className="flex h-full min-h-28 items-center gap-4 rounded-3xl bg-muted/50 p-4"
     >
-      <div className="flex items-center gap-2 text-sm font-medium">
-        <IconAlertTriangle aria-hidden="true" className="size-4 text-muted-foreground" />
-        {t.common.unavailable(title)}
+      <ErrorArt className="h-16" />
+      <div className="flex flex-col items-start gap-2">
+        <p className="text-sm font-medium">{t.common.unavailable(title)}</p>
+        <p className="text-sm text-muted-foreground">{t.common.providerDidntRespond}</p>
+        <Button variant="outline" size="sm" onClick={() => retry()}>
+          {t.common.tryAgain}
+        </Button>
       </div>
-      <p className="text-sm text-muted-foreground">{t.common.providerDidntRespond}</p>
-      <Button variant="outline" size="sm" onClick={() => retry()}>
-        {t.common.tryAgain}
-      </Button>
     </div>
   );
 }

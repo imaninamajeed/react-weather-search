@@ -16,10 +16,6 @@ interface PlaceActionsProps {
   isHome: boolean;
 }
 
-// The hero is the mark's ink in dark mode, so its controls are glass there.
-const onInk =
-  "dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15 dark:hover:text-white";
-
 /** Save / set-home controls in the hero. Every change can be undone from its toast. */
 export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceActionsProps) {
   const [pending, startTransition] = useTransition();
@@ -58,7 +54,7 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
 
   return (
     <div className="flex shrink-0 flex-wrap items-center gap-2">
-      <Button asChild variant="ghost" size="sm" className={onInk}>
+      <Button asChild variant="ghost" size="sm">
         <Link
           href={`/map?place=${encodeURIComponent(placeKey)}`}
           aria-label={t.dashboard.hero.radarFor(placeName)}
@@ -70,7 +66,6 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
       <Button
         variant="outline"
         size="sm"
-        className={onInk}
         aria-pressed={saved}
         disabled={pending || !online}
         title={offlineHint}
@@ -80,7 +75,7 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
         {saved ? t.place.actions.savedState : t.place.actions.save}
       </Button>
       {isHome ? (
-        <span className="inline-flex h-7 items-center gap-1 px-2 text-[0.8rem] text-muted-foreground dark:text-white/80">
+        <span className="inline-flex h-7 items-center gap-1 px-2 text-[0.8rem] text-muted-foreground">
           <IconHome aria-hidden="true" className="size-3.5" />
           {t.dashboard.hero.home}
         </span>
@@ -88,7 +83,6 @@ export function PlaceActions({ placeKey, placeName, saved, isHome }: PlaceAction
         <Button
           variant="ghost"
           size="sm"
-          className={onInk}
           disabled={pending || !online}
           title={offlineHint}
           onClick={makeHome}

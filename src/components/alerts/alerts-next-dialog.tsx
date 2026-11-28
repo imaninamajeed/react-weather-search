@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Compass } from "lucide-react";
+import { IconArrowRight, IconCompass } from "@tabler/icons-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +27,7 @@ export function AlertsNextDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" className="bg-background/70 backdrop-blur dark:bg-white/10">
-          <Compass aria-hidden="true" />
+          <IconCompass aria-hidden="true" />
           {text.button}
         </Button>
       </DialogTrigger>
@@ -44,7 +44,7 @@ export function AlertsNextDialog() {
                   href={destination.href}
                   className="group flex items-center gap-3 rounded-2xl border border-border px-4 py-3 transition-colors hover:bg-muted focus-visible:bg-muted"
                 >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-(--brand-teal-text) [&_svg]:size-5">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary [&_svg]:size-5">
                     {destination.icon}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -53,7 +53,7 @@ export function AlertsNextDialog() {
                       {text[HINTS[destination.href as keyof typeof HINTS]]}
                     </span>
                   </span>
-                  <ArrowRight
+                  <IconArrowRight
                     aria-hidden="true"
                     className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
                   />

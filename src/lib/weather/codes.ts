@@ -1,7 +1,7 @@
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { getMessages } from "@/lib/i18n/messages";
 
-/** Icon identifiers; components/shared/weather-icon.tsx maps these to lucide icons. */
+/** Icon identifiers; components/shared/weather-icon.tsx draws each one in the app's own illustrated set. */
 export type WeatherIconName =
   | "clear-day"
   | "clear-night"
@@ -68,6 +68,16 @@ export function describeWeather(
 
 export function isThunderstorm(code: number): boolean {
   return code === 95 || code === 96 || code === 99;
+}
+
+/** Snowfall, snow grains and snow showers. */
+export function isSnowCode(code: number): boolean {
+  return (code >= 71 && code <= 77) || code === 85 || code === 86;
+}
+
+/** Fog and depositing rime fog. */
+export function isFogCode(code: number): boolean {
+  return code === 45 || code === 48;
 }
 
 /** Any liquid or frozen precipitation (drizzle, rain, snow, showers, storms). */

@@ -1,6 +1,7 @@
-import { Clock, Droplets, OctagonAlert, TriangleAlert } from "lucide-react";
+import { IconAlertOctagon, IconAlertTriangle, IconClock, IconDroplets } from "@tabler/icons-react";
 import Link from "next/link";
-import { WeatherIcon } from "@/components/shared/weather-icon";
+import { sceneFor } from "@/components/shared/sky-panel";
+import { SkyChip } from "@/components/shared/sky-chip";
 import { describeAlert, highestSeverity, sortAlerts } from "@/lib/alerts/describe";
 import type { WeatherAlert } from "@/lib/alerts/types";
 import { formatPlaceSubtitle, formatTime } from "@/lib/format";
@@ -63,7 +64,7 @@ export async function LocationTile({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
           {forecast && (
             <p className={cn(caption, "tnum flex items-center gap-1.5")}>
-              <Clock aria-hidden="true" className="size-3.5" />
+              <IconClock aria-hidden="true" className="size-3.5" />
               {formatTime(forecast.current.time, locale)}
             </p>
           )}
@@ -108,7 +109,7 @@ function AlertBand({
   t: Messages;
 }) {
   const isWarning = severity === "warning";
-  const Icon = isWarning ? OctagonAlert : TriangleAlert;
+  const Icon = isWarning ? IconAlertOctagon : IconAlertTriangle;
   return (
     <div
       className={cn(
@@ -177,7 +178,7 @@ function TileWeather({
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3">
-          <WeatherIcon name={weather.icon} className="size-9 shrink-0 text-(--brand-teal-text)" />
+          <SkyChip scene={sceneFor(forecast)} icon={weather.icon} />
           <p className="font-heading text-6xl leading-none font-medium tracking-tight">
             <span className="sr-only">
               {units === "metric"
@@ -186,7 +187,7 @@ function TileWeather({
             </span>
             <span aria-hidden="true">
               {temperature}
-              <span className="align-top text-xl font-normal text-(--brand-teal-text)">
+              <span className="align-top text-xl font-normal text-muted-foreground">
                 {units === "metric" ? "°C" : "°F"}
               </span>
             </span>
@@ -208,7 +209,7 @@ function TileWeather({
         <div className="min-w-0 sm:border-l sm:border-border sm:pl-6 sm:dark:border-white/10">
           <p className={caption}>{t.dashboard.tile.rain}</p>
           <p className="mt-1 flex items-center gap-1.5 font-medium">
-            <Droplets aria-hidden="true" className="size-4 shrink-0 text-(--brand-teal-text)" />
+            <IconDroplets aria-hidden="true" className="size-4 shrink-0 text-icon-rain" />
             <span className="min-w-0">{describeRainOutlook(hourly, locale)}</span>
           </p>
         </div>

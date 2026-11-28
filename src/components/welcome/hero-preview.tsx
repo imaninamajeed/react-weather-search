@@ -1,11 +1,13 @@
 "use client";
 
 import { IconAlertTriangle } from "@tabler/icons-react";
+import { SkyPanel } from "@/components/shared/sky-panel";
 import { WeatherIcon } from "@/components/shared/weather-icon";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMessages } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
+import { skyPreset } from "@/lib/weather/sky";
 import { smoothPath, type Point } from "./curves";
 
 // The three models' daily highs over a week, as in the social image: they agree for three days,
@@ -17,9 +19,9 @@ const RUNS = [
 ];
 const VERDICT = ["high", "high", "high", "medium", "medium", "low", "low"] as const;
 const VERDICT_COLOUR = {
-  high: "var(--brand-teal-text)",
+  high: "var(--chart-4)",
   medium: "var(--advisory)",
-  low: "var(--brand-magenta)",
+  low: "var(--chart-1)",
 };
 
 const x = (day: number) => 12 + day * 28.6;
@@ -109,19 +111,18 @@ export function HeroPreview({ className }: { className?: string }) {
           <span className="font-normal">{text.until}</span>
         </Badge>
 
-        <Card size="sm" className={cn(glass, "w-full")}>
-          <CardContent>
-            <p className="label-caps">{text.example}</p>
-            <div className="mt-2 flex items-center gap-3">
-              <WeatherIcon name="rain" className="size-10" />
-              <p className="tnum font-heading text-5xl leading-none font-semibold tracking-tight">
-                26
-                <sup className="ml-0.5 text-xl font-medium text-muted-foreground">°C</sup>
-              </p>
-            </div>
-            <p className="mt-2 text-sm">{text.summary}</p>
-          </CardContent>
-        </Card>
+        {/* The weather now on its own sky, as the dashboard draws it. */}
+        <SkyPanel scene={skyPreset("rain-day")} className="w-full rounded-3xl p-4">
+          <p className="label-caps">{text.example}</p>
+          <div className="mt-2 flex items-center gap-3">
+            <WeatherIcon name="rain" animated className="size-14 drop-shadow-lg" />
+            <p className="tnum font-heading text-5xl leading-none font-semibold tracking-tight">
+              26
+              <sup className="ml-0.5 text-xl font-medium text-muted-foreground">°C</sup>
+            </p>
+          </div>
+          <p className="mt-2 text-sm">{text.summary}</p>
+        </SkyPanel>
       </div>
     </div>
   );

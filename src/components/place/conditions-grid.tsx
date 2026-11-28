@@ -51,7 +51,7 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
       key="humidity"
       label={text.humidity}
       icon={IconDroplet}
-      accent="var(--brand-indigo)"
+      accent="var(--icon-rain)"
       value={Math.round(current.humidity)}
       unit="%"
       caption={text.dewPoint(
@@ -63,7 +63,7 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
       key="uv"
       label={text.uvIndex}
       icon={IconSun}
-      accent="var(--brand-violet)"
+      accent="var(--icon-sun-shade)"
       value={Math.round(current.uvIndex)}
       unit={uv.label}
       caption={
@@ -90,7 +90,7 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
       key="pressure"
       label={text.pressure}
       icon={IconGauge}
-      accent="var(--brand-magenta)"
+      accent="var(--chart-5)"
       value={
         units === "imperial"
           ? convertPressure(current.pressure, units).toFixed(2)
@@ -103,7 +103,7 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
       key="visibility"
       label={text.visibility}
       icon={IconEye}
-      accent="var(--brand-teal-text)"
+      accent="var(--icon-fog)"
       value={Number(convertDistance(current.visibility, units).toFixed(1))}
       unit={labels.distance}
       caption={`${describeVisibility(current.visibility, t)} · ${formatDistance(current.visibility, units)}`}
@@ -112,7 +112,7 @@ export async function ConditionsGrid({ forecast, units }: { forecast: Forecast; 
       key="cloud"
       label={text.cloudCover}
       icon={IconCloud}
-      accent="var(--brand-indigo)"
+      accent="var(--icon-cloud-shade)"
       value={Math.round(current.cloudCover)}
       unit="%"
       caption={describeCloudCover(current.cloudCover, t)}

@@ -85,7 +85,7 @@ export function TileFlip({
             <p className="truncate font-heading text-lg leading-tight">
               <Link
                 href={href}
-                className="cursor-pointer underline decoration-transparent decoration-2 underline-offset-4 transition-colors outline-none hover:decoration-(--brand-teal-text) focus-visible:decoration-(--brand-teal-text)"
+                className="cursor-pointer underline decoration-transparent decoration-2 underline-offset-4 transition-colors outline-none hover:decoration-primary focus-visible:decoration-primary"
               >
                 {title}
               </Link>

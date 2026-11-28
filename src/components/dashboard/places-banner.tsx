@@ -24,6 +24,7 @@ export async function PlacesBanner() {
       label={text.label}
       title={none ? text.none : text.following(places.length)}
       lead={none ? text.leadNone : text.lead(home.name)}
+      palette="golden"
       aside={
         countries.size > 0 ? (
           <BannerFigures figures={[{ label: text.countries, value: countries.size }]} />

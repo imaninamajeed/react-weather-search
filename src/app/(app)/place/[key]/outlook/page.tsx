@@ -34,7 +34,7 @@ async function OutlookRoute({ params }: Pick<PageProps<"/place/[key]/outlook">, 
 
   return (
     <div className="flex flex-col gap-6 fit:gap-3">
-      <SubpageHeader label={text.label} place={place} lead={text.lead} />
+      <SubpageHeader label={text.label} place={place} lead={text.lead} forecast={forecast} />
 
       <div className="contents fit:grid fit:grid-cols-12 fit:gap-3">
         <SectionCard id="daily" title={text.daily} className="fit:col-span-5">

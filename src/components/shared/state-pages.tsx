@@ -1,8 +1,8 @@
 "use client";
 
-import { IconMapPinOff, IconWifiOff } from "@tabler/icons-react";
 import Link from "next/link";
 import { OpenSearchButton } from "@/components/dashboard/open-search-button";
+import { NotFoundArt, OfflineArt } from "@/components/shared/illustrations";
 import { StateScreen } from "@/components/shared/state-screen";
 import { Button } from "@/components/ui/button";
 import { useMessages } from "@/lib/i18n/client";
@@ -12,7 +12,7 @@ export function NotFoundState() {
   const t = useMessages();
   return (
     <StateScreen
-      icon={IconMapPinOff}
+      art={<NotFoundArt />}
       label="404"
       title={t.states.notFound.title}
       actions={
@@ -33,7 +33,7 @@ export function OfflineState() {
   const t = useMessages();
   return (
     <StateScreen
-      icon={IconWifiOff}
+      art={<OfflineArt />}
       label={t.states.offline.label}
       title={t.states.offline.title}
       actions={

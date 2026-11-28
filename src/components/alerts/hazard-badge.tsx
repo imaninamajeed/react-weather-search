@@ -1,4 +1,4 @@
-import { OctagonAlert, TriangleAlert } from "lucide-react";
+import { IconAlertOctagon, IconAlertTriangle } from "@tabler/icons-react";
 import { highestSeverity } from "@/lib/alerts/describe";
 import type { WeatherAlert } from "@/lib/alerts/types";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,7 @@ export async function HazardBadge({ alerts }: { alerts: WeatherAlert[] }) {
   const { t } = await getI18n();
   const severity = highestSeverity(alerts);
   if (!severity) return null;
-  const Icon = severity === "warning" ? OctagonAlert : TriangleAlert;
+  const Icon = severity === "warning" ? IconAlertOctagon : IconAlertTriangle;
   const label =
     alerts.length === 1
       ? severity === "warning"

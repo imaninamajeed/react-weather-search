@@ -337,7 +337,7 @@ function popupContent(
   big.className = "font-heading text-3xl font-semibold leading-none";
   big.append(String(Math.round(convertTemperature(data.temperature, units))));
   const unitMark = document.createElement("span");
-  unitMark.className = "align-top text-base font-normal text-(--brand-teal-text)";
+  unitMark.className = "align-top text-base font-normal text-muted-foreground";
   unitMark.textContent = unit;
   big.append(unitMark);
   root.append(big);
@@ -348,7 +348,7 @@ function popupContent(
     const fact = (icon: string, value: string) => {
       const item = document.createElement("span");
       item.className = "flex items-center gap-1";
-      item.append(iconElement(icon, "size-3.5 text-(--brand-teal-text)"), value);
+      item.append(iconElement(icon, "size-3.5 text-primary"), value);
       return item;
     };
     const facts = document.createElement("p");

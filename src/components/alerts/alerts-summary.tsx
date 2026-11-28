@@ -1,6 +1,7 @@
-import { Check, ShieldCheck } from "lucide-react";
+import { IconCheck } from "@tabler/icons-react";
 import Link from "next/link";
 import { AlertsNextDialog } from "@/components/alerts/alerts-next-dialog";
+import { AllClearArt } from "@/components/shared/illustrations";
 import { BannerFigures, PageBanner } from "@/components/shared/page-banner";
 import { getI18n } from "@/lib/i18n/server";
 import { placeHref, type Place } from "@/lib/places";
@@ -21,8 +22,9 @@ interface AlertsSummaryProps {
 
 /**
  * The alerts page's banner (see PageBanner). The answer is in words on the left; on the right sit the
- * two counts or, when nothing is active, a shield with a slow ripple, and the places that were checked.
- * It only reports: severity shows only as an icon and a word on each alert.
+ * two counts or, when nothing is active, a clear-sky illustration, and the places that were checked.
+ * The sky follows the answer (a storm for warnings, rain for advisories, clear when all is quiet), but
+ * only as mood: severity shows as an icon and a word on each alert.
  */
 export async function AlertsSummary({
   warnings,
@@ -62,21 +64,19 @@ export async function AlertsSummary({
           ? text.acrossAll(placesLabel)
           : text.inSome(affected, placesLabel);
 
+  const palette =
+    warnings > 0 ? "storm" : advisories > 0 ? "rain-day" : clear ? "clear-day" : "overcast-day";
+
   return (
     <PageBanner
       id="alerts-summary"
       label={text.label}
       title={headline}
       lead={lead}
+      palette={palette}
       aside={
         clear ? (
-          <div aria-hidden="true" className="relative hidden size-32 place-items-center sm:grid">
-            <span className="absolute inset-0 rounded-full bg-(--brand-teal-text)/15 motion-safe:animate-[ping_3.2s_cubic-bezier(0,0,0.2,1)_infinite]" />
-            <span className="absolute inset-4 rounded-full bg-(--brand-teal-text)/10" />
-            <span className="relative grid size-20 place-items-center rounded-full bg-background/80 text-(--brand-teal-text) shadow-lg ring-1 ring-(--brand-teal-text)/30 backdrop-blur dark:bg-black/60">
-              <ShieldCheck className="size-10" strokeWidth={1.5} />
-            </span>
-          </div>
+          <AllClearArt className="hidden h-36 sm:block" />
         ) : (
           !none && (
             <BannerFigures
@@ -95,13 +95,13 @@ export async function AlertsSummary({
             <li key={place.key}>
               <Link
                 href={placeHref(place)}
-                className="flex items-center gap-1.5 rounded-full bg-background/70 py-1 pr-3 pl-1.5 text-sm font-medium ring-1 ring-foreground/10 backdrop-blur transition-colors hover:bg-background dark:bg-white/10 dark:ring-white/15 dark:hover:bg-white/15"
+                className="flex items-center gap-1.5 rounded-full bg-background py-1 pr-3 pl-1.5 text-sm font-medium ring-1 ring-border backdrop-blur transition-colors hover:bg-card"
               >
                 <span
                   aria-hidden="true"
-                  className="grid size-5 place-items-center rounded-full bg-[color-mix(in_oklch,var(--brand-teal-text)_18%,transparent)] text-(--brand-teal-text)"
+                  className="grid size-5 place-items-center rounded-full bg-card text-sky-accent"
                 >
-                  <Check className="size-3" strokeWidth={3} />
+                  <IconCheck className="size-3" stroke={3} />
                 </span>
                 {place.name}
               </Link>

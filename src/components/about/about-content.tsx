@@ -84,7 +84,7 @@ export function AboutContent() {
 
   return (
     <div className="flex flex-col gap-10 fit:gap-3">
-      <PageHeader label={t.label} title={t.title} lead={t.lead} />
+      <PageHeader label={t.label} title={t.title} lead={t.lead} sky="golden" />
 
       <div className="contents fit:grid fit:grid-cols-12 fit:gap-3">
         <nav

@@ -32,7 +32,7 @@ export async function WindCompass({
   return (
     <div className={`${PANEL} ${className ?? ""}`}>
       <p className="label-caps flex items-center gap-2">
-        <IconChip icon={IconWind} accent="var(--brand-teal-text)" />
+        <IconChip icon={IconWind} accent="var(--primary)" />
         {t.place.hero.wind}
       </p>
       <p className="mt-3 text-3xl leading-none font-semibold tabular-nums fit:mt-2 fit:text-2xl">
@@ -47,8 +47,8 @@ export async function WindCompass({
       >
         <defs>
           <linearGradient id="wind-needle" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" style={{ stopColor: "var(--brand-teal-text)" }} />
-            <stop offset="1" style={{ stopColor: "var(--brand-magenta)" }} />
+            <stop offset="0" style={{ stopColor: "var(--primary)" }} />
+            <stop offset="1" style={{ stopColor: "var(--chart-3)" }} />
           </linearGradient>
         </defs>
         <circle cx="60" cy="63" r="44" fill="none" stroke="currentColor" strokeOpacity="0.18" />

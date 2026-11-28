@@ -35,7 +35,7 @@ const FEATURES: {
 /**
  * The whole welcome page, full-bleed and outside the app shell, after the social image: the wordmark,
  * the promise and the four features (a 2×2 of cards) on the left; the storm and a few of the
- * app's cards on the right. Dark mode uses the mark's own ink and light mode the page's white; `--hero-bg` is that
+ * app's cards on the right, on the page's own background in either theme; `--hero-bg` is that
  * surface, which the chart's label gaps and the shade behind the text also use.
  */
 export function WelcomeHero() {
@@ -44,7 +44,7 @@ export function WelcomeHero() {
   return (
     <section
       aria-labelledby="welcome-title"
-      className="relative isolate flex flex-1 flex-col justify-center overflow-hidden bg-(--hero-bg) text-foreground [--hero-bg:var(--background)] dark:[--hero-bg:var(--brand-ink)]"
+      className="relative isolate flex flex-1 flex-col justify-center overflow-hidden bg-(--hero-bg) text-foreground [--hero-bg:var(--background)]"
     >
       <div className="absolute top-4 right-4 z-10 sm:top-6 sm:right-6">
         <LanguageToggle />

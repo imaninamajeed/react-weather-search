@@ -23,8 +23,9 @@ function appearsAt(index: number) {
 }
 
 /**
- * The next twelve hours as a horizontally scrolling strip. `glass` is for sitting on the hero:
- * translucent tiles and a teal chance-of-rain, in either theme.
+ * The next twelve hours as a horizontally scrolling strip of soft pills, "Now" picked out in a
+ * solid pill with the brand's magenta dot. `glass` is for sitting on a sky: translucent pills in the
+ * sky's own surface and ink (see SkyPanel), in either theme.
  */
 export async function HourStrip({
   forecast,
@@ -69,28 +70,21 @@ export async function HourStrip({
           <li
             key={hour.time}
             className={cn(
-              "flex min-w-16 flex-1 shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-2 py-3",
+              "flex min-w-16 flex-1 shrink-0 flex-col items-center gap-1.5 rounded-2xl px-2 py-3",
               compact && "gap-1 py-2",
               adaptive && cn("snap-start", appearsAt(index)),
               glass
-                ? cn(
-                    "border-border bg-background/60 backdrop-blur-sm dark:border-white/10 dark:bg-white/5",
-                    now &&
-                      "border-(--brand-teal-text)/50 bg-background dark:border-(--brand-teal)/50 dark:bg-white/10",
-                  )
-                : "border-border/60 bg-card/50",
+                ? cn("bg-background backdrop-blur-sm", now && "bg-card ring-1 ring-border")
+                : cn("bg-muted/70", now && "bg-primary/10 ring-1 ring-primary/30"),
             )}
           >
-            <span
-              className={cn(
-                "font-heading text-xs font-medium tracking-[0.08em] uppercase",
-                "text-muted-foreground",
-                glass && "dark:text-white/80",
+            <span className="inline-flex items-center gap-1 font-heading text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
+              {now && (
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-(--brand-magenta)" />
               )}
-            >
               {now ? t.common.now : formatHour(hour.time, locale)}
             </span>
-            <WeatherIcon name={weather.icon} className="size-5" />
+            <WeatherIcon name={weather.icon} className={compact ? "size-6" : "size-7"} />
             <span className="sr-only">{weather.label}</span>
             <span className={cn("text-base font-medium", compact && "text-sm")}>
               {formatTemperature(hour.temperature, units)}
@@ -99,12 +93,15 @@ export async function HourStrip({
             <span
               className={cn(
                 "tnum inline-flex min-h-4 items-center gap-0.5 text-xs",
-                glass ? "text-(--brand-teal-text)" : "text-muted-foreground",
+                glass ? "text-sky-accent" : "text-muted-foreground",
               )}
             >
               {hour.precipitationProbability >= 20 && (
                 <>
-                  <IconDroplet aria-hidden="true" className="size-3" />
+                  <IconDroplet
+                    aria-hidden="true"
+                    className={cn("size-3", !glass && "text-icon-rain")}
+                  />
                   {hour.precipitationProbability}%
                   <span className="sr-only"> {t.place.daily.chanceOfRain}</span>
                 </>

@@ -83,7 +83,7 @@ export async function DailyList({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <WeatherIcon name={weather.icon} className="size-5" />
+                  <WeatherIcon name={weather.icon} className="size-6" />
                   <span className="hidden text-sm @lg/daily:inline">{weather.label}</span>
                   <span className="sr-only @lg/daily:hidden">{weather.label}</span>
                 </div>
